@@ -8,12 +8,12 @@ use structopt::StructOpt;
 pub struct Config {
     /// file to write data about consumed
     /// rows vs. memory consumption into
-    #[structopt()]
+    #[structopt(short,long)]
     pub output: String,
+
+    #[structopt(short,long)]
+    pub limit: usize,
 
     #[structopt(default_value = "gittables_main_tokenized")]
     pub table: String,
-
-    #[structopt()]
-    pub limit: usize,
 }
