@@ -11,7 +11,7 @@ mod db;
 fn main() {
     let (sender, receiver) = channel();
 
-    let mut database = DatabaseCollection::new(db::client(), "gitttables_main_tokenized").limit(15);
+    let mut database = DatabaseCollection::new(db::client(), "gittables_main_tokenized").limit(15);
 
     let p = spawn(move || database.read(sender));
 
