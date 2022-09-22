@@ -1,6 +1,3 @@
-use std::collections::hash_map::DefaultHasher;
-use std::collections::BTreeMap as Map;
-use std::hash::{Hash, Hasher};
 use std::sync::mpsc::channel;
 use std::thread::spawn;
 
@@ -8,7 +5,6 @@ mod table_lake;
 use table_lake::*;
 
 mod db;
-mod util;
 
 // type InvertedIndex = Map<String, Vec<TableIndex>>;
 

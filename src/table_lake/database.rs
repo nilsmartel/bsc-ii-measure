@@ -44,7 +44,17 @@ impl TableLakeReader for DatabaseCollection {
             .expect("query database");
 
         while let Some(row) = rows.next().expect("read next row") {
-            println!("{:#?}", row);
+            // both saved as `integer`
+            let table_id: i32 = row.get("tableid");
+            let column_id: i32 = row.get("colid");
+
+            // saved as bigint
+            let row_id: i64 = row.get("rowid");
+
+            let tokenized = row.get("tokenized");
+            let index = TableIndex::new(table_id as u32, column_id as u32, row_id as u64);
+
+            ch.send((tokenized, index)).expect("send index to channel");
         }
 
         unimplemented!()
