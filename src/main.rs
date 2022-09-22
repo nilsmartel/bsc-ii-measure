@@ -36,9 +36,9 @@ fn doodlemain() -> ! {
     let rows = client
         .query(
             "
-        SELECT * FROM $1 LIMIT 10
+        SELECT * FROM gittables_main_tokenized LIMIT 10
         ",
-            &[&table],
+            &[],
         )
         .expect("perform query");
 
