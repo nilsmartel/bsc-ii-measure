@@ -1,6 +1,7 @@
 use get_size::GetSize;
-use std::sync::mpsc::{ channel, Receiver };
-use std::thread::{ spawn, JoinHandle };
+
+mod util;
+use util::*;
 
 mod table_lake;
 use structopt::StructOpt;
@@ -15,7 +16,7 @@ fn main() {
     let config = cli::Config::from_args();
     let table = &config.table;
 
-    let (receiver, p) = collect_indices(table);
+    let (receiver, p) = collect_indices(table, config.limit);
 
     // init information logger
     let mut log = Logger::new(&config.output)
@@ -29,12 +30,4 @@ fn main() {
     }
 
     p.join().expect("join thread");
-}
-
-fn collect_indices(table: &str) -> (Receiver<(String, TableIndex)>, JoinHandle<()>) {
-    let (sender, receiver) = channel();
-
-    let mut database = DatabaseCollection::new(db::client(), table).limit(15);
-    let p = spawn(move || database.read(sender));
-    (receiver, p)
 }

@@ -15,5 +15,5 @@ pub struct Config {
     pub table: String,
 
     #[structopt()]
-    pub limit: Option<usize>,
+    pub limit: usize,
 }

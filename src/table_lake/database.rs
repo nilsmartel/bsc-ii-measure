@@ -5,37 +5,28 @@ use std::sync::mpsc::Sender;
 pub struct DatabaseCollection {
     client: postgres::Client,
     table: String,
-    limit: Option<usize>,
+    limit: usize,
 }
 
 impl DatabaseCollection {
-    pub fn new(client: postgres::Client, table: impl Into<String>) -> Self {
+    pub fn new(client: postgres::Client, table: impl Into<String>, limit: usize) -> Self {
         DatabaseCollection {
             client,
             table: table.into(),
-            limit: None,
+            limit,
         }
-    }
-
-    pub fn limit(self, limit: usize) -> Self {
-        let limit = Some(limit);
-        Self { limit, ..self }
     }
 }
 
 impl TableLakeReader for DatabaseCollection {
     fn read(&mut self, ch: Sender<Entry>) {
-        let query = if let Some(limit) = self.limit {
+        let query =
             format!(
                 "
                 SELECT * FROM {}
                 LIMIT {}
             ",
-                self.table, limit
-            )
-        } else {
-            format!("SELECT * FROM {}", self.table)
-        };
+                self.table, self.limit);
 
         let params: [bool; 0] = [];
         let mut rows = self
