@@ -1,4 +1,3 @@
-use anyhow::Result;
 use std::sync::mpsc::channel;
 use std::thread::spawn;
 
@@ -16,14 +15,9 @@ fn main() {
 
     let p = spawn(move || database.read(sender));
 
-    // this will never be reached at the moment
     for (cell, _) in receiver {
         println!("{cell}");
     }
 
-    // let inverted_index = into_inverted_index(receiver.into_iter());
-
-    // print_cell_value_overlap_distribution(&inverted_index);
-
-    p.join().expect("to join thread");
+    p.join().expect("join thread");
 }

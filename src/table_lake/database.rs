@@ -56,7 +56,5 @@ impl TableLakeReader for DatabaseCollection {
 
             ch.send((tokenized, index)).expect("send index to channel");
         }
-
-        unimplemented!()
     }
 }
