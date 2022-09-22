@@ -25,22 +25,22 @@ impl DatabaseCollection {
 
 impl TableLakeReader for DatabaseCollection {
     fn read(&mut self, ch: Sender<Entry>) {
-        let (query, params) = if let Some(limit) = self.limit {
-            let query = "
-                SELECT * FROM $1
-                LIMIT $2
-                ";
-            let params = vec![self.table.clone(), format!("{limit}")];
-            (query, params)
+        let query = if let Some(limit) = self.limit {
+            format!(
+                "
+                SELECT * FROM {}
+                LIMIT {}
+            ",
+                self.table, limit
+            )
         } else {
-            let query = "SELECT * FROM $1";
-            let params = vec![self.table.clone()];
-            (query, params)
+            format!("SELECT * FROM {}", self.table)
         };
 
+        let params: [bool; 0] = [];
         let mut rows = self
             .client
-            .query_raw(query, params)
+            .query_raw(&query, params)
             .expect("query database");
 
         while let Some(row) = rows.next().expect("read next row") {
