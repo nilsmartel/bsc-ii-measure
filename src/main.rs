@@ -7,18 +7,20 @@ use std::thread::spawn;
 mod table_lake;
 use table_lake::*;
 
+mod db;
 mod util;
 
 // type InvertedIndex = Map<String, Vec<TableIndex>>;
 
 fn main() {
-    let mut lake = util::collect_tables_from_stdin();
-
     let (sender, receiver) = channel();
 
-    let p = spawn(move || lake.read(sender));
+    let mut database = DatabaseCollection::new(db::client(), "gitttables_main_tokenized").limit(15);
 
-    for (cell, _ ) in receiver {
+    let p = spawn(move || database.read(sender));
+
+    // this will never be reached at the moment
+    for (cell, _) in receiver {
         println!("{cell}");
     }
 
@@ -27,43 +29,4 @@ fn main() {
     // print_cell_value_overlap_distribution(&inverted_index);
 
     p.join().expect("to join thread");
-}
-
-fn print_cell_value_overlap_distribution(ii: &Map<u64, u32>) {
-    let mut d = Vec::new();
-
-    for (_, occurences) in ii {
-        let distr_index = *occurences as usize;
-
-        while d.len() <= distr_index {
-            d.push(0);
-        }
-
-        d[distr_index] += 1;
-    }
-
-    println!("n;cvo");
-
-    for (n, cvo) in d.into_iter().enumerate() {
-        if cvo == 0 {
-            continue;
-        }
-
-        println!("{n};{cvo}");
-    }
-}
-
-fn into_inverted_index(iter: impl Iterator<Item = Entry>) -> Map<u64, u32> {
-    let mut ii = Map::new();
-    for (cell_value, _position) in iter {
-        let cell_value_hash = {
-            let mut h = DefaultHasher::new();
-            cell_value.hash(&mut h);
-            h.finish()
-        };
-
-        *ii.entry(cell_value_hash).or_insert(0) += 1;
-    }
-
-    ii
 }

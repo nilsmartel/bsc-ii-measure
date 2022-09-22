@@ -1,6 +1,8 @@
 mod csv_collection;
+mod database;
 
 pub use csv_collection::CSVCollection;
+pub use database::*;
 
 use std::sync::mpsc::Sender;
 
