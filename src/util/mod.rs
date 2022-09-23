@@ -7,7 +7,7 @@ use std::thread::JoinHandle;
 use std::sync::mpsc::Receiver;
 
 use crate::*;
-use crate::cli::Config;
+use crate::cli::CompressionAlgorithm;
 
 mod random_keys;
 pub use random_keys::RandomKeys;
@@ -24,9 +24,11 @@ pub(crate) fn collect_indices(
     (receiver, p)
 }
 
-pub fn best_filename(table: &str, limit: usize) -> String {
+pub fn best_filename(table: &str, limit: usize, algo: CompressionAlgorithm) -> String {
     let limit = to_sci_str(limit);
-    format!("{limit}-{table}")
+    let algo = algo.str();
+
+    format!("{limit}-{table}-{algo}")
 }
 
 pub fn to_sci_str(n: usize) -> String {

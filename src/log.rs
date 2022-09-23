@@ -4,8 +4,6 @@ use std::sync::mpsc::*;
 use std::thread::spawn;
 use std::time::Duration;
 
-use crate::cli::CompressionAlgorithm;
-
 pub type MemLog = (usize, usize, Duration);
 
 /// Handles logging and formatting of information to file
@@ -15,13 +13,12 @@ pub struct Logger {
 
 impl Logger {
     /// Starts a new logging server as a separate thread and opens the desired files.
-    pub fn new(output_file: impl Into<String>, algo: CompressionAlgorithm) -> Self {
+    pub fn new(output_file: impl Into<String>) -> Self {
         let (sender, receiver) = channel::<Msg>();
 
-        let algo = algo.str();
         // File containing the csv formatted information about how the memory rises
         // with respect to the amount of cell values inserted into the table
-        let outputfile = output_file.into() + "-" + &algo;
+        let outputfile = output_file.into();
         let mem_stats = outputfile.clone() + "-mem.csv";
         let retr_stats = outputfile + "-retr.csv";
 
