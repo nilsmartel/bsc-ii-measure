@@ -14,14 +14,14 @@ impl Logger {
         let mem_stats = output_file.into() + "-mem.csv";
         let mut mem_stats = File::create(mem_stats)?;
 
-        writeln!(&mut mem_stats, "cells;bytes")?;
+        writeln!(&mut mem_stats, "cells;bytes;insert_duration_microsec")?;
 
         Ok(Logger {mem_stats})
     }
 
-    pub fn memory(&mut self, cells: usize, bytes: usize) -> Result<()> {
-        writeln!(&mut self.mem_stats, "{cells};{bytes}")?;
-        Ok(())
+    pub fn memory(&mut self, cells: usize, bytes: usize, duration: std::time::Duration) {
+        let duration = duration.as_micros();
+        writeln!(&mut self.mem_stats, "{cells};{bytes};{duration}").expect("write logs");
     }
 }
 
