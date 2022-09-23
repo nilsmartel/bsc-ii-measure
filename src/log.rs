@@ -10,7 +10,6 @@ pub type MemLog = (usize, usize, Duration);
 
 /// Handles logging and formatting of information to file
 pub struct Logger {
-    thread: JoinHandle<()>,
     sender: Sender<Msg>,
 }
 
@@ -66,10 +65,6 @@ impl Logger {
         self.sender
             .send(Msg::Retr(duration))
             .expect("write to retrieval logging channel");
-    }
-
-    pub fn join(self) {
-        self.thread.join().expect("join logging thread")
     }
 }
 
