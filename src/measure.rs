@@ -15,6 +15,31 @@ macro_rules! timed {
     }};
 }
 
+fn retrieval<'a, T>(ii: &'a T, mut log: Logger)
+where
+    T: InvertedIndex<'a> + RandomKeys,
+{
+    // TODO ensure that this is not getting optimized out!
+    let keys = ii.random_keys();
+    let max = keys.len();
+    // for logging percentage to completion
+    let steps = max / 20;
+    let mut percentage = 0;
+
+    for (index, key) in keys.into_iter().enumerate() {
+        let (duration, _table_indexes) = timed!(ii.get(&key));
+
+        log.retrieval_info(duration);
+
+        if index % steps == 0 {
+            println!("{percentage}%");
+            percentage += 5;
+        }
+    }
+
+    log.join();
+}
+
 /// Baseline measure of data, the way it is present in database
 pub(crate) fn baseline(receiver: Receiver<(String, TableIndex)>, log: Logger) {
     let mut ii = Vec::new();
@@ -31,24 +56,11 @@ pub(crate) fn baseline(receiver: Receiver<(String, TableIndex)>, log: Logger) {
     retrieval(&ii, log);
 }
 
-fn retrieval<'a, T>(ii: &'a T, mut log: Logger)
-where
-    T: InvertedIndex<'a> + RandomKeys,
-{
-    // TODO ensure that this is not getting optimized out!
-    let keys = ii.random_keys();
-    for key in keys {
-        let (duration, _table_indexes) = timed!(ii.get(&key));
-
-        log.retrieval_info(duration);
-    }
-
-    log.join();
-}
-
 /// Performs deduplication using a HashMap
 pub(crate) fn duplicates_hash(receiver: Receiver<(String, TableIndex)>, log: Logger) {
     use std::collections::HashMap as Map;
+
+    println!("Step 1. Measure insertion time.");
 
     let mut ii: Map<String, Vec<TableIndex>> = Map::new();
     let mut i = 1;
@@ -68,6 +80,7 @@ pub(crate) fn duplicates_hash(receiver: Receiver<(String, TableIndex)>, log: Log
 /// Performs deduplication using a btreemap
 pub(crate) fn duplicates_tree(receiver: Receiver<(String, TableIndex)>, log: Logger) {
     use std::collections::BTreeMap as Map;
+    println!("Step 1. Measure insertion time.");
 
     let mut ii: Map<String, Vec<TableIndex>> = Map::new();
 
