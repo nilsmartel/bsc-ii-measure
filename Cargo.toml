@@ -14,3 +14,4 @@ postgres = "0.19.4"                         # A native, synchronous PostgreSQL c
 anyhow = "1.0.65"                                   # Flexible concrete Error type built on std::error::Error
 fallible-iterator = "0.2.0"              # Fallible iterator traits
 structopt = "0.3.26"               # Parse command line argument by defining a struct.
+rand = "*"

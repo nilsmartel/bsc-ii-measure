@@ -299,6 +299,7 @@ dependencies = [
  "fallible-iterator",
  "get-size",
  "postgres",
+ "rand",
  "structopt",
  "threadpool",
 ]
