@@ -21,7 +21,7 @@ impl Logger {
         let algo = algo.str();
         // File containing the csv formatted information about how the memory rises
         // with respect to the amount of cell values inserted into the table
-        let outputfile = output_file.into() + &algo;
+        let outputfile = output_file.into() + "-" + &algo;
         let mem_stats = outputfile.clone() + "-mem.csv";
         let retr_stats = outputfile + "-retr.csv";
 
