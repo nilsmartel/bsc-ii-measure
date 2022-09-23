@@ -25,7 +25,7 @@ impl Logger {
         let mem_stats = outputfile.clone() + "-mem.csv";
         let retr_stats = outputfile + "-retr.csv";
 
-        let thread: JoinHandle<()> = spawn(move || {
+        spawn(move || {
             let mut mem_stats = File::create(mem_stats).expect("create mem stat file");
             writeln!(&mut mem_stats, "cells;bytes;insert_duration_microsec")
                 .expect("to write mem stat header");
@@ -50,7 +50,7 @@ impl Logger {
             }
         });
 
-        Logger { sender, thread }
+        Logger { sender }
     }
 
     #[inline]
