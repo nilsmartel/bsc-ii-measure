@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::Write;
 use std::sync::mpsc::*;
-use std::thread::{spawn, JoinHandle};
+use std::thread::spawn;
 use std::time::Duration;
 
 use crate::cli::CompressionAlgorithm;
