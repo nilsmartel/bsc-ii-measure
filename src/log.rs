@@ -27,22 +27,22 @@ impl Logger {
 
         spawn(move || {
             let mut mem_stats = File::create(mem_stats).expect("create mem stat file");
-            writeln!(&mut mem_stats, "cells;bytes;insert_duration_microsec")
+            writeln!(&mut mem_stats, "cells;bytes;insert_duration_nanosec")
                 .expect("to write mem stat header");
 
             let mut retr_stats = File::create(retr_stats).expect("create retrieval stat file");
-            writeln!(&mut retr_stats, "retrieval_duration_microsec")
+            writeln!(&mut retr_stats, "retrieval_duration_nanosec")
                 .expect("write to retrieval stat file");
 
             for msg in receiver {
                 match msg {
                     Msg::Mem((cells, bytes, duration)) => {
-                        let duration = duration.as_micros();
+                        let duration = duration.as_nanos();
                         writeln!(&mut mem_stats, "{cells};{bytes};{duration}")
                             .expect("to write mem stat row");
                     }
                     Msg::Retr(duration) => {
-                        let duration = duration.as_micros();
+                        let duration = duration.as_nanos();
                         writeln!(&mut retr_stats, "{duration}")
                             .expect("write row to retrieval stat file");
                     }
