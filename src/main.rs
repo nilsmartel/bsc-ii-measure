@@ -9,7 +9,7 @@ use structopt::StructOpt;
 use table_lake::*;
 use log::Logger;
 
-use std::{sync::mpsc::{ Receiver, channel, Sender }, thread::spawn, time::Duration};
+use std::{sync::mpsc::{ channel, Sender }, thread::spawn, time::Duration};
 
 mod log;
 mod cli;
@@ -29,8 +29,9 @@ fn main() {
     // Select Compression Algorithm and perfom 
     use cli::CompressionAlgorithm::*;
     match config.compression {
-        Baseline => measure_algo_baseline(receiver, log),
-        Duplicates => measure_algo_duplicates(receiver, log)
+        Baseline => measure::baseline(receiver, log),
+        DuplicatesHash => measure::duplicates_hash(receiver, log),
+        DuplicatesTree => measure::duplicates_tree(receiver, log),
     }.expect("perform compression");
 
     p.join().expect("join thread");
@@ -60,31 +61,61 @@ macro_rules! timed {
     };
 }
 
-fn measure_algo_baseline(receiver: Receiver<(String, TableIndex)>, mut log: Log) -> Result<()>{
-    let mut ii = Vec::new();
-    for data in receiver {
-        let (t,_) = timed!(ii.push(data));
+mod measure {
+    use anyhow::Result;
 
-        log.send((ii.len(), ii.get_size(), t))?;
+    use super::Log;
+    use crate::TableIndex;
+    use get_size::GetSize;
+    use std::sync::mpsc::Receiver;
+
+    /// Baseline measure of data, the way it is present in database
+    pub(crate) fn baseline(receiver: Receiver<(String, TableIndex)>, log: Log) -> Result<()>{
+        let mut ii = Vec::new();
+        for data in receiver {
+            let (t,_) = timed!(ii.push(data));
+
+            log.send((ii.len(), ii.get_size(), t))?;
+        }
+
+        Ok(())
     }
 
-    Ok(())
-}
+    /// Performs deduplication using a HashMap
+    pub(crate) fn duplicates_hash(receiver: Receiver<(String, TableIndex)>, log: Log) -> Result<()> {
+        use std::collections::HashMap as Map;
 
-fn measure_algo_duplicates(receiver: Receiver<(String, TableIndex)>, mut log: Log) -> Result<()> {
-    use std::collections::HashMap as Map;
+        let mut ii = Map::new();
+        let mut i = 1;
+        for (index, data) in receiver {
+            let (t,_) = timed!(
+                ii.insert(index, data)
+            );
 
-    let mut ii = Map::new();
-    let mut i = 1;
-    for (index, data) in receiver {
-        let (t,_) = timed!(
-            ii.insert(index, data)
-        );
+            log.send((i, ii.get_size(), t))?;
 
-        log.send((i, ii.get_size(), t))?;
+            i += 1;
+        }
 
-        i += 1;
+        Ok(())
     }
 
-    Ok(())
+    /// Performs deduplication using a btreemap
+    pub(crate) fn duplicates_tree(receiver: Receiver<(String, TableIndex)>, log: Log) -> Result<()> {
+        use std::collections::BTreeMap as Map;
+
+        let mut ii = Map::new();
+        let mut i = 1;
+        for (index, data) in receiver {
+            let (t,_) = timed!(
+                ii.insert(index, data)
+            );
+
+            log.send((i, ii.get_size(), t))?;
+
+            i += 1;
+        }
+
+        Ok(())
+    }
 }

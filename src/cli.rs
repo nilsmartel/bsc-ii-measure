@@ -26,7 +26,8 @@ pub struct Config {
 #[derive(Copy, Clone)]
 pub enum CompressionAlgorithm {
     Baseline,
-    Duplicates,
+    DuplicatesHash,
+    DuplicatesTree,
 }
 
 impl FromStr for CompressionAlgorithm {
@@ -34,9 +35,10 @@ impl FromStr for CompressionAlgorithm {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "baseline" | "base" => Ok(CompressionAlgorithm::Baseline),
-            "duplicate" | "duplicates" | "dup" => Ok(CompressionAlgorithm::Duplicates),
-            _ => Err(String::from("allowed: base baseline duplicate duplicates dup")),
+            "baseline" => Ok(CompressionAlgorithm::Baseline),
+            "duplicate-hash" => Ok(CompressionAlgorithm::DuplicatesHash),
+            "duplicate-tree" => Ok(CompressionAlgorithm::DuplicatesTree),
+            _ => Err(String::from("allowed: baseline duplicate-hash duplicate-tree")),
         }
     }
 }
