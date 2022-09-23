@@ -25,6 +25,9 @@ impl Logger {
         let mem_stats = outputfile.clone() + "-mem.csv";
         let retr_stats = outputfile + "-retr.csv";
 
+        println!("writing to {mem_stats}");
+        println!("writing to {retr_stats}");
+
         spawn(move || {
             let mut mem_stats = File::create(mem_stats).expect("create mem stat file");
             writeln!(&mut mem_stats, "cells;bytes;insert_duration_nanosec")
