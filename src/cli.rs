@@ -11,7 +11,7 @@ pub struct Config {
     /// file to write data about consumed
     /// rows vs. memory consumption into
     #[structopt(short, long)]
-    pub output: String,
+    pub output: Option<String>,
 
     #[structopt(short, long)]
     pub limit: usize,

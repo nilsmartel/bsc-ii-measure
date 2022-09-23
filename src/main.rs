@@ -17,13 +17,14 @@ fn main() {
     let table = &config.table;
     let limit = config.limit;
     let compression = config.compression;
+    let output = config.output.unwrap_or_else(|| best_filename(table, limit));
 
     println!("benchmarking {table} {limit} {}", compression.str());
 
     let (receiver, p) = collect_indices(table, limit);
 
     // init information logger
-    let log = Logger::new(&config.output, compression);
+    let log = Logger::new(&output, compression);
 
     // Select Compression Algorithm and perfom
     use cli::CompressionAlgorithm::*;
