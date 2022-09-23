@@ -5,7 +5,7 @@ pub use database::*;
 
 use std::sync::mpsc::Sender;
 
-#[derive(GetSize)]
+#[derive(GetSize, Clone, Copy)]
 pub struct TableIndex {
     pub table_id: u32,
     pub row_id: u32,

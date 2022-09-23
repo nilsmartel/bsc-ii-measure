@@ -1,19 +1,16 @@
 mod util;
 use util::*;
 
-mod measure; 
+mod inverted_index;
+mod measure;
 mod table_lake;
+use log::Logger;
 use structopt::StructOpt;
 use table_lake::*;
-use log::Logger;
 
-use std::{sync::mpsc::{ channel, Sender }, thread::spawn, time::Duration};
-
-mod log;
 mod cli;
 mod db;
-
-type Log = Sender<(usize, usize, Duration)>;
+mod log;
 
 fn main() {
     let config = cli::Config::from_args();
@@ -22,28 +19,14 @@ fn main() {
     let (receiver, p) = collect_indices(table, config.limit);
 
     // init information logger
-    let log = spawn_logger(&config.output);
+    let log = Logger::new(&config.output, config.compression);
 
-    // Select Compression Algorithm and perfom 
+    // Select Compression Algorithm and perfom
     use cli::CompressionAlgorithm::*;
     match config.compression {
         Baseline => measure::baseline(receiver, log),
         DuplicatesHash => measure::duplicates_hash(receiver, log),
         DuplicatesTree => measure::duplicates_tree(receiver, log),
-    }.expect("perform compression");
-
+    }
     p.join().expect("join thread");
-}
-
-fn spawn_logger(output: &str) -> Log {
-    let mut log = Logger::new(output)
-        .expect("init logging");
-    let (snd, rc) = channel();
-    spawn(move|| {
-        for (cells, bytes, duration) in rc {
-            log.memory(cells, bytes, duration)
-        }
-    });
-    
-    snd
 }

@@ -20,13 +20,13 @@ impl DatabaseCollection {
 
 impl TableLakeReader for DatabaseCollection {
     fn read(&mut self, ch: Sender<Entry>) {
-        let query =
-            format!(
-                "
+        let query = format!(
+            "
                 SELECT * FROM {}
                 LIMIT {}
             ",
-                self.table, self.limit);
+            self.table, self.limit
+        );
 
         let params: [bool; 0] = [];
         let mut rows = self
