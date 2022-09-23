@@ -36,8 +36,6 @@ where
             percentage += 5;
         }
     }
-
-    log.join();
 }
 
 /// Baseline measure of data, the way it is present in database
