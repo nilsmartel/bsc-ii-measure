@@ -38,7 +38,7 @@ where
     // TODO ensure that this is not getting optimized out!
     let keys = ii.random_keys();
     for key in keys {
-        let (duration, table_indexes) = timed!(ii.get(&key));
+        let (duration, _table_indexes) = timed!(ii.get(&key));
 
         log.retrieval_info(duration);
     }

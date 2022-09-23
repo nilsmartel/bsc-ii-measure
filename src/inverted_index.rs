@@ -40,7 +40,7 @@ impl<'a> InvertedIndex<'a> for Vec<(String, TableIndex)> {
     fn get(&self, key: &str) -> Indices<'a> {
         let v = self
             .iter()
-            .filter(|(k, v)| k == key)
+            .filter(|(k, _)| k == key)
             .map(|(_, i)| *i)
             .collect::<Vec<_>>();
 
