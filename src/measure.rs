@@ -28,10 +28,13 @@ pub(crate) fn baseline(receiver: Receiver<(String, TableIndex)>, log: Logger) {
     }
 
     println!("Step 2. Measure retrieval time.");
-    retrieval(ii, log);
+    retrieval(&ii, log);
 }
 
-fn retrieval<'a>(ii: impl InvertedIndex<'a> + RandomKeys, mut log: Logger) {
+fn retrieval<'a, T>(ii: &'a T, mut log: Logger)
+where
+    T: InvertedIndex<'a> + RandomKeys,
+{
     // TODO ensure that this is not getting optimized out!
     let keys = ii.random_keys();
     for key in keys {
@@ -59,7 +62,7 @@ pub(crate) fn duplicates_hash(receiver: Receiver<(String, TableIndex)>, log: Log
         i += 1;
     }
 
-    retrieval(ii, log);
+    retrieval(&ii, log);
 }
 
 /// Performs deduplication using a btreemap
@@ -79,5 +82,5 @@ pub(crate) fn duplicates_tree(receiver: Receiver<(String, TableIndex)>, log: Log
         i += 1;
     }
 
-    retrieval(ii, log);
+    retrieval(&ii, log);
 }
