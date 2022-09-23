@@ -15,11 +15,15 @@ mod log;
 fn main() {
     let config = cli::Config::from_args();
     let table = &config.table;
+    let limit = config.limit;
+    let compression = config.compression;
 
-    let (receiver, p) = collect_indices(table, config.limit);
+    println!("benchmarking {table} {limit} {}", compression.str());
+
+    let (receiver, p) = collect_indices(table, limit);
 
     // init information logger
-    let log = Logger::new(&config.output, config.compression);
+    let log = Logger::new(&config.output, compression);
 
     // Select Compression Algorithm and perfom
     use cli::CompressionAlgorithm::*;
