@@ -2,6 +2,7 @@ mod util;
 use util::*;
 
 mod inverted_index;
+mod historgram;
 mod measure;
 mod table_lake;
 use log::Logger;
