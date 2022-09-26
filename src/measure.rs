@@ -17,20 +17,23 @@ where
     let keys = ii.random_keys();
     let max = keys.len() as f32;
 
+    let mut ds = Vec::with_capacity(keys.len());
+
     for (index, key) in keys.into_iter().enumerate() {
         let starttime = Instant::now();
         let _table_indexes = ii.get(&key);
         drop(_table_indexes);
 
         let duration = starttime.elapsed();
-
-        log.retrieval_info(duration);
+        ds.push(duration);
 
         if index & 0xfff == 0 {
             let percentage = (index as f32 / max) * max;
             println!("{:02}%", percentage);
         }
     }
+
+    log.retrieval_info(ds);
 }
 
 pub fn measure_logging<F, II>(algorithm: F, receiver: Receiver<(String, TableIndex)>, log: Logger)
@@ -45,7 +48,7 @@ where
     let (entry_count, ii) = algorithm(receiver);
 
     let duration = starttime.elapsed();
-    log.memory_info(entry_count, ii.get_size(), duration);
+    log.memory_info(vec![(entry_count, ii.get_size(), duration)]);
     retrieval(ii, log);
 }
 
