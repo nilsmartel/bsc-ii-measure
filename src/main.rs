@@ -8,6 +8,7 @@ use log::Logger;
 use structopt::StructOpt;
 use table_lake::*;
 
+mod algorithm;
 mod cli;
 mod db;
 mod log;
@@ -33,9 +34,9 @@ fn main() {
     // Select Compression Algorithm and perfom
     use cli::CompressionAlgorithm::*;
     match config.compression {
-        Baseline => measure_logging(measure::baseline, receiver, log),
-        DedupHash => measure_logging(measure::dedup_hash, receiver, log),
-        DedupBTree => measure_logging(measure::dedup_btree, receiver, log),
+        Baseline => measure_logging(algorithm::baseline, receiver, log),
+        DedupHash => measure_logging(algorithm::dedup_hash, receiver, log),
+        DedupBTree => measure_logging(algorithm::dedup_btree, receiver, log),
     }
     p.join().expect("join thread");
 }
