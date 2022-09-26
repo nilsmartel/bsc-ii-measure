@@ -47,7 +47,7 @@ impl<T> RandomKeys for Vec<(String, T)> {
 impl<T> RandomKeys for BTreeMap<String, T> {
     fn random_keys_potentially_ordered(&self) -> Vec<String> {
         let mut v = Vec::with_capacity(DESIRED_KEY_COUNT);
-        let chance = DESIRED_KEY_COUNT as f64 / self.len() as f64  ;
+        let chance = DESIRED_KEY_COUNT as f64 / self.len() as f64;
         v.extend(self.keys().filter(|_| random::<f64>() <= chance).cloned());
         v
     }
@@ -56,7 +56,7 @@ impl<T> RandomKeys for BTreeMap<String, T> {
 impl<T> RandomKeys for HashMap<String, T> {
     fn random_keys_potentially_ordered(&self) -> Vec<String> {
         let mut v = Vec::with_capacity(DESIRED_KEY_COUNT);
-        let chance = DESIRED_KEY_COUNT as f64 / self.len() as f64  ;
+        let chance = DESIRED_KEY_COUNT as f64 / self.len() as f64;
         v.extend(self.keys().filter(|_| random::<f64>() <= chance).cloned());
         v
     }

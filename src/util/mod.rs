@@ -6,8 +6,8 @@ use std::thread::JoinHandle;
 
 use std::sync::mpsc::Receiver;
 
-use crate::*;
 use crate::cli::CompressionAlgorithm;
+use crate::*;
 
 mod random_keys;
 pub use random_keys::RandomKeys;

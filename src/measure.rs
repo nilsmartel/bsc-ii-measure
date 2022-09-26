@@ -18,9 +18,9 @@ macro_rules! timed {
     }};
 }
 
-fn retrieval<'a, T>(ii: T, mut log: Logger)
+fn retrieval<T>(ii: T, mut log: Logger)
 where
-    T: InvertedIndex<'a> + RandomKeys + 'a,
+    T: InvertedIndex + RandomKeys
 {
     println!("Step 2. Measure retrieval time.");
 
@@ -29,7 +29,11 @@ where
     let max = keys.len() as f32;
 
     for (index, key) in keys.into_iter().enumerate() {
-        let (duration, _table_indexes) = timed!(ii.get(&key));
+        let starttime = Instant::now();
+        let _table_indexes = ii.get(&key);
+        drop(_table_indexes);
+
+        let duration = starttime.elapsed();
 
         log.retrieval_info(duration);
 

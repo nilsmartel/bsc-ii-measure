@@ -19,7 +19,9 @@ fn main() {
     let table = &config.table;
     let limit = config.limit;
     let compression = config.compression;
-    let output = config.output.unwrap_or_else(|| best_filename(table, limit, config.compression));
+    let output = config
+        .output
+        .unwrap_or_else(|| best_filename(table, limit, config.compression));
 
     println!("benchmarking {table} {limit} {}", compression.str());
 
@@ -31,9 +33,9 @@ fn main() {
     // Select Compression Algorithm and perfom
     use cli::CompressionAlgorithm::*;
     match config.compression {
-        Baseline => measure_logging(measure::baseline,receiver, log),
-        DedupHash => measure_logging(measure::dedup_hash,receiver, log),
-        DedupBTree => measure_logging(measure::dedup_btree,receiver, log),
+        Baseline => measure_logging(measure::baseline, receiver, log),
+        DedupHash => measure_logging(measure::dedup_hash, receiver, log),
+        DedupBTree => measure_logging(measure::dedup_btree, receiver, log),
     }
     p.join().expect("join thread");
 }

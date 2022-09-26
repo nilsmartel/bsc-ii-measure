@@ -49,9 +49,7 @@ impl FromStr for CompressionAlgorithm {
             "baseline" => Ok(CompressionAlgorithm::Baseline),
             "dedup_hash" => Ok(CompressionAlgorithm::DedupHash),
             "dedup_btree" => Ok(CompressionAlgorithm::DedupBTree),
-            _ => Err(String::from(
-                "allowed: baseline dedup_hash dedup_btree",
-            )),
+            _ => Err(String::from("allowed: baseline dedup_hash dedup_btree")),
         }
     }
 }
