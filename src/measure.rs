@@ -7,20 +7,9 @@ use std::collections::{BTreeMap, HashMap};
 use std::sync::mpsc::Receiver;
 use std::time::Instant;
 
-/// Macro used to measure the time it takes
-/// to perform some expression
-macro_rules! timed {
-    ($e:expr) => {{
-        let time_now = std::time::Instant::now();
-        let result = $e;
-        let duration = time_now.elapsed();
-        (duration, result)
-    }};
-}
-
 fn retrieval<T>(ii: T, mut log: Logger)
 where
-    T: InvertedIndex + RandomKeys
+    T: InvertedIndex + RandomKeys,
 {
     println!("Step 2. Measure retrieval time.");
 
@@ -44,13 +33,10 @@ where
     }
 }
 
-pub fn measure_logging<'a, F, II>(
-    algorithm: F,
-    receiver: Receiver<(String, TableIndex)>,
-    log: Logger,
-) where
+pub fn measure_logging<F, II>(algorithm: F, receiver: Receiver<(String, TableIndex)>, log: Logger)
+where
     F: Fn(Receiver<(String, TableIndex)>) -> (usize, II),
-    II: InvertedIndex<'a> + RandomKeys + GetSize + 'a,
+    II: InvertedIndex + RandomKeys + GetSize,
 {
     println!("Step 1. Measure insertion time.");
 
