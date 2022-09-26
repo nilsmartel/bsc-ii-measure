@@ -12,6 +12,8 @@ mod cli;
 mod db;
 mod log;
 
+use measure::measure_logging;
+
 fn main() {
     let config = cli::Config::from_args();
     let table = &config.table;
@@ -29,9 +31,9 @@ fn main() {
     // Select Compression Algorithm and perfom
     use cli::CompressionAlgorithm::*;
     match config.compression {
-        Baseline => measure::baseline(receiver, log),
-        DuplicatesHash => measure::duplicates_hash(receiver, log),
-        DuplicatesTree => measure::duplicates_tree(receiver, log),
+        Baseline => measure_logging(measure::baseline,receiver, log),
+        DedupHash => measure_logging(measure::dedup_hash,receiver, log),
+        DedupBTree => measure_logging(measure::dedup_btree,receiver, log),
     }
     p.join().expect("join thread");
 }

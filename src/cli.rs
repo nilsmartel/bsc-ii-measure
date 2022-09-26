@@ -26,16 +26,16 @@ pub struct Config {
 #[derive(Copy, Clone)]
 pub enum CompressionAlgorithm {
     Baseline,
-    DuplicatesHash,
-    DuplicatesTree,
+    DedupHash,
+    DedupBTree,
 }
 
 impl CompressionAlgorithm {
     pub fn str(self) -> String {
         match self {
             Self::Baseline => "baseline",
-            Self::DuplicatesHash => "duplicate-hash",
-            Self::DuplicatesTree => "duplicate-tree",
+            Self::DedupHash => "dedup_hash",
+            Self::DedupBTree => "dedup_btree",
         }
         .to_string()
     }
@@ -47,10 +47,10 @@ impl FromStr for CompressionAlgorithm {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "baseline" => Ok(CompressionAlgorithm::Baseline),
-            "duplicate-hash" => Ok(CompressionAlgorithm::DuplicatesHash),
-            "duplicate-tree" => Ok(CompressionAlgorithm::DuplicatesTree),
+            "dedup_hash" => Ok(CompressionAlgorithm::DedupHash),
+            "dedup_btree" => Ok(CompressionAlgorithm::DedupBTree),
             _ => Err(String::from(
-                "allowed: baseline duplicate-hash duplicate-tree",
+                "allowed: baseline dedup_hash dedup_btree",
             )),
         }
     }

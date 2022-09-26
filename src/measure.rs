@@ -1,8 +1,11 @@
 use crate::inverted_index::InvertedIndex;
+use crate::table_lake::Entry;
 use crate::util::RandomKeys;
 use crate::{log::Logger, TableIndex};
 use get_size::GetSize;
+use std::collections::{BTreeMap, HashMap};
 use std::sync::mpsc::Receiver;
+use std::time::Instant;
 
 /// Macro used to measure the time it takes
 /// to perform some expression
@@ -15,83 +18,79 @@ macro_rules! timed {
     }};
 }
 
-fn retrieval<'a, T>(ii: &'a T, mut log: Logger)
+fn retrieval<'a, T>(ii: T, mut log: Logger)
 where
-    T: InvertedIndex<'a> + RandomKeys,
+    T: InvertedIndex<'a> + RandomKeys + 'a,
 {
+    println!("Step 2. Measure retrieval time.");
+
     // TODO ensure that this is not getting optimized out!
     let keys = ii.random_keys();
-    let max = keys.len();
-    // for logging percentage to completion
-    let steps = max / 20;
-    let mut percentage = 0;
+    let max = keys.len() as f32;
 
     for (index, key) in keys.into_iter().enumerate() {
         let (duration, _table_indexes) = timed!(ii.get(&key));
 
         log.retrieval_info(duration);
 
-        if index % steps == 0 {
-            println!("{percentage}%");
-            percentage += 5;
+        if index & 0xfff == 0 {
+            let percentage = (index as f32 / max) * max;
+            println!("{:02}%", percentage);
         }
     }
 }
 
-/// Baseline measure of data, the way it is present in database
-pub(crate) fn baseline(receiver: Receiver<(String, TableIndex)>, log: Logger) {
-    let mut ii = Vec::new();
-
+pub fn measure_logging<'a, F, II>(
+    algorithm: F,
+    receiver: Receiver<(String, TableIndex)>,
+    log: Logger,
+) where
+    F: Fn(Receiver<(String, TableIndex)>) -> (usize, II),
+    II: InvertedIndex<'a> + RandomKeys + GetSize + 'a,
+{
     println!("Step 1. Measure insertion time.");
 
-    for data in receiver {
-        let (t, _) = timed!(ii.push(data));
+    let starttime = Instant::now();
 
-        log.memory_info(ii.len(), ii.get_size(), t);
+    let (entry_count, ii) = algorithm(receiver);
+
+    let duration = starttime.elapsed();
+    log.memory_info(entry_count, ii.get_size(), duration);
+    retrieval(ii, log);
+}
+
+/// Baseline measure of data, the way it is present in database
+pub(crate) fn baseline(receiver: Receiver<(String, TableIndex)>) -> (usize, Vec<Entry>) {
+    let mut ii = Vec::new();
+    for data in receiver {
+        ii.push(data);
     }
 
-    println!("Step 2. Measure retrieval time.");
-    retrieval(&ii, log);
+    (ii.len(), ii)
 }
 
 /// Performs deduplication using a HashMap
-pub(crate) fn duplicates_hash(receiver: Receiver<(String, TableIndex)>, log: Logger) {
-    use std::collections::HashMap as Map;
-
-    println!("Step 1. Measure insertion time.");
-
-    let mut ii: Map<String, Vec<TableIndex>> = Map::new();
-    let mut i = 1;
+pub(crate) fn dedup_hash(
+    receiver: Receiver<(String, TableIndex)>,
+) -> (usize, HashMap<String, Vec<TableIndex>>) {
+    let mut ii: HashMap<String, Vec<TableIndex>> = HashMap::new();
     for (index, data) in receiver {
-        let (t, _) = timed!({
-            ii.entry(index).or_insert_with(Vec::new).push(data);
-        });
-
-        log.memory_info(i, ii.get_size(), t);
-
-        i += 1;
+        ii.entry(index).or_insert_with(Vec::new).push(data);
     }
 
-    retrieval(&ii, log);
+    let entry_count = ii.len();
+    (entry_count, ii)
 }
 
 /// Performs deduplication using a btreemap
-pub(crate) fn duplicates_tree(receiver: Receiver<(String, TableIndex)>, log: Logger) {
-    use std::collections::BTreeMap as Map;
-    println!("Step 1. Measure insertion time.");
-
-    let mut ii: Map<String, Vec<TableIndex>> = Map::new();
-
-    let mut i = 1;
+pub(crate) fn dedup_btree(
+    receiver: Receiver<(String, TableIndex)>,
+) -> (usize, BTreeMap<String, Vec<TableIndex>>) {
+    let mut ii: BTreeMap<String, Vec<TableIndex>> = BTreeMap::new();
     for (index, data) in receiver {
-        let (t, _) = timed!({
-            ii.entry(index).or_insert_with(Vec::new).push(data);
-        });
-
-        log.memory_info(i, ii.get_size(), t);
-
-        i += 1;
+        ii.entry(index).or_insert_with(Vec::new).push(data);
     }
 
-    retrieval(&ii, log);
+    let entry_count = ii.len();
+    (entry_count, ii)
 }
