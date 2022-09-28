@@ -40,10 +40,11 @@ impl TableLakeReader for DatabaseCollection {
             // saved as bigint
             let row_id: i32 = row.get("rowid");
 
-            let tokenized = row.get("tokenized");
+            let tokenized: Option<String> = row.get("tokenized");
+            let token = tokenized.unwrap_or_default();
             let index = TableIndex::new(table_id as u32, column_id as u32, row_id as u64);
 
-            ch.send((tokenized, index)).expect("send index to channel");
+            ch.send((token, index)).expect("send index to channel");
         }
     }
 }
