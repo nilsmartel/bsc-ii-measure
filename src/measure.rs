@@ -5,9 +5,10 @@ use get_size::GetSize;
 use std::sync::mpsc::Receiver;
 use std::time::Instant;
 
-fn retrieval<T>(ii: T, mut log: Logger)
+fn retrieval<T, O>(ii: T, mut log: Logger)
 where
-    T: InvertedIndex + RandomKeys,
+    T: InvertedIndex<O> + RandomKeys,
+    O: Sized
 {
     println!("Step 2. Measure retrieval time.");
 
@@ -34,10 +35,11 @@ where
     log.retrieval_info(ds);
 }
 
-pub fn measure_logging<F, II>(algorithm: F, receiver: Receiver<(String, TableIndex)>, log: Logger)
+pub fn measure_logging<F, II, O>(algorithm: F, receiver: Receiver<(String, TableIndex)>, log: Logger)
 where
     F: Fn(Receiver<(String, TableIndex)>) -> (usize, II),
-    II: InvertedIndex + RandomKeys + GetSize,
+    II: InvertedIndex<O> + RandomKeys + GetSize,
+    O: Sized,
 {
     println!("Step 1. Measure insertion time.");
 

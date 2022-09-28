@@ -3,33 +3,27 @@ use std::collections::*;
 
 /// Interface that all implementations of the inverted index are desirde to
 /// conform to.
-pub trait InvertedIndex {
-    fn get(&self, key: &str) -> Vec<TableIndex>;
+pub trait InvertedIndex<O> {
+    fn get(&self, key: &str) -> O;
 }
 
-impl InvertedIndex for Vec<(String, TableIndex)> {
+impl InvertedIndex<Vec<TableIndex>> for Vec<(String, TableIndex)> {
     fn get(&self, key: &str) -> Vec<TableIndex> {
         self.iter()
-            .filter(|(k, _)| k == key)
-            .map(|(_, i)| *i)
-            .collect::<Vec<_>>()
+            .filter(|(s, _)| s == key)
+            .map(|(_, k)|*k)
+            .collect()
     }
 }
 
-impl InvertedIndex for HashMap<String, Vec<TableIndex>> {
-    fn get(&self, key: &str) -> Vec<TableIndex> {
-        match self.get(key) {
-            None => Vec::new(),
-            Some(v) => v.clone(),
-        }
+impl InvertedIndex<Option<Vec<TableIndex>>> for HashMap<String, Vec<TableIndex>> {
+    fn get(&self, key: &str) -> Option<Vec<TableIndex>> {
+        self.get(key).cloned()
     }
 }
 
-impl InvertedIndex for BTreeMap<String, Vec<TableIndex>> {
-    fn get(&self, key: &str) -> Vec<TableIndex> {
-        match self.get(key) {
-            None => Vec::new(),
-            Some(v) => v.clone(),
-        }
+impl InvertedIndex<Option<Vec<TableIndex>>> for BTreeMap<String, Vec<TableIndex>> {
+    fn get(&self, key: &str) -> Option<Vec<TableIndex>> {
+        self.get(key).cloned()
     }
 }
