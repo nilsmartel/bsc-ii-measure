@@ -27,10 +27,7 @@ impl TableLakeReader for DatabaseCollection {
             self.table, self.limit
         );
 
-        let rows = self
-            .client
-            .query(&query, &[])
-            .expect("query database");
+        let rows = self.client.query(&query, &[]).expect("query database");
 
         for row in rows {
             // both saved as `integer`
@@ -38,7 +35,7 @@ impl TableLakeReader for DatabaseCollection {
             let column_id: i32 = row.get("colid");
 
             // saved as bigint
-            let row_id: i64 = row.get("rowid");
+            let row_id: i32 = row.get("rowid");
 
             let tokenized = row.get("tokenized");
             let index = TableIndex::new(table_id as u32, column_id as u32, row_id as u64);
