@@ -26,7 +26,7 @@ fn main() {
 
     println!("benchmarking {table} {limit} {}", compression.str());
 
-    let (receiver, p) = collect_indices(table, limit);
+    let receiver = collect_indices(table, limit);
 
     // init information logger
     let log = Logger::new(&output);
