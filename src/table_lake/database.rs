@@ -1,5 +1,4 @@
 use crate::{Entry, TableIndex, TableLakeReader};
-use fallible_iterator::FallibleIterator;
 use std::sync::mpsc::Sender;
 
 pub struct DatabaseCollection {
