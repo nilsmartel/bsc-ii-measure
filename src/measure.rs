@@ -26,7 +26,7 @@ where
         ds.push(duration);
 
         if index & 0xfff == 0 {
-            let percentage = (index as f32 / max) * max;
+            let percentage = (index as f32 / max) * 100.0;
             println!("{:02}%", percentage);
         }
     }
