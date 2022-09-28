@@ -25,7 +25,7 @@ where
         let duration = starttime.elapsed();
         ds.push(duration);
 
-        if index & 0x3ff == 0 {
+        if index & 0x1ff == 0 {
             let percentage = (index as f32 / max) * 100.0;
             println!("{:02}%", percentage);
         }
