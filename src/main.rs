@@ -38,5 +38,4 @@ fn main() {
         DedupHash => measure_logging(algorithm::dedup_hash, receiver, log),
         DedupBTree => measure_logging(algorithm::dedup_btree, receiver, log),
     }
-    p.join().expect("join thread");
 }

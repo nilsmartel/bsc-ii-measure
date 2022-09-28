@@ -27,7 +27,10 @@ impl TableLakeReader for DatabaseCollection {
             self.table, self.limit
         );
 
+        println!("execute query");
         let rows = self.client.query(&query, &[]).expect("query database");
+
+        println!("retrieved {} rows", rows.len());
 
         for row in rows {
             // both saved as `integer`
