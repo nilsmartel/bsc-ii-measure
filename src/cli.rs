@@ -28,6 +28,7 @@ pub enum CompressionAlgorithm {
     Baseline,
     DedupHash,
     DedupBTree,
+    NS,
 }
 
 impl CompressionAlgorithm {
@@ -36,6 +37,7 @@ impl CompressionAlgorithm {
             Self::Baseline => "baseline",
             Self::DedupHash => "dedup_hash",
             Self::DedupBTree => "dedup_btree",
+            Self::NS => "ns",
         }
         .to_string()
     }
@@ -49,7 +51,8 @@ impl FromStr for CompressionAlgorithm {
             "baseline" => Ok(CompressionAlgorithm::Baseline),
             "dedup_hash" => Ok(CompressionAlgorithm::DedupHash),
             "dedup_btree" => Ok(CompressionAlgorithm::DedupBTree),
-            _ => Err(String::from("allowed: baseline dedup_hash dedup_btree")),
+            "ns" => Ok(CompressionAlgorithm::NS),
+            _ => Err(String::from("allowed: baseline dedup_hash dedup_btree ns")),
         }
     }
 }

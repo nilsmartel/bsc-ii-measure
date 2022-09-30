@@ -10,10 +10,7 @@ use crate::*;
 mod random_keys;
 pub use random_keys::RandomKeys;
 
-pub(crate) fn collect_indices(
-    table: &str,
-    limit: usize,
-) -> Receiver<(String, TableIndex)> {
+pub(crate) fn collect_indices(table: &str, limit: usize) -> Receiver<(String, TableIndex)> {
     let (sender, receiver) = channel();
 
     let mut database = DatabaseCollection::new(db::client(), table, limit);

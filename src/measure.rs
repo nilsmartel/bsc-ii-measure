@@ -8,7 +8,7 @@ use std::time::Instant;
 fn retrieval<T, O>(ii: T, mut log: Logger)
 where
     T: InvertedIndex<O> + RandomKeys,
-    O: Sized
+    O: Sized,
 {
     println!("Step 2. Measure retrieval time.");
 
@@ -35,8 +35,11 @@ where
     log.retrieval_info(ds);
 }
 
-pub fn measure_logging<F, II, O>(algorithm: F, receiver: Receiver<(String, TableIndex)>, log: Logger)
-where
+pub fn measure_logging<F, II, O>(
+    algorithm: F,
+    receiver: Receiver<(String, TableIndex)>,
+    log: Logger,
+) where
     F: Fn(Receiver<(String, TableIndex)>) -> (usize, II),
     II: InvertedIndex<O> + RandomKeys + GetSize,
     O: Sized,
