@@ -27,7 +27,7 @@ impl TableIndex {
         let column_id = if column_id <= std::u32::MAX as u64 {
             column_id as u32
         } else {
-            eprintln!("error in TableIndex::integers, column_id is to high {}", column_id);
+            println!("error in TableIndex::integers, column_id is to high {}", column_id);
             column_id.min(std::u32::MAX as u64) as u32
         };
 
