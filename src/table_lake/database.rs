@@ -22,8 +22,8 @@ impl TableLakeReader for DatabaseCollection {
         let query = format!(
             "
                 SELECT * FROM {}
-                LIMIT {}
                 ORDER BY tokenized
+                LIMIT {}
             ",
             self.table, self.limit
         );
