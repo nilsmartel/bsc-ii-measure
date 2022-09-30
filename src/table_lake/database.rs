@@ -23,6 +23,7 @@ impl TableLakeReader for DatabaseCollection {
             "
                 SELECT * FROM {}
                 LIMIT {}
+                ORDER BY tokenized
             ",
             self.table, self.limit
         );

@@ -20,8 +20,8 @@ where
 
     for (index, key) in keys.into_iter().enumerate() {
         let starttime = Instant::now();
-        let _table_indexes = ii.get(&key);
-        drop(_table_indexes);
+        let _table_indices = ii.get(&key);
+        drop(_table_indices);
 
         let duration = starttime.elapsed();
         ds.push(duration);

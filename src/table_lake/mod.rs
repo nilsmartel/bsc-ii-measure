@@ -20,6 +20,19 @@ impl TableIndex {
             column_id,
         }
     }
+
+    pub fn integers(self) -> [u32; 3]  {
+        let TableIndex { table_id, column_id, row_id} = self;
+
+        let column_id = if column_id <= std::u32::MAX as u64 {
+            column_id as u32
+        } else {
+            eprintln!("error in TableIndex::integers, column_id is to high {}", column_id);
+            column_id.min(std::u32::MAX as u64) as u32
+        };
+
+        [table_id, column_id, row_id]
+    }
 }
 
 pub type Entry = (String, TableIndex);
