@@ -18,8 +18,18 @@ pub(crate) fn dedup_hash(
     receiver: Receiver<(String, TableIndex)>,
 ) -> (usize, HashMap<String, Vec<TableIndex>>) {
     let mut ii: HashMap<String, Vec<TableIndex>> = HashMap::new();
+
+    let mut group_id = String::new();
+    let mut buffer = Vec::new();
+
     for (index, data) in receiver {
-        ii.entry(index).or_insert_with(Vec::new).push(data);
+        if index != group_id {
+            ii.insert(index.clone(), buffer.clone());
+            group_id = index;
+            buffer.clear();
+        }
+
+        buffer.push(data);
     }
 
     let entry_count = ii.len();
@@ -31,8 +41,18 @@ pub(crate) fn dedup_btree(
     receiver: Receiver<(String, TableIndex)>,
 ) -> (usize, BTreeMap<String, Vec<TableIndex>>) {
     let mut ii: BTreeMap<String, Vec<TableIndex>> = BTreeMap::new();
+
+    let mut group_id = String::new();
+    let mut buffer = Vec::new();
+
     for (index, data) in receiver {
-        ii.entry(index).or_insert_with(Vec::new).push(data);
+        if index != group_id {
+            ii.insert(index.clone(), buffer.clone());
+            group_id = index;
+            buffer.clear();
+        }
+
+        buffer.push(data);
     }
 
     let entry_count = ii.len();
