@@ -37,5 +37,6 @@ fn main() {
         Baseline => measure_logging(algorithm::baseline, receiver, log),
         DedupHash => measure_logging(algorithm::dedup_hash, receiver, log),
         DedupBTree => measure_logging(algorithm::dedup_btree, receiver, log),
+        NS => measure_logging(algorithm::ns_4_wise, receiver, log),
     }
 }
