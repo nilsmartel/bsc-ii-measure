@@ -11,10 +11,18 @@ pub trait InvertedIndex<O> {
 
 impl InvertedIndex<Vec<TableIndex>> for Vec<(String, TableIndex)> {
     fn get(&self, key: &str) -> Vec<TableIndex> {
-        self.iter()
-            .filter(|(s, _)| s == key)
-            .map(|(_, k)| *k)
-            .collect()
+        fn get_key(v: &(String, TableIndex)) -> &str {
+            &v.0
+        }
+
+        match self.binary_search_by_key(&key, get_key) {
+            Err(_) => Vec::new(),
+            Ok(index) => {
+                let elem = self[index].1;
+                // TODO: come up with the right algorithm to return all elements
+                vec![elem]
+            }
+        }
     }
 }
 
