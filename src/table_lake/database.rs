@@ -1,4 +1,4 @@
-use crate::{Entry, TableIndex, TableLakeReader};
+use crate::{Entry, TableLakeReader, table_lake::tablerow::TableRow};
 use std::sync::mpsc::Sender;
 
 pub struct DatabaseCollection {
@@ -21,7 +21,7 @@ impl TableLakeReader for DatabaseCollection {
     fn read(&mut self, ch: Sender<Entry>) {
         let query = format!(
             "
-                SELECT * FROM {}
+                SELECT tokenized, tableid, colid, rowid FROM {}
                 ORDER BY tokenized
                 LIMIT {}
             ",
@@ -34,18 +34,8 @@ impl TableLakeReader for DatabaseCollection {
         println!("retrieved {} rows", rows.len());
 
         for row in rows {
-            // both saved as `integer`
-            let table_id: i32 = row.get("tableid");
-            let column_id: i32 = row.get("colid");
-
-            // saved as bigint
-            let row_id: i32 = row.get("rowid");
-
-            let tokenized: Option<String> = row.get("tokenized");
-            let token = tokenized.unwrap_or_default();
-            let index = TableIndex::new(table_id as u32, column_id as u32, row_id as u64);
-
-            ch.send((token, index)).expect("send index to channel");
+            let row: TableRow = (&row).into();
+            ch.send(row.into_entry()).expect("send index to channel");
         }
     }
 }

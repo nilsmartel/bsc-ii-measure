@@ -19,6 +19,7 @@ fn main() {
     let config = cli::Config::from_args();
     let table = &config.table;
     let limit = config.limit;
+    let use_bintables = config.bintable;
     let compression = config.compression;
     let output = config
         .output
@@ -26,7 +27,11 @@ fn main() {
 
     println!("benchmarking {table} {limit} {}", compression.str());
 
-    let receiver = collect_indices(table, limit);
+    let receiver = if use_bintables {
+        indices_from_bintable(table, limit)
+    } else {
+        indices(table, limit)
+    };
 
     // init information logger
     let log = Logger::new(&output);

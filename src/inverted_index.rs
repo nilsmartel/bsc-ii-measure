@@ -1,6 +1,5 @@
-use int_compression_4_wise::ListUInt32;
 
-use crate::{algorithm::Compressed4Wise, table_lake::TableIndex};
+use crate::{algorithm::Compressed4Wise, table_lake::TableLocation};
 use std::collections::*;
 
 /// Interface that all implementations of the inverted index are desirde to
@@ -9,9 +8,9 @@ pub trait InvertedIndex<O> {
     fn get(&self, key: &str) -> O;
 }
 
-impl InvertedIndex<Vec<TableIndex>> for Vec<(String, TableIndex)> {
-    fn get(&self, key: &str) -> Vec<TableIndex> {
-        fn get_key(v: &(String, TableIndex)) -> &str {
+impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
+    fn get(&self, key: &str) -> Vec<TableLocation> {
+        fn get_key(v: &(String, TableLocation)) -> &str {
             &v.0
         }
 
@@ -26,42 +25,20 @@ impl InvertedIndex<Vec<TableIndex>> for Vec<(String, TableIndex)> {
     }
 }
 
-impl InvertedIndex<Option<Vec<TableIndex>>> for HashMap<String, Vec<TableIndex>> {
-    fn get(&self, key: &str) -> Option<Vec<TableIndex>> {
+impl InvertedIndex<Option<Vec<TableLocation>>> for HashMap<String, Vec<TableLocation>> {
+    fn get(&self, key: &str) -> Option<Vec<TableLocation>> {
         self.get(key).cloned()
     }
 }
 
-impl InvertedIndex<Option<Vec<TableIndex>>> for BTreeMap<String, Vec<TableIndex>> {
-    fn get(&self, key: &str) -> Option<Vec<TableIndex>> {
+impl InvertedIndex<Option<Vec<TableLocation>>> for BTreeMap<String, Vec<TableLocation>> {
+    fn get(&self, key: &str) -> Option<Vec<TableLocation>> {
         self.get(key).cloned()
     }
 }
 
-impl InvertedIndex<Option<Vec<TableIndex>>> for HashMap<String, ListUInt32> {
-    fn get(&self, key: &str) -> Option<Vec<TableIndex>> {
-        let v = self.get(key)?.collect();
-        // second phase of decompression
-
-        let mut ti = Vec::with_capacity(v.len() / 3);
-
-        for i in (0..v.len()).step_by(3) {
-            let table_id = v[i];
-            let row_id = v[i + 1];
-            let column_id = v[i + 2] as u64;
-            ti.push(TableIndex {
-                table_id,
-                row_id,
-                column_id,
-            });
-        }
-
-        Some(ti)
-    }
-}
-
-impl InvertedIndex<Option<Vec<TableIndex>>> for Compressed4Wise {
-    fn get(&self, key: &str) -> Option<Vec<TableIndex>> {
+impl InvertedIndex<Option<Vec<TableLocation>>> for Compressed4Wise {
+    fn get(&self, key: &str) -> Option<Vec<TableLocation>> {
         use int_compression_4_wise::decompress;
         let v = {
             let (data, overshoot) = self.get(key)?;
@@ -81,13 +58,13 @@ impl InvertedIndex<Option<Vec<TableIndex>>> for Compressed4Wise {
         let mut ti = Vec::with_capacity(v.len() / 3);
 
         for i in (0..v.len()).step_by(3) {
-            let table_id = v[i];
-            let row_id = v[i + 1];
-            let column_id = v[i + 2] as u64;
-            ti.push(TableIndex {
-                table_id,
-                row_id,
-                column_id,
+            let tableid = v[i];
+            let colid = v[i + 2];
+            let rowid = v[i + 1] as u64;
+            ti.push(TableLocation {
+                tableid,
+                colid,
+                rowid,
             });
         }
 

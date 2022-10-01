@@ -1,6 +1,6 @@
 use crate::inverted_index::InvertedIndex;
 use crate::util::RandomKeys;
-use crate::{log::Logger, TableIndex};
+use crate::{log::Logger, TableLocation};
 use get_size::GetSize;
 use std::sync::mpsc::Receiver;
 use std::time::Instant;
@@ -37,10 +37,10 @@ where
 
 pub fn measure_logging<F, II, O>(
     algorithm: F,
-    receiver: Receiver<(String, TableIndex)>,
+    receiver: Receiver<(String, TableLocation)>,
     log: Logger,
 ) where
-    F: Fn(Receiver<(String, TableIndex)>) -> (usize, II),
+    F: Fn(Receiver<(String, TableLocation)>) -> (usize, II),
     II: InvertedIndex<O> + RandomKeys + GetSize,
     O: Sized,
 {

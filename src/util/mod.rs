@@ -4,13 +4,23 @@ use std::sync::mpsc::channel;
 
 use std::sync::mpsc::Receiver;
 
-use crate::cli::CompressionAlgorithm;
-use crate::*;
-
 mod random_keys;
 pub use random_keys::RandomKeys;
 
-pub(crate) fn collect_indices(table: &str, limit: usize) -> Receiver<(String, TableIndex)> {
+use crate::cli::CompressionAlgorithm;
+use crate::table_lake::*;
+use crate::db;
+
+pub fn indices_from_bintable(bintable: &str, limit: usize) -> Receiver<(String, TableLocation)> {
+    let (sender, receiver) = channel();
+
+    let mut bintable = BinTable::open(bintable, limit).expect("open bintable");
+
+    spawn(move || bintable.read(sender));
+    receiver
+}
+
+pub fn indices(table: &str, limit: usize) -> Receiver<(String, TableLocation)> {
     let (sender, receiver) = channel();
 
     let mut database = DatabaseCollection::new(db::client(), table, limit);

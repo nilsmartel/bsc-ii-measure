@@ -170,6 +170,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4443176a9f2c162692bd3d352d745ef9413eec5782a80d8fd6f8a1ac692a07f7"
 
 [[package]]
+name = "fast-smaz"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6625d0b7fa35899042f4ba9940ddf9053ba137fa7c0f218820e8c3e5de69ac18"
+
+[[package]]
 name = "futures-channel"
 version = "0.3.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -297,6 +303,7 @@ dependencies = [
  "anyhow",
  "csv",
  "fallible-iterator",
+ "fast-smaz",
  "get-size",
  "int-compression-4-wise",
  "lz4_flex",
@@ -304,6 +311,7 @@ dependencies = [
  "rand",
  "structopt",
  "threadpool",
+ "varint-compression",
 ]
 
 [[package]]
@@ -879,6 +887,12 @@ name = "unicode-width"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c0edd1e5b14653f783770bce4a4dabb4a5108a5370a5f5d8cfe8710c361f6c8b"
+
+[[package]]
+name = "varint-compression"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97774f372bad25eecc4cb4a56b691c7b92b67cd23bd17f25962389336bfe61bc"
 
 [[package]]
 name = "vec_map"

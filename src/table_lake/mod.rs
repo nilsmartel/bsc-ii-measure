@@ -1,4 +1,8 @@
+mod tablerow;
 mod database;
+mod bintable;
+pub use database::DatabaseCollection;
+pub use bintable::BinTable;
 use get_size::GetSize;
 
 pub use database::*;
@@ -6,36 +10,36 @@ pub use database::*;
 use std::sync::mpsc::Sender;
 
 #[derive(GetSize, Clone, Copy)]
-pub struct TableIndex {
-    pub table_id: u32,
-    pub row_id: u32,
-    pub column_id: u64,
+pub struct TableLocation {
+    pub tableid: u32,
+    pub colid: u32,
+    pub rowid: u64,
 }
 
-impl TableIndex {
-    pub fn new(table_id: u32, row_id: u32, column_id: u64) -> Self {
+impl TableLocation {
+    pub fn new(tableid: u32, colid: u32, rowid: u64) -> Self {
         Self {
-            table_id,
-            row_id,
-            column_id,
+            tableid,
+            rowid,
+            colid,
         }
     }
 
     pub fn integers(self) -> [u32; 3]  {
-        let TableIndex { table_id, column_id, row_id} = self;
+        let TableLocation { tableid, colid, rowid } = self;
 
-        let column_id = if column_id <= std::u32::MAX as u64 {
-            column_id as u32
+        let rowid = if rowid <= std::u32::MAX as u64 {
+            rowid as u32
         } else {
-            println!("error in TableIndex::integers, column_id is to high {}", column_id);
-            column_id.min(std::u32::MAX as u64) as u32
+            println!("error in TableIndex::integers, row index (TableLocation::rowid) is to high {}", rowid);
+            rowid.min(std::u32::MAX as u64) as u32
         };
 
-        [table_id, column_id, row_id]
+        [tableid, colid, rowid]
     }
 }
 
-pub type Entry = (String, TableIndex);
+pub type Entry = (String, TableLocation);
 
 /// Trait used to digest multiple tables
 /// from various sources.

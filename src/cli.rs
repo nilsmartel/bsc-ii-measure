@@ -21,6 +21,9 @@ pub struct Config {
 
     #[structopt(default_value = "gittables_main_tokenized")]
     pub table: String,
+
+    #[structopt(short, long)]
+    pub bintable: bool
 }
 
 #[derive(Copy, Clone)]

@@ -17,3 +17,5 @@ structopt = "0.3.26"               # Parse command line argument by defining a s
 rand = "*"
 int-compression-4-wise = "0.1.1"    # Fast algorithm to compress lists if integers in blocks of 4. Appends 0 to blocks, if length…
 lz4_flex = "0.9.5"         # Fastest LZ4 implementation in Rust, no unsafe by default.
+fast-smaz = "0.1.0"    # Pure Rust SMAZ compression implementation
+varint-compression = "0.1.0"    # variable length integer compression

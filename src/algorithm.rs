@@ -1,10 +1,10 @@
 use crate::table_lake::Entry;
-use crate::TableIndex;
+use crate::TableLocation;
 use std::collections::{BTreeMap, HashMap};
 use std::sync::mpsc::Receiver;
 
 /// Baseline measure of data, the way it is present in database
-pub(crate) fn baseline(receiver: Receiver<(String, TableIndex)>) -> (usize, Vec<Entry>) {
+pub(crate) fn baseline(receiver: Receiver<(String, TableLocation)>) -> (usize, Vec<Entry>) {
     let mut ii = Vec::new();
     for data in receiver {
         ii.push(data);
@@ -15,9 +15,9 @@ pub(crate) fn baseline(receiver: Receiver<(String, TableIndex)>) -> (usize, Vec<
 
 /// Performs deduplication using a HashMap
 pub(crate) fn dedup_hash(
-    receiver: Receiver<(String, TableIndex)>,
-) -> (usize, HashMap<String, Vec<TableIndex>>) {
-    let mut ii: HashMap<String, Vec<TableIndex>> = HashMap::new();
+    receiver: Receiver<(String, TableLocation)>,
+) -> (usize, HashMap<String, Vec<TableLocation>>) {
+    let mut ii: HashMap<String, Vec<TableLocation>> = HashMap::new();
 
     let mut group_id = String::new();
     let mut buffer = Vec::new();
@@ -38,9 +38,9 @@ pub(crate) fn dedup_hash(
 
 /// Performs deduplication using a btreemap
 pub(crate) fn dedup_btree(
-    receiver: Receiver<(String, TableIndex)>,
-) -> (usize, BTreeMap<String, Vec<TableIndex>>) {
-    let mut ii: BTreeMap<String, Vec<TableIndex>> = BTreeMap::new();
+    receiver: Receiver<(String, TableLocation)>,
+) -> (usize, BTreeMap<String, Vec<TableLocation>>) {
+    let mut ii: BTreeMap<String, Vec<TableLocation>> = BTreeMap::new();
 
     let mut group_id = String::new();
     let mut buffer = Vec::new();
@@ -63,7 +63,7 @@ pub(crate) fn dedup_btree(
 // as the implementation does not consider that elements may not come in blocks of precisely 4.
 pub type Compressed4Wise = HashMap<String, (Vec<u8>, u8)>;
 
-pub(crate) fn ns_4_wise(receiver: Receiver<(String, TableIndex)>) -> (usize, Compressed4Wise) {
+pub(crate) fn ns_4_wise(receiver: Receiver<(String, TableLocation)>) -> (usize, Compressed4Wise) {
     use int_compression_4_wise::compress;
     let mut ii: Compressed4Wise = HashMap::new();
     let mut entry_count = 0;
