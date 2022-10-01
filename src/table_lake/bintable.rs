@@ -31,7 +31,7 @@ impl TableLakeReader for BinTable {
         loop {
             let i = self.file.read(&mut buffer).expect("read bintable file");
             if i == 0 {
-                return
+                return;
             }
 
             let mut tmpbuffer: &mut [u8] = &mut buffer;
@@ -42,7 +42,7 @@ impl TableLakeReader for BinTable {
 
                 self.limit -= 1;
                 if self.limit == 0 {
-                    return
+                    return;
                 }
 
                 let bytes_consumed = tmpbuffer.len() - rest.len();

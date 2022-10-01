@@ -1,7 +1,6 @@
 use anyhow::Result;
 use fast_smaz::Smaz;
 use postgres::Row;
-use std::io::prelude::*;
 use varint_compression::*;
 
 use super::{Entry, TableLocation};

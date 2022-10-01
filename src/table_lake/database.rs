@@ -1,4 +1,4 @@
-use crate::{Entry, TableLakeReader, table_lake::tablerow::TableRow};
+use crate::{table_lake::tablerow::TableRow, Entry, TableLakeReader};
 use std::sync::mpsc::Sender;
 
 pub struct DatabaseCollection {

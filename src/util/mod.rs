@@ -8,8 +8,8 @@ mod random_keys;
 pub use random_keys::RandomKeys;
 
 use crate::cli::CompressionAlgorithm;
-use crate::table_lake::*;
 use crate::db;
+use crate::table_lake::*;
 
 pub fn indices_from_bintable(bintable: &str, limit: usize) -> Receiver<(String, TableLocation)> {
     let (sender, receiver) = channel();

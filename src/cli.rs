@@ -23,7 +23,7 @@ pub struct Config {
     pub table: String,
 
     #[structopt(short, long)]
-    pub bintable: bool
+    pub bintable: bool,
 }
 
 #[derive(Copy, Clone)]

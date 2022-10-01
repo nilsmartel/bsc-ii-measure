@@ -1,8 +1,8 @@
-mod tablerow;
-mod database;
 mod bintable;
-pub use database::DatabaseCollection;
+mod database;
+mod tablerow;
 pub use bintable::BinTable;
+pub use database::DatabaseCollection;
 use get_size::GetSize;
 
 pub use database::*;
@@ -25,13 +25,20 @@ impl TableLocation {
         }
     }
 
-    pub fn integers(self) -> [u32; 3]  {
-        let TableLocation { tableid, colid, rowid } = self;
+    pub fn integers(self) -> [u32; 3] {
+        let TableLocation {
+            tableid,
+            colid,
+            rowid,
+        } = self;
 
         let rowid = if rowid <= std::u32::MAX as u64 {
             rowid as u32
         } else {
-            println!("error in TableIndex::integers, row index (TableLocation::rowid) is to high {}", rowid);
+            println!(
+                "error in TableIndex::integers, row index (TableLocation::rowid) is to high {}",
+                rowid
+            );
             rowid.min(std::u32::MAX as u64) as u32
         };
 
