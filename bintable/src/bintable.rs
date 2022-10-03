@@ -33,57 +33,7 @@ impl BinTable {
 impl Iterator for BinTable {
     type Item = TableRow;
     fn next(&mut self) -> Option<Self::Item> {
-        if self.buffer.len() == self.buffer_offset {
-            self.buffer.extend((0..1024).map(|_| 0));
-        }
-
-        // read to the end of the buffer
-        let i = self
-            .file
-            .read(&mut self.buffer[self.buffer_offset..])
-            .expect("read bintable file");
-
-        // Advance the offset into the buffer,
-        // so the next time we read, we won't override our data.
-        self.buffer_offset += i;
-
-        // can only mean there is nothign left to be read from the file.
-        // if we have already consumed out buffer, we can end iteration here
-        if i == 0 {
-            // DBG START
-            eprintln!("i == 0");
-            eprintln!("bytes left: {}", self.buffer.len());
-            eprintln!("parsing_pointer: {}", self.parsing_pointer);
-
-            let mut tmpbuffer: &[u8] = &self.buffer[self.parsing_pointer..];
-            let mut rows = Vec::new();
-            while let Ok((row, rest)) = TableRow::from_bin(tmpbuffer) {
-                // the buffer contained enough bytes to parse an entire row.
-                let bytes_consumed = tmpbuffer.len() - rest.len();
-
-                // advance the parsing pointer
-                self.parsing_pointer += bytes_consumed;
-
-                tmpbuffer = &self.buffer[self.parsing_pointer..];
-
-                rows.push(row);
-            }
-            eprintln!("bytes left: {}", self.buffer.len());
-            eprintln!("parsing_pointer: {}", self.parsing_pointer);
-            eprintln!("{:?}", rows.len());
-            for r in rows {
-                eprintln!("{}", r.tokenized);
-            }
-
-            // DBG END
-
-            if self.buffer.len() == self.parsing_pointer {
-                return None;
-            }
-        }
-
         let tmpbuffer: &[u8] = &self.buffer[self.parsing_pointer..];
-
         if let Ok((row, rest)) = TableRow::from_bin(tmpbuffer) {
             // the buffer contained enough bytes to parse an entire row.
             let bytes_consumed = tmpbuffer.len() - rest.len();
@@ -94,39 +44,28 @@ impl Iterator for BinTable {
             return Some(row);
         }
 
-        // the buffer did not hold enough information to keep parsing!
+        let bytes_remaining = tmpbuffer.to_vec();
+        self.parsing_pointer = bytes_remaining.len();
 
-        // more bytes need to be read!
+        self.buffer.clear();
+        self.buffer.extend(bytes_remaining);
 
-        // we assume that the buffer is filled to the brim.
-
-        //      Scenario A
-
-        // we can't clear up space
-        // the buffer isn't large enought to
-        if self.parsing_pointer == 0 {
-            // No need to extend the buffer.
-            // On the next invokation the buffer will get extended.
-            return self.next();
+        // fill up buffer with zeros.
+        while self.buffer.len() < self.buffer.capacity() {
+            self.buffer.push(0);
         }
 
-        //      Scenario B
-        // clear up space in the buffer
-        // by getting rid of the already parsed content.
+        let bytes_read = self.file.read(&mut self.buffer).expect("to read from file");
 
-        // stash unparsed bytes
-        let fresh_bytes = tmpbuffer.to_vec();
+        if bytes_read == 0 {
+            if self.parsing_pointer == 0 {
+                return None;
+            } else {
+                self.buffer.extend((0..1024).map(|_| 0));
+                eprintln!("bufferlen: {}", self.buffer.len());
+            }
+        }
 
-        // adjust buffer offset so we write new content after the fresh bytes
-        self.buffer_offset = fresh_bytes.len();
-        // reset parsing pointer
-        self.parsing_pointer = 0;
-
-        // clear the buffer and write fresh_bytes back to it..
-        self.buffer.clear();
-        self.buffer.extend(fresh_bytes);
-
-        // now seek from the file again
         self.next()
     }
 }
