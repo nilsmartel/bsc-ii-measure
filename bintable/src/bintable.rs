@@ -37,7 +37,6 @@ impl Iterator for BinTable {
             self.buffer.extend((0..1024).map(|_| 0));
         }
 
-        eprintln!("seek");
         // read to the end of the buffer
         let i = self
             .file
@@ -51,8 +50,6 @@ impl Iterator for BinTable {
         // can only mean there is nothign left to be read from the file.
         // if we have already consumed out buffer, we can end iteration here
         if i == 0 && self.buffer.len() == self. parsing_pointer{
-            eprintln!("end of file");
-
             return None;
         }
 
@@ -77,18 +74,18 @@ impl Iterator for BinTable {
         //      Scenario A
 
         // we can't clear up space
-        // the buffer isn't large enought to 
+        // the buffer isn't large enought to
         if self.parsing_pointer == 0 {
             // No need to extend the buffer.
             // On the next invokation the buffer will get extended.
             return self.next();
         }
 
-        
+
         //      Scenario B
         // clear up space in the buffer
         // by getting rid of the already parsed content.
-        
+
         // stash unparsed bytes
         let fresh_bytes = tmpbuffer.to_vec();
 
@@ -100,7 +97,7 @@ impl Iterator for BinTable {
         // clear the buffer and write fresh_bytes back to it..
         self.buffer.clear();
         self.buffer.extend(fresh_bytes);
-    
+
         // now seek from the file again
         self.next()
     }
