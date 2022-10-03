@@ -23,7 +23,7 @@ fn main() {
 
     let mut count = 064;
     let mut size = 0u64;
-    for row in table {
+    for row in table.take(87700224) {
         count += 1;
         size += row.tokenized.get_size() as u64 + 16;
 
