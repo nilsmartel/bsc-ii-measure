@@ -49,8 +49,11 @@ impl Iterator for BinTable {
 
         // can only mean there is nothign left to be read from the file.
         // if we have already consumed out buffer, we can end iteration here
-        if i == 0 && self.buffer.len() == self. parsing_pointer{
-            return None;
+        if i == 0 {
+            eprintln!("i == 0");
+            if self.buffer.len() == self.parsing_pointer {
+                return None;
+            }
         }
 
         let tmpbuffer: &[u8] = &self.buffer[self.parsing_pointer..];
@@ -80,7 +83,6 @@ impl Iterator for BinTable {
             // On the next invokation the buffer will get extended.
             return self.next();
         }
-
 
         //      Scenario B
         // clear up space in the buffer
