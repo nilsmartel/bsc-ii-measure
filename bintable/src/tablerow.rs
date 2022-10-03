@@ -1,3 +1,5 @@
+use std::num::IntErrorKind;
+
 use anyhow::Result;
 use fast_smaz::Smaz;
 use postgres::Row;
@@ -55,7 +57,14 @@ impl TableRow {
     }
 
     pub fn from_bin(data: &[u8]) -> Result<(Self, &[u8])> {
-        let (total_length, rest) = decompress(data);
+        let data = match decompress(data) {
+            Ok(d) => d,
+            Err(s) => {
+                return Err(anyhow::Error::msg("not enough input"));
+            }
+        };
+
+        let (total_length, rest) = data;
         let total_length = total_length as usize;
 
         if rest.len() < total_length {
@@ -68,13 +77,13 @@ impl TableRow {
     }
 
     pub fn from_bin_raw(data: &[u8]) -> Self {
-        let (n, rest) = decompress(data);
+        let (n, rest) = decompress(data).unwrap();
         let n = n as usize;
         let tokenized = &rest[..n];
         let tokenized = tokenized.smaz_decompress().unwrap();
         let tokenized = String::from_utf8(tokenized).expect("to retrieve valid utf8 string");
 
-        let ([tableid, colid, rowid], _rest) = decompress_n(&rest[n..]);
+        let ([tableid, colid, rowid], _rest) = decompress_n(&rest[n..]).unwrap();
 
         let tableid = tableid as u32;
         let colid = colid as u32;

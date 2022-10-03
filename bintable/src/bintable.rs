@@ -28,16 +28,14 @@ impl Iterator for BinTable {
     type Item = TableRow;
     fn next(&mut self) -> Option<Self::Item> {
         let tmpbuffer: &[u8] = &self.buffer[self.parsing_pointer..];
-        if tmpbuffer.len() > 4 {
-            if let Ok((row, rest)) = TableRow::from_bin(tmpbuffer) {
-                // the buffer contained enough bytes to parse an entire row.
-                let bytes_consumed = tmpbuffer.len() - rest.len();
+        if let Ok((row, rest)) = TableRow::from_bin(tmpbuffer) {
+            // the buffer contained enough bytes to parse an entire row.
+            let bytes_consumed = tmpbuffer.len() - rest.len();
 
-                // advance the parsing pointer
-                self.parsing_pointer += bytes_consumed;
+            // advance the parsing pointer
+            self.parsing_pointer += bytes_consumed;
 
-                return Some(row);
-            }
+            return Some(row);
         }
 
         // seek more bytes into the buffer

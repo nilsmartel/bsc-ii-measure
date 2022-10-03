@@ -9,6 +9,6 @@ edition = "2021"
 int-compression-4-wise = "0.1.1"    # Fast algorithm to compress lists if integers in blocks of 4. Appends 0 to blocks, if length…
 lz4_flex = "0.9.5"         # Fastest LZ4 implementation in Rust, no unsafe by default.
 fast-smaz = "0.1.0"    # Pure Rust SMAZ compression implementation
-varint-compression = "0.1.0"    # variable length integer compression
+varint-compression = "0.2.0"    # variable length integer compression
 postgres = "0.19.4"                         # A native, synchronous PostgreSQL client
 anyhow = "1.0.65"                                   # Flexible concrete Error type built on std::error::Error
