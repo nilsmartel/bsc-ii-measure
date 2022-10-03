@@ -33,6 +33,12 @@ pub fn best_filename(table: &str, limit: usize, algo: CompressionAlgorithm) -> S
     let limit = to_sci_str(limit);
     let algo = algo.str();
 
+    let table = if let Some((_path, file)) = table.rsplit_once('/') {
+        file
+    } else {
+        table
+    };
+
     format!("{limit}-{table}-{algo}")
 }
 
