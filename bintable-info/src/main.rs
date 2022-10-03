@@ -1,6 +1,7 @@
 use bintable::*;
 use get_size::GetSize;
 use std::io::Write;
+use structopt::StructOpt;
 
 fn help() -> ! {
     println!(
@@ -10,11 +11,18 @@ fn help() -> ! {
     std::process::exit(0);
 }
 
+#[derive(StructOpt)]
+struct Config {
+    /// Bintable file
+    #[structopt()]
+    table: String,
+
+    #[structopt(long, short)]
+    limit: usize,
+}
+
 fn main() {
-    let table = match std::env::args().nth(1) {
-        Some(t) => t,
-        None => help(),
-    };
+    let Config { table, limit } = Config::from_args();
 
     let table = BinTable::open(&table).expect("open bintable file");
 
@@ -23,7 +31,7 @@ fn main() {
 
     let mut count = 064;
     let mut size = 0u64;
-    for row in table.take(87700224) {
+    for row in table.take(limit) {
         count += 1;
         size += row.tokenized.get_size() as u64 + 16;
 
