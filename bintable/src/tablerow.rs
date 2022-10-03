@@ -72,7 +72,7 @@ impl TableRow {
         let n = n as usize;
         let tokenized = &rest[..n];
         let tokenized = tokenized.smaz_decompress().unwrap();
-        let tokenized = String::from_utf8(tokenized).unwrap();
+        let tokenized = String::from_utf8(tokenized).expect("to retrieve valid utf8 string");
 
         let ([tableid, colid, rowid], _rest) = decompress_n(&rest[n..]);
 
