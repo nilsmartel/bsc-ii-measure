@@ -1,7 +1,5 @@
-mod bintable;
 mod database;
-mod tablerow;
-pub use bintable::BinTable;
+pub use bintable::TableRow;
 pub use database::DatabaseCollection;
 use get_size::GetSize;
 
@@ -55,4 +53,23 @@ where
     Self: Send,
 {
     fn read(&mut self, ch: Sender<Entry>);
+}
+
+impl<I: Iterator<Item = TableRow> + Send> TableLakeReader for I {
+    fn read(&mut self, ch: Sender<Entry>) {
+        for row in self {
+            let TableRow {
+                tokenized,
+                tableid,
+                colid,
+                rowid,
+            } = row;
+            let location = TableLocation {
+                tableid,
+                colid,
+                rowid,
+            };
+            ch.send((tokenized, location));
+        }
+    }
 }
