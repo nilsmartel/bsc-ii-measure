@@ -10,13 +10,32 @@ pub use random_keys::RandomKeys;
 use crate::cli::CompressionAlgorithm;
 use crate::db;
 use crate::table_lake::*;
+use bintable::BinTable;
 
-pub fn indices_from_bintable(bintable: &str, limit: usize) -> Receiver<(String, TableLocation)> {
+pub fn indices_from_bintable(
+    bintable: &str,
+    limit: Option<usize>,
+) -> Receiver<(String, TableLocation)> {
     let (sender, receiver) = channel();
 
-    let mut bintable = BinTable::open(bintable, limit).expect("open bintable");
+    let mut bintable = BinTable::open(bintable).expect("open bintable");
 
-    spawn(move || bintable.read(sender));
+    if let Some(limit) = limit {
+        // TODO BE AWARE THAT WE ARE USING A
+        // HIGHLY BIASED
+        // CONVINIENCE SAMPLE
+        // HERE IMPLICITLY
+        //
+        // Since we sort by the table cells,
+        // the resulting rows have
+        // MUCH LOWER ENTROPY
+        // that usually can be expected from
+        // lakes of tables of size `limit`
+        spawn(move || bintable.take(limit).read(sender));
+    } else {
+        spawn(move || bintable.read(sender));
+    }
+
     receiver
 }
 

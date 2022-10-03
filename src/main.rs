@@ -28,6 +28,12 @@ fn main() {
     println!("benchmarking {table} {limit} {}", compression.str());
 
     let receiver = if use_bintables {
+        let limit = if limit == 0 {
+            None
+        } else {
+            println!("WARNING. reading from partial bintable results in querying data of much lower entropy that what would be realistic");
+            Some(limit)
+        };
         indices_from_bintable(table, limit)
     } else {
         indices(table, limit)
