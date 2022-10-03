@@ -50,7 +50,33 @@ impl Iterator for BinTable {
         // can only mean there is nothign left to be read from the file.
         // if we have already consumed out buffer, we can end iteration here
         if i == 0 {
+            // DBG START
             eprintln!("i == 0");
+            eprintln!("bytes left: {}", self.buffer.len());
+            eprintln!("parsing_pointer: {}", self.parsing_pointer);
+
+            let mut tmpbuffer: &[u8] = &self.buffer[self.parsing_pointer..];
+            let mut rows = Vec::new();
+            while let Ok((row, rest)) = TableRow::from_bin(tmpbuffer) {
+                // the buffer contained enough bytes to parse an entire row.
+                let bytes_consumed = tmpbuffer.len() - rest.len();
+
+                // advance the parsing pointer
+                self.parsing_pointer += bytes_consumed;
+
+                tmpbuffer = &self.buffer[self.parsing_pointer..];
+
+                rows.push(row);
+            }
+            eprintln!("bytes left: {}", self.buffer.len());
+            eprintln!("parsing_pointer: {}", self.parsing_pointer);
+            eprintln!("{:?}", rows.len());
+            for r in rows {
+                eprintln!("{}", r.tokenized);
+            }
+
+            // DBG END
+
             if self.buffer.len() == self.parsing_pointer {
                 return None;
             }
