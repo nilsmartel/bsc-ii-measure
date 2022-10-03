@@ -24,6 +24,7 @@ fn main() {
     let mut count = 0u64;
     let mut size = 0u64;
     for row in table.take(limit) {
+        writeln!(&mut out, "{}", row.tokenized).unwrap();
         count += 1;
         size += row.tokenized.get_size() as u64 + 16;
 
