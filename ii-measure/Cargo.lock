@@ -60,7 +60,7 @@ dependencies = [
  "int-compression-4-wise",
  "lz4_flex",
  "postgres",
- "varint-compression",
+ "varint-compression 0.2.0",
 ]
 
 [[package]]
@@ -324,7 +324,7 @@ dependencies = [
  "rand",
  "structopt",
  "threadpool",
- "varint-compression",
+ "varint-compression 0.1.0",
 ]
 
 [[package]]
@@ -906,6 +906,12 @@ name = "varint-compression"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "97774f372bad25eecc4cb4a56b691c7b92b67cd23bd17f25962389336bfe61bc"
+
+[[package]]
+name = "varint-compression"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee9f7521a6d07a7b7ad7b979a1965578f123412c44ebf0b44609d0a2a7ae7edc"
 
 [[package]]
 name = "vec_map"

@@ -1,5 +1,3 @@
-use std::num::IntErrorKind;
-
 use anyhow::Result;
 use fast_smaz::Smaz;
 use postgres::Row;
@@ -59,7 +57,7 @@ impl TableRow {
     pub fn from_bin(data: &[u8]) -> Result<(Self, &[u8])> {
         let data = match decompress(data) {
             Ok(d) => d,
-            Err(s) => {
+            Err(_) => {
                 return Err(anyhow::Error::msg("not enough input"));
             }
         };

@@ -802,9 +802,9 @@ checksum = "c0edd1e5b14653f783770bce4a4dabb4a5108a5370a5f5d8cfe8710c361f6c8b"
 
 [[package]]
 name = "varint-compression"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97774f372bad25eecc4cb4a56b691c7b92b67cd23bd17f25962389336bfe61bc"
+checksum = "ee9f7521a6d07a7b7ad7b979a1965578f123412c44ebf0b44609d0a2a7ae7edc"
 
 [[package]]
 name = "vec_map"
