@@ -27,8 +27,8 @@ fn main() {
         count += 1;
         size += row.tokenized.get_size() as u64 + 16;
 
-        if count & 0xff == 0 {
-            writeln!(&mut out, "{:03}", count).unwrap();
+        if count & 0xfff == 0 {
+            writeln!(&mut out, "{:08}", count).unwrap();
         }
     }
 
