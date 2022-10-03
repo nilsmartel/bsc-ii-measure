@@ -15,14 +15,6 @@ pub struct TableLocation {
 }
 
 impl TableLocation {
-    pub fn new(tableid: u32, colid: u32, rowid: u64) -> Self {
-        Self {
-            tableid,
-            rowid,
-            colid,
-        }
-    }
-
     pub fn integers(self) -> [u32; 3] {
         let TableLocation {
             tableid,
@@ -69,7 +61,8 @@ impl<I: Iterator<Item = TableRow> + Send> TableLakeReader for I {
                 colid,
                 rowid,
             };
-            ch.send((tokenized, location));
+            ch.send((tokenized, location))
+                .expect("streadm tablelocation");
         }
     }
 }

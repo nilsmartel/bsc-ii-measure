@@ -1,4 +1,5 @@
-use crate::{table_lake::tablerow::TableRow, Entry, TableLakeReader};
+use crate::{table_lake::TableLocation, Entry, TableLakeReader};
+use bintable::TableRow;
 use std::sync::mpsc::Sender;
 
 pub struct DatabaseCollection {
@@ -35,7 +36,21 @@ impl TableLakeReader for DatabaseCollection {
 
         for row in rows {
             let row: TableRow = (&row).into();
-            ch.send(row.into_entry()).expect("send index to channel");
+            let TableRow {
+                tokenized,
+                tableid,
+                colid,
+                rowid,
+            } = row;
+            ch.send((
+                tokenized,
+                TableLocation {
+                    tableid,
+                    colid,
+                    rowid,
+                },
+            ))
+            .expect("send index to channel");
         }
     }
 }
