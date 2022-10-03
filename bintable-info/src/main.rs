@@ -3,14 +3,6 @@ use get_size::GetSize;
 use std::io::Write;
 use structopt::StructOpt;
 
-fn help() -> ! {
-    println!(
-        "usage: bintable-info <table>
-        "
-    );
-    std::process::exit(0);
-}
-
 #[derive(StructOpt)]
 struct Config {
     /// Bintable file
@@ -29,7 +21,7 @@ fn main() {
     let e = std::io::stderr();
     let mut out = e.lock();
 
-    let mut count = 064;
+    let mut count = 0u64;
     let mut size = 0u64;
     for row in table.take(limit) {
         count += 1;
