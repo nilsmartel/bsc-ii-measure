@@ -20,14 +20,24 @@ impl DatabaseCollection {
 
 impl TableLakeReader for DatabaseCollection {
     fn read(&mut self, ch: Sender<Entry>) {
-        let query = format!(
-            "
+        let query = if self.limit != 0 {
+            format!(
+                "
                 SELECT tokenized, tableid, colid, rowid FROM {}
                 ORDER BY tokenized
                 LIMIT {}
             ",
-            self.table, self.limit
-        );
+                self.table, self.limit
+            )
+        } else {
+            format!(
+                "
+                SELECT tokenized, tableid, colid, rowid FROM {}
+                ORDER BY tokenized
+            ",
+                self.table
+            )
+        };
 
         println!("execute query");
         let rows = self.client.query(&query, &[]).expect("query database");
