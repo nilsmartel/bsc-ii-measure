@@ -1,66 +1,72 @@
 use crate::{table_lake::TableLocation, Entry, TableLakeReader};
 use bintable::TableRow;
+use rand::Rng;
 use std::sync::mpsc::Sender;
 
 pub struct DatabaseCollection {
     client: postgres::Client,
     table: String,
-    limit: usize,
+    factor: Option<f32>,
 }
 
 impl DatabaseCollection {
-    pub fn new(client: postgres::Client, table: impl Into<String>, limit: usize) -> Self {
+    pub fn new(client: postgres::Client, table: impl Into<String>, factor: Option<f32>) -> Self {
         DatabaseCollection {
             client,
             table: table.into(),
-            limit,
+            factor,
         }
     }
 }
 
+fn entry(row: &postgres::Row) -> Entry {
+    let row: TableRow = row.into();
+    let TableRow {
+        tokenized,
+        tableid,
+        colid,
+        rowid,
+    } = row;
+
+    (
+        tokenized,
+        TableLocation {
+            tableid,
+            colid,
+            rowid,
+        },
+    )
+}
+
 impl TableLakeReader for DatabaseCollection {
     fn read(&mut self, ch: Sender<Entry>) {
-        let query = if self.limit != 0 {
-            format!(
-                "
-                SELECT tokenized, tableid, colid, rowid FROM {}
-                ORDER BY tokenized
-                LIMIT {}
-            ",
-                self.table, self.limit
-            )
-        } else {
-            format!(
-                "
+        let query = format!(
+            "
                 SELECT tokenized, tableid, colid, rowid FROM {}
                 ORDER BY tokenized
             ",
-                self.table
-            )
-        };
+            self.table,
+        );
 
-        println!("execute query");
+        eprintln!("execute query");
         let rows = self.client.query(&query, &[]).expect("query database");
 
-        println!("retrieved {} rows", rows.len());
+        eprintln!("retrieved {} rows", rows.len());
 
-        for row in rows {
-            let row: TableRow = (&row).into();
-            let TableRow {
-                tokenized,
-                tableid,
-                colid,
-                rowid,
-            } = row;
-            ch.send((
-                tokenized,
-                TableLocation {
-                    tableid,
-                    colid,
-                    rowid,
-                },
-            ))
-            .expect("send index to channel");
+        if let Some(f) = self.factor {
+            let mut rng = rand::thread_rng();
+            for row in rows {
+                if rng.gen::<f32>() < f {
+                    continue;
+                }
+                let e = entry(&row);
+                ch.send(e).expect("send index to channel");
+            }
+        } else {
+            for row in rows {
+                let e = entry(&row);
+                ch.send(e).expect("send index to channel");
+            }
         }
     }
 }

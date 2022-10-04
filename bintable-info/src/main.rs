@@ -33,8 +33,8 @@ fn main() {
 
     }
 
-    println!("count: {count}");
-    println!("size: {}", to_byte_str(size));
+    eprintln!("count: {count}");
+    eprintln!("size: {}", to_byte_str(size));
 }
 
 fn to_byte_str(mut bytes: u64) -> String {

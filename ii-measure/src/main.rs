@@ -15,36 +15,43 @@ mod log;
 
 use measure::measure_logging;
 
+use crate::cli::Config;
+
+fn basename(s: &str) -> String {
+    s.rsplit('/').next().unwrap().to_owned()
+}
 fn main() {
-    let config = cli::Config::from_args();
-    let table = &config.table;
-    let limit = config.limit;
-    let use_bintables = config.bintable;
-    let compression = config.compression;
-    let output = config
-        .output
-        .unwrap_or_else(|| best_filename(table, limit, config.compression));
+    let Config {
+        bintable,
+        algorithm,
+        table,
+        header,
+        header_only,
+        mut factor,
+    } = cli::Config::from_args();
 
-    println!("benchmarking {table} {limit} {}", compression.str());
+    if header_only {
+        log::print_header();
+        std::process::exit(1);
+    }
 
-    let receiver = if use_bintables {
-        let limit = if limit == 0 {
-            None
-        } else {
-            println!("WARNING. reading from partial bintable results in querying data of much lower entropy that what would be realistic");
-            Some(limit)
-        };
-        indices_from_bintable(table, limit)
-    } else {
-        indices(table, limit)
-    };
+    if factor == Some(1.0) {
+        factor = None;
+    }
 
     // init information logger
-    let log = Logger::new(&output);
+    let log = Logger::new(algorithm.str(), basename(&table), header);
+    eprintln!("benchmarking {} on {}", algorithm.str(), table);
+
+    let receiver = if bintable {
+        indices_from_bintable(&table, factor)
+    } else {
+        indices(&table, factor)
+    };
 
     // Select Compression Algorithm and perfom
     use cli::CompressionAlgorithm::*;
-    match config.compression {
+    match algorithm {
         Baseline => measure_logging(algorithm::baseline, receiver, log),
         DedupHash => measure_logging(algorithm::dedup_hash, receiver, log),
         DedupBTree => measure_logging(algorithm::dedup_btree, receiver, log),

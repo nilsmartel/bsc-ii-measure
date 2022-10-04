@@ -9,24 +9,26 @@ import os
 def loaddata(dir):
     data = dict()
 
-    for path in os.listdir(dir):
-        data = pd.load_csv(dir + "/" + path)
+    files = os.listdir(dir)
+    files.sort()
+    for path in files:
+        frame = pd.read_csv(dir + "/" + path)
         tablename, algo, kind = parsename(path)
 
         if kind == 'retr':
-            retrieval_ns = np.average(data)
+            retrieval_ns = np.average(frame)
             data[(tablename, algo)]['retrieval_ns'] = retrieval_ns
         else:
-            data[(tablename, algo)] = data
+            data[(tablename, algo)] = frame
 
     data_per_algos = dict()
     for (tablename, algo), value in data.items():
         if algo in data_per_algos:
             value['source'] = tablename
-            tablename[algo].append(value)
+            data_per_algos[algo].append(value)
         else:
             value['source'] = tablename
-            tablename[algo] = value
+            data_per_algos[algo] = value
 
     return data_per_algos
 
