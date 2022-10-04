@@ -39,7 +39,7 @@ impl Logger {
         let algorithm = &self.algorithm;
         let table = &self.table;
 
-        println!("{cells};{bytes};{duration};{retr_duration};{algorithm}{table}");
+        println!("{cells};{bytes};{duration};{retr_duration};{algorithm};{table}");
     }
 
     pub fn memory_info(&mut self, data: MemData) {
