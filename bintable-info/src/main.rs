@@ -1,6 +1,6 @@
 use bintable::*;
 use get_size::GetSize;
-use std::io::Write;
+use std::{io::Write, fmt::format};
 use structopt::StructOpt;
 
 #[derive(StructOpt)]
@@ -34,5 +34,15 @@ fn main() {
     }
 
     println!("count: {count}");
-    println!("size: {size}");
+    println!("size: {}", to_byte_str(size));
+}
+
+fn to_byte_str(mut bytes: u64) -> String {
+    for unit in ["","Kb", "Mb", "Gb", "Tb"] {
+        if bytes < 1024 {
+            return format!("{bytes}{unit}");
+        }
+        bytes /= 1024;
+    }
+    format!("{bytes} Petabyte")
 }
