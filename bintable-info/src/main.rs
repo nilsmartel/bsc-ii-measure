@@ -1,6 +1,6 @@
 use bintable::*;
 use get_size::GetSize;
-use std::{io::Write, fmt::format};
+use std::io::Write;
 use structopt::StructOpt;
 
 #[derive(StructOpt)]
