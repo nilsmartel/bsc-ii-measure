@@ -21,13 +21,17 @@ fn main() {
     let e = std::io::stderr();
     let mut out = e.lock();
 
-    let mut count = 0u64;
+    let skip = 101;
+    let mut count = skip;
     let mut size = 0u64;
     for row in table.take(limit) {
-        writeln!(&mut out, "[{}] {:?}", count, row).unwrap();
+        if count & 0xfff == 0 {
+            writeln!(&mut out, "[{}] {:?}", count, row).unwrap();
+        }
 
         count += 1;
         size += row.tokenized.get_size() as u64 + 16;
+
     }
 
     println!("count: {count}");
