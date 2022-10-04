@@ -21,9 +21,8 @@ fn main() {
     let e = std::io::stderr();
     let mut out = e.lock();
 
-    let skip = 101;
-    let mut count = skip;
-    let mut size = 0u64;
+    let mut count: u64 = 0;
+    let mut size: u64 = 0;
     for row in table.take(limit) {
         if count & 0xfff == 0 {
             writeln!(&mut out, "[{}] {:?}", count, row).unwrap();
