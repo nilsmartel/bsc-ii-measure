@@ -30,6 +30,7 @@ pub(crate) fn dedup_hash(
     let mut buffer = Vec::new();
 
     let mut build_time = Duration::new(0, 0);
+    let mut entry_count = 0;
 
     for (index, data) in receiver {
         let starttime = Instant::now();
@@ -41,9 +42,9 @@ pub(crate) fn dedup_hash(
 
         buffer.push(data);
         build_time += starttime.elapsed();
+        entry_count += 1;
     }
 
-    let entry_count = ii.len();
     (entry_count, build_time, ii)
 }
 
