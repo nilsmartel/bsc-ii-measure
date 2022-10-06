@@ -1,6 +1,4 @@
 use bintable::*;
-use get_size::GetSize;
-use std::io::Write;
 use structopt::StructOpt;
 
 #[derive(StructOpt)]
@@ -9,40 +7,51 @@ struct Config {
     #[structopt()]
     table: String,
 
-    #[structopt(long, short)]
-    limit: usize,
+    #[structopt(short, long)]
+    header: bool,
 }
 
 fn main() {
-    let Config { table, limit } = Config::from_args();
+    let Config { table, header } = Config::from_args();
 
-    let table = BinTable::open(&table).expect("open bintable file");
-
-    let e = std::io::stderr();
-    let mut out = e.lock();
-
-    let mut count: u64 = 0;
-    let mut size: u64 = 0;
-    for row in table.take(limit) {
-        if count & 0xfff == 0 {
-            writeln!(&mut out, "[{}] {:?}", count, row).unwrap();
-        }
-
-        count += 1;
-        size += row.tokenized.get_size() as u64 + 16;
-
+    if header {
+        println!("table;values;distinct_values;mean_cardinality;avg_cell_len;avg_tableid;avg_colid;avg_rowid");
     }
 
-    eprintln!("count: {count}");
-    eprintln!("size: {}", to_byte_str(size));
-}
+    let bintable = BinTable::open(&table).expect("open bintable file");
 
-fn to_byte_str(mut bytes: u64) -> String {
-    for unit in ["","Kb", "Mb", "Gb", "Tb"] {
-        if bytes < 1024 {
-            return format!("{bytes}{unit}");
+    let mut values: u64 = 0;
+    let mut distinct_values: u64 = 0;
+
+    let mut total_length_tokenized: u64 = 0;
+    let mut total_length_tableid: u64 = 0;
+    let mut total_length_colid: u64 = 0;
+    let mut total_length_rowid: u64 = 0;
+
+    {
+        let mut last_value = String::new();
+        for row in bintable {
+            total_length_tokenized += row.tokenized.as_bytes().len() as u64;
+            total_length_tableid += row.tableid as u64;
+            total_length_colid += row.colid as u64;
+            total_length_rowid += row.rowid as u64;
+
+            if row.tokenized != last_value {
+                last_value = row.tokenized;
+                distinct_values += 1;
+            }
+
+            values += 1;
         }
-        bytes /= 1024;
     }
-    format!("{bytes} Petabyte")
+
+    let mean_cardinality = values as f64 / distinct_values as f64;
+
+    let values = values as f64;
+    let cell_len = total_length_tokenized as f64 / values;
+    let tableid = total_length_tableid as f64 / values;
+    let colid = total_length_colid as f64 / values;
+    let rowid = total_length_rowid as f64 / values;
+
+    println!("{table};{values};{distinct_values};{mean_cardinality};{cell_len};{tableid};{colid};{rowid}");
 }
