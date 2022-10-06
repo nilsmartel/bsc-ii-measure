@@ -17,6 +17,11 @@ use measure::measure_logging;
 
 use crate::cli::Config;
 
+use jemallocator::Jemalloc;
+
+#[global_allocator]
+static GLOBAL: Jemalloc = Jemalloc;
+
 fn basename(s: &str) -> String {
     s.rsplit('/').next().unwrap().to_owned()
 }

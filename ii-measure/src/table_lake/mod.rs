@@ -1,13 +1,12 @@
 mod database;
 pub use bintable::TableRow;
 pub use database::DatabaseCollection;
-use get_size::GetSize;
 
 pub use database::*;
 
 use std::sync::mpsc::Sender;
 
-#[derive(GetSize, Clone, Copy)]
+#[derive(Clone, Copy)]
 pub struct TableLocation {
     pub tableid: u32,
     pub colid: u32,

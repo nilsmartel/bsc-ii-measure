@@ -1,43 +1,41 @@
 use crate::inverted_index::InvertedIndex;
 use crate::util::RandomKeys;
 use crate::{log::Logger, TableLocation};
-use get_size::GetSize;
+use std::io::Write;
 use std::sync::mpsc::Receiver;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
-fn retrieval<T, O>(ii: T, mut log: Logger)
+fn retrieval<T, O>(ii: &T, log: &mut Logger)
 where
     T: InvertedIndex<O> + RandomKeys,
     O: Sized,
 {
     eprintln!("Step 2. Measure retrieval time.");
 
-    // TODO ensure that this is not getting optimized out!
     let keys = ii.random_keys();
-    let max = keys.len() as f32;
+    let total_attempts = keys.len() as u32;
+    let total_attempts_f = total_attempts as f32;
 
-    let mut ds = Vec::with_capacity(keys.len());
+    let err = std::io::stderr();
+    let mut stdout = err.lock();
 
+    let starttime = Instant::now();
+    // TODO ensure that this is not getting optimized out!
     for (index, key) in keys.into_iter().enumerate() {
-        let starttime = Instant::now();
         let _table_indices = ii.get(&key);
-        drop(_table_indices);
-
-        let duration = starttime.elapsed();
-        ds.push(duration);
 
         if index & 0x1ff == 0 {
-            let percentage = (index as f32 / max) * 100.0;
-            eprintln!("{:02}%", percentage);
+            let percentage = (index as f32 / total_attempts_f) * 100.0;
+            writeln!(&mut stdout, "{:02}%", percentage).expect("log progress");
         }
     }
 
-    let len = ds.len() as f64;
-    let avg = ds.into_iter().map(|d| d.as_nanos() as u64).sum::<u64>() as f64 / len;
-    let avg = Duration::from_nanos(avg as u64);
-    log.retrieval_info(avg);
+    drop(stdout);
+    drop(err);
 
-    log.print();
+    let average_retrieval_time = starttime.elapsed() / total_attempts;
+
+    log.retrieval_info(average_retrieval_time);
 }
 
 pub fn measure_logging<F, II, O>(
@@ -46,7 +44,7 @@ pub fn measure_logging<F, II, O>(
     mut log: Logger,
 ) where
     F: Fn(Receiver<(String, TableLocation)>) -> (usize, II),
-    II: InvertedIndex<O> + RandomKeys + GetSize,
+    II: InvertedIndex<O> + RandomKeys,
     O: Sized,
 {
     eprintln!("Step 1. Measure insertion time.");
@@ -55,9 +53,24 @@ pub fn measure_logging<F, II, O>(
 
     let (entry_count, ii) = algorithm(receiver);
 
-    let duration = starttime.elapsed();
+    let insertion_time = starttime.elapsed();
 
-    log.memory_info((entry_count, ii.get_size(), duration));
+    retrieval(&ii, &mut log);
+    log.memory_info((entry_count, get_size(ii), insertion_time));
+    log.print();
+}
 
-    retrieval(ii, log);
+fn get_size<T>(t: T) -> usize {
+    use jemalloc_ctl::{epoch, stats};
+    let e = epoch::mib().unwrap();
+    let allocated = stats::allocated::mib().unwrap();
+
+    let with = allocated.read().unwrap();
+
+    drop(t);
+
+    e.advance().unwrap();
+    let without = allocated.read().unwrap();
+
+    return with - without;
 }
