@@ -3,7 +3,7 @@ use crate::util::RandomKeys;
 use crate::{log::Logger, TableLocation};
 use std::io::Write;
 use std::sync::mpsc::Receiver;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 fn retrieval<T, O>(ii: &T, log: &mut Logger)
 where
@@ -43,7 +43,7 @@ pub fn measure_logging<F, II, O>(
     receiver: Receiver<(String, TableLocation)>,
     mut log: Logger,
 ) where
-    F: Fn(Receiver<(String, TableLocation)>) -> (usize, II),
+    F: Fn(Receiver<(String, TableLocation)>) -> (usize, Duration, II),
     II: InvertedIndex<O> + RandomKeys,
     O: Sized,
 {
@@ -51,12 +51,12 @@ pub fn measure_logging<F, II, O>(
 
     let starttime = Instant::now();
 
-    let (entry_count, ii) = algorithm(receiver);
+    let (entry_count, build_time, ii) = algorithm(receiver);
 
     let insertion_time = starttime.elapsed();
 
     retrieval(&ii, &mut log);
-    log.memory_info((entry_count, get_size(ii), insertion_time));
+    log.memory_info((entry_count, get_size(ii), build_time, insertion_time));
     log.print();
 }
 

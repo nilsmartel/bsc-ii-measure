@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-pub type MemData = (usize, usize, Duration);
+pub type MemData = (usize, usize, Duration, Duration);
 
 /// Handles logging and formatting of information to file
 pub struct Logger {
@@ -12,7 +12,7 @@ pub struct Logger {
 }
 
 pub fn print_header() {
-    println!("cells;bytes;build_duration_nanosec;retr_duration_avg_nanosec;algorithm;table");
+    println!("cells;bytes;build_duration_nanosec;build_duration_total_nanosec;retr_duration_avg_nanosec;algorithm;table");
 }
 
 impl Logger {
@@ -31,15 +31,16 @@ impl Logger {
         if self.header {
             print_header();
         }
-
-        let (cells, bytes, duration) = self.memdata.expect("memdata");
-        let duration = duration.as_nanos();
-        let retr_duration = self.retrieval.expect("retrieval information").as_nanos();
-
         let algorithm = &self.algorithm;
         let table = &self.table;
 
-        println!("{cells};{bytes};{duration};{retr_duration};{algorithm};{table}");
+        let (cells, bytes, duration, total_duration) = self.memdata.expect("memdata");
+        let duration = duration.as_nanos();
+        let total_duration = total_duration.as_nanos();
+
+        let retr_duration = self.retrieval.expect("retrieval information").as_nanos();
+
+        println!("{cells};{bytes};{duration};{total_duration};{retr_duration};{algorithm};{table}");
     }
 
     pub fn memory_info(&mut self, data: MemData) {
