@@ -21,9 +21,7 @@ pub fn indices_from_bintable(
     let mut bintable = BinTable::open(bintable).expect("open bintable");
 
     if let Some(factor) = factor {
-        spawn(move || {
-            bintable.filter(|_| random::<f32>() > factor).read(sender)
-        });
+        spawn(move || bintable.filter(|_| random::<f32>() > factor).read(sender));
     } else {
         spawn(move || bintable.read(sender));
     }

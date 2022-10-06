@@ -26,7 +26,7 @@ pub struct Config {
     /// Wether or not to include header in output csv
     #[structopt(short, long)]
     pub header: bool,
-    
+
     /// if true, print only the csv header and exit
     #[structopt(long)]
     pub header_only: bool,
