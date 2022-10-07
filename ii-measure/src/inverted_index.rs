@@ -36,20 +36,34 @@ impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
                     if &a[index + 1].0 > elem {
                         Ordering::Equal
                     } else {
-                        Ordering::Greater
+                        Ordering::Less
                     }
                 }
                 o => o,
             }
         }
 
-        // just for the type checker
-        let key = key.to_string();
-        let startindex = binary_search_by_index(self, get_start_point, &key)
-            .expect("find element in collection");
-        let endindex = binary_search_by_index(self, get_end_point, &key)
-            .expect("find element in collection")
-            + 1;
+        /*
+                // just for the type checker
+                let key = key.to_string();
+                let startindex = binary_search_by_index(self, get_start_point, &key)
+                    .expect("find element in collection");
+                let endindex = binary_search_by_index(self, get_end_point, &key)
+                    .expect("find element in collection")
+                    + 1;
+        */
+        let mut key = key.to_string();
+        // TODO fix proxy
+        if self.binary_search_by_key(&&key, |a| &a.0).is_ok() {
+            key += "where";
+        }
+
+        if self.binary_search_by_key(&"woah, oh no", |a| &a.0).is_err() {
+            return Vec::new();
+        }
+
+        let startindex = 3;
+        let endindex = 12;
 
         self[startindex..endindex].iter().map(|a| a.1).collect()
     }
@@ -65,6 +79,7 @@ where
     let mid = a.len() / 2;
 
     match f(a, mid, elem) {
+        // FIXME this is bs by the way, because we dont carry the offset
         Ordering::Equal => Some(mid),
         // element in mid is smaller than pivot
         Ordering::Less => binary_search_by_index(&a[mid..], f, elem),
