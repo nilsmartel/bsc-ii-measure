@@ -1,5 +1,5 @@
 use crate::{algorithm::Compressed4Wise, table_lake::TableLocation};
-use std::collections::*;
+use std::{cmp::Ordering, collections::*};
 
 /// Interface that all implementations of the inverted index are desirde to
 /// conform to.
@@ -9,18 +9,67 @@ pub trait InvertedIndex<O> {
 
 impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
     fn get(&self, key: &str) -> Vec<TableLocation> {
-        fn get_key(v: &(String, TableLocation)) -> &str {
-            &v.0
-        }
+        fn get_start_point(a: &[(String, TableLocation)], index: usize, elem: &String) -> Ordering {
+            if a.len() == 1 {
+                return a[0].0.cmp(elem);
+            }
 
-        match self.binary_search_by_key(&key, get_key) {
-            Err(_) => Vec::new(),
-            Ok(index) => {
-                let elem = self[index].1;
-                // TODO: come up with the right algorithm to return all elements
-                vec![elem]
+            match a[index].0.cmp(elem) {
+                Ordering::Equal => {
+                    if &a[index - 1].0 < elem {
+                        Ordering::Equal
+                    } else {
+                        Ordering::Greater
+                    }
+                }
+                o => o,
             }
         }
+
+        fn get_end_point(a: &[(String, TableLocation)], index: usize, elem: &String) -> Ordering {
+            if a.len() == index + 1 {
+                return a[index].0.cmp(elem);
+            }
+
+            match a[index].0.cmp(elem) {
+                Ordering::Equal => {
+                    if &a[index + 1].0 > elem {
+                        Ordering::Equal
+                    } else {
+                        Ordering::Greater
+                    }
+                }
+                o => o,
+            }
+        }
+
+        // just for the type checker
+        let key = key.to_string();
+        let startindex = binary_search_by_index(self, get_start_point, &key)
+            .expect("find element in collection");
+        let endindex = binary_search_by_index(self, get_end_point, &key)
+            .expect("find element in collection")
+            + 1;
+
+        self[startindex..endindex].iter().map(|a| a.1).collect()
+    }
+}
+
+fn binary_search_by_index<T, T2, F>(a: &[T], f: F, elem: &T2) -> Option<usize>
+where
+    F: Fn(&[T], usize, &T2) -> Ordering,
+{
+    if a.is_empty() {
+        return None;
+    }
+    let mid = a.len() / 2;
+
+    match f(a, mid, elem) {
+        Ordering::Equal => Some(mid),
+        // element in mid is smaller than pivot
+        Ordering::Less => binary_search_by_index(&a[mid..], f, elem),
+        // element in mid is greater than pivot
+        Ordering::Greater => binary_search_by_index(&a[..mid], f, elem),
     }
 }
 
