@@ -1,6 +1,7 @@
 use crate::{table_lake::TableLocation, Entry, TableLakeReader};
 use bintable::TableRow;
 use fallible_iterator::FallibleIterator;
+use rand::*;
 use std::sync::mpsc::Sender;
 
 pub struct DatabaseCollection {
@@ -92,7 +93,14 @@ impl TableLakeReader for DatabaseCollection {
             .expect("query database");
 
         let mut i = 0;
+        let mut rng = rand::thread_rng();
         while let Some(row) = rows.next().expect("read next row") {
+            if let Some(f) = self.factor {
+                if rng.gen::<f32>() < f {
+                    continue;
+                }
+            }
+
             let e = entry(&row);
             ch.send(e).expect("send index to channel");
             i += 1;
