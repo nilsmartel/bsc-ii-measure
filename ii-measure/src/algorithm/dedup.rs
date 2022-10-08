@@ -1,6 +1,6 @@
-use std::sync::mpsc::Receiver;
 use crate::table_lake::*;
-use std::time::{ Duration, Instant };
+use std::sync::mpsc::Receiver;
+use std::time::{Duration, Instant};
 
 use std::collections::{BTreeMap, HashMap};
 

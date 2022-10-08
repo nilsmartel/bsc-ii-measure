@@ -1,10 +1,8 @@
-
-use std::sync::mpsc::Receiver;
 use crate::table_lake::*;
-use std::time::{ Duration, Instant };
-use std::collections::HashMap;
 use int_compression_4_wise::compress;
-
+use std::collections::HashMap;
+use std::sync::mpsc::Receiver;
+use std::time::{Duration, Instant};
 
 // we're storing the overshooting length,
 // as the implementation does not consider that elements may not come in blocks of precisely 4.
@@ -13,7 +11,6 @@ pub type Compressed4Wise = HashMap<String, (Vec<u8>, u8)>;
 pub(crate) fn ns_4_wise(
     receiver: Receiver<(String, TableLocation)>,
 ) -> (usize, Duration, Compressed4Wise) {
-    
     let mut ii: Compressed4Wise = HashMap::new();
     let mut entry_count = 0;
 

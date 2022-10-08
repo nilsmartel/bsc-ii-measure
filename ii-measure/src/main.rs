@@ -47,7 +47,7 @@ fn main() {
     if let Some(f) = factor {
         let percentage = f * 100.;
         eprintln!(
-            "benchmarking {} on {:.3}% {}",
+            "benchmarking {} on {}% {}",
             algorithm.str(),
             percentage,
             table

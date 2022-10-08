@@ -24,10 +24,26 @@ pub trait RandomKeys {
 
 impl RandomKeys for Vec<String> {
     fn random_keys_potentially_ordered(&self) -> Vec<String> {
+        // NOTE
+        // It's super important to sample unique values,
+        // otherwise the population of keys will be heavily biased
+        // towards values that occur often
+        let mut v = Vec::new();
+        let mut s = "";
+        for elem in self {
+            let si = elem;
+            if s == si {
+                continue;
+            }
+
+            s = si;
+            v.push(si);
+        }
+
         (0..DESIRED_KEY_COUNT)
             .map(|_| {
-                let index = random::<f64>() * self.len() as f64;
-                self[index as usize].clone()
+                let index = random::<f64>() * v.len() as f64;
+                v[index as usize].to_string()
             })
             .collect()
     }
@@ -35,10 +51,26 @@ impl RandomKeys for Vec<String> {
 
 impl<T> RandomKeys for Vec<(String, T)> {
     fn random_keys_potentially_ordered(&self) -> Vec<String> {
+        // NOTE
+        // It's super important to sample unique values,
+        // otherwise the population of keys will be heavily biased
+        // towards values that occur often
+        let mut v = Vec::new();
+        let mut s = "";
+        for elem in self {
+            let si = &elem.0;
+            if s == si {
+                continue;
+            }
+
+            s = si;
+            v.push(si);
+        }
+
         (0..DESIRED_KEY_COUNT)
             .map(|_| {
-                let index = random::<f64>() * self.len() as f64;
-                self[index as usize].0.clone()
+                let index = random::<f64>() * v.len() as f64;
+                v[index as usize].to_string()
             })
             .collect()
     }
