@@ -80,9 +80,30 @@ where
         // FIXME this is bs by the way, because we dont carry the offset
         Ordering::Equal => Some(mid),
         // element in mid is smaller than pivot
-        Ordering::Less => binary_search_by_index(&a[mid..], f, elem),
+        // desired element is on the right side of the middle point
+        Ordering::Less => Some(mid + binary_search_by_index(&a[mid..], f, elem)?),
         // element in mid is greater than pivot
+        // we search the left side for the element in question then.
         Ordering::Greater => binary_search_by_index(&a[..mid], f, elem),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn binsearch_by_index() {
+        let collection: Vec<i32> = (0..300).collect();
+
+        fn f(a: &[i32], index: usize, elem: &i32) -> Ordering {
+            a[index].cmp(elem)
+        }
+
+        for i in [0, 4, 7, 2, 4, 6, 10, 299, 200] {
+            let index = binary_search_by_index(&collection, f, &i);
+            assert_eq!(index, Some(i as usize), "{i} is inside the collection at position {i}");
+        }
     }
 }
 
