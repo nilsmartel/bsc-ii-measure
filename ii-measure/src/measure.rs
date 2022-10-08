@@ -13,10 +13,6 @@ where
     eprintln!("Step 2. Measure retrieval time.");
 
     let keys = ii.random_keys();
-    {
-        let zeros = keys.iter().filter(|k| k == &"0").count();
-        eprintln!("the key '0' was present {zeros} times");
-    }
 
     let total_attempts = keys.len() as u32;
     let total_attempts_f = total_attempts as f32;
