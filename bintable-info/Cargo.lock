@@ -68,7 +68,6 @@ name = "bintable-info"
 version = "0.1.0"
 dependencies = [
  "bintable",
- "get-size",
  "structopt",
 ]
 

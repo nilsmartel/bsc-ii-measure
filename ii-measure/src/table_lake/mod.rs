@@ -6,7 +6,7 @@ pub use database::*;
 
 use std::sync::mpsc::Sender;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct TableLocation {
     pub tableid: u32,
     pub colid: u32,
