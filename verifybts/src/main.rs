@@ -21,12 +21,16 @@ fn main() {
     let bt = indices_from_bintable(&bintable, None);
     let t = indices(&table, None);
 
+    let mut i = 0;
     loop {
         let bt = bt.recv().expect("read entry");
         let t = t.recv().expect("read entry");
 
         if bt.0 != t.0 {
-            eprintln!("differing {} {}", bt.0, t.0);
+            eprintln!("{i} differing {} {}", bt.0, t.0);
         }
+        eprintln!("{i}");
+        i += 1;
     }
 }
+
