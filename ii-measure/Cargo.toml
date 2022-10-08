@@ -1,6 +1,6 @@
 [package]
 name = "ii-measure"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -19,5 +19,5 @@ fast-smaz = "0.1.0"    # Pure Rust SMAZ compression implementation
 varint-compression = "0.1.0"    # variable length integer compression
 
 bintable = {path = "../bintable" }
-jemallocator = "0.5.0"                       # A Rust allocator backed by jemalloc 
-jemalloc-ctl = "0.5.0"         # A safe wrapper over jemalloc's control and introspection APIs 
+jemallocator = "0.5.0"                       # A Rust allocator backed by jemalloc
+jemalloc-ctl = "0.5.0"         # A safe wrapper over jemalloc's control and introspection APIs
