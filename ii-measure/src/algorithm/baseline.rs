@@ -13,5 +13,12 @@ pub fn baseline(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration
         build_time += starttime.elapsed();
     }
 
+    // sadly postgres strings are not ordered the  same as rust strings.
+    // we need to order them manually.
+
+    eprintln!("ordering strings now");
+    ii.sort_by_key(|a| a.0.to_string());
+    eprintln!("ordering complete");
+
     (ii.len(), build_time, ii)
 }

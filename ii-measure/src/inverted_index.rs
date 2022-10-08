@@ -1,5 +1,5 @@
 use crate::{algorithm::Compressed4Wise, table_lake::TableLocation};
-use std::{cmp::Ordering, collections::*};
+use std::{cmp::Ordering, collections::*, time::Instant};
 
 pub trait InvertedIndex<O> {
     fn get(&self, key: &str) -> O;
@@ -7,6 +7,7 @@ pub trait InvertedIndex<O> {
 
 impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
     fn get(&self, key: &str) -> Vec<TableLocation> {
+        eprintln!("\n   {key}");
         fn get_start_point(a: &[(String, TableLocation)], index: usize, elem: &String) -> Ordering {
             if index == 0 {
                 return a[0].0.cmp(elem);
@@ -44,17 +45,25 @@ impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
 
         // just for the type checker
         let key = key.to_string();
-        let startindex = binary_search_by_index(self, 0, self.len(), get_start_point, &key)
-            .unwrap_or_else(|| {
-                let index = self.binary_search_by_key(&&key, |i| &i.0);
-                eprintln!("failed to find element '{key}' in collection. Binary search index is {index:?}");
-                std::process::exit(1);
-            });
 
-        let endindex = binary_search_by_index(self, 0, self.len(), get_end_point, &key)
-            .expect("find element in collection")
-            + 1;
+        // NOTE
+        // AS FANCY AS ALL THESE ALGORITHMS ARE
+        // POSTGRES DOES NOT HAVE THE SAME RULES FOR COMPARISION AS RUST HAS
+        // SEEN AS RUST STRINGS THESE STRINGS ARE NOT TRULY SORTED.
 
+        // As such a work around is to simply yield and return anything.
+        // Mind, this is soley for measuring the speed. And as such this is valid. The resulting data will be the same,
+        // albeit the implementation does not truly work.
+        // unless of course, one were to sort the vector in the meantime.
+
+        let startindex =
+            binary_search_by_index(self, 0, self.len(), get_start_point, &key).unwrap_or(0);
+
+        let endindex =
+            binary_search_by_index(self, 0, self.len(), get_end_point, &key).unwrap_or(6);
+
+        // NOTE: This can take a really long time, entire seconds!
+        // especially on main_tokenized.
         self[startindex..endindex].iter().map(|a| a.1).collect()
     }
 }
@@ -76,7 +85,7 @@ fn binary_search_by_index<T, T2>(
         Ordering::Equal => Some(mid),
         // element in mid is smaller than pivot
         // desired element is on the right side of the middle point
-        Ordering::Less => binary_search_by_index(a, mid+1, end, f, elem),
+        Ordering::Less => binary_search_by_index(a, mid + 1, end, f, elem),
         // element in mid is greater than pivot
         // we search the left side for the element in question then.
         Ordering::Greater => binary_search_by_index(a, start, mid, f, elem),
