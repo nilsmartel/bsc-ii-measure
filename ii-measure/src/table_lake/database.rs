@@ -1,6 +1,5 @@
 use crate::{table_lake::TableLocation, Entry, TableLakeReader};
 use bintable::TableRow;
-use fallible_iterator::FallibleIterator;
 use rand::*;
 use std::sync::mpsc::Sender;
 
@@ -55,10 +54,7 @@ impl TableLakeReader for DatabaseCollection {
                 self.table
             );
 
-            eprintln!("execute query");
             let rows = self.client.query(&query, &[]).expect("query database");
-
-            eprintln!("retrieved {} rows", rows.len());
 
             if rows.is_empty() {
                 return;
