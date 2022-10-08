@@ -45,7 +45,12 @@ impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
         // just for the type checker
         let key = key.to_string();
         let startindex = binary_search_by_index(self, 0, self.len(), get_start_point, &key)
-            .expect("find element in collection");
+            .unwrap_or_else(|| {
+                let index = self.binary_search_by_key(&&key, |i| &i.0);
+                eprintln!("failed to find element '{key}' in collection. Binary search index is {index:?}");
+                std::process::exit(1);
+            });
+
         let endindex = binary_search_by_index(self, 0, self.len(), get_end_point, &key)
             .expect("find element in collection")
             + 1;
@@ -71,7 +76,7 @@ fn binary_search_by_index<T, T2>(
         Ordering::Equal => Some(mid),
         // element in mid is smaller than pivot
         // desired element is on the right side of the middle point
-        Ordering::Less => binary_search_by_index(a, mid, end, f, elem),
+        Ordering::Less => binary_search_by_index(a, mid+1, end, f, elem),
         // element in mid is greater than pivot
         // we search the left side for the element in question then.
         Ordering::Greater => binary_search_by_index(a, start, mid, f, elem),
