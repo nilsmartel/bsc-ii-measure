@@ -7,7 +7,6 @@ pub trait InvertedIndex<O> {
 
 impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
     fn get(&self, key: &str) -> Vec<TableLocation> {
-        eprintln!("\n   {key}");
         fn get_start_point(a: &[(String, TableLocation)], index: usize, elem: &String) -> Ordering {
             if index == 0 {
                 return a[0].0.cmp(elem);
