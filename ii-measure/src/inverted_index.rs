@@ -1,5 +1,5 @@
 use crate::{algorithm::Compressed4Wise, table_lake::TableLocation};
-use std::{cmp::Ordering, collections::*, time::Instant};
+use std::{cmp::Ordering, collections::*};
 
 pub trait InvertedIndex<O> {
     fn get(&self, key: &str) -> O;
