@@ -72,5 +72,5 @@ fn get_size<T>(t: T) -> usize {
     e.advance().unwrap();
     let without = allocated.read().unwrap();
 
-    return with - without;
+    with - without
 }
