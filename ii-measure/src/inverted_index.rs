@@ -1,8 +1,6 @@
 use crate::{algorithm::Compressed4Wise, table_lake::TableLocation};
 use std::{cmp::Ordering, collections::*};
 
-/// Interface that all implementations of the inverted index are desirde to
-/// conform to.
 pub trait InvertedIndex<O> {
     fn get(&self, key: &str) -> O;
 }
