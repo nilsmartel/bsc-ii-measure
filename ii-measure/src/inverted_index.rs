@@ -61,8 +61,11 @@ impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
         let endindex =
             binary_search_by_index(self, 0, self.len(), get_end_point, &key).unwrap_or(6);
 
+        let total = endindex - startindex;
+        let percentage = (total as f32 / self.len() as f32) * 100.0;
         // NOTE: This can take a really long time, entire seconds!
         // especially on main_tokenized.
+        eprintln!("found {} items, {}% of collection", total, percentage);
         self[startindex..endindex].iter().map(|a| a.1).collect()
     }
 }

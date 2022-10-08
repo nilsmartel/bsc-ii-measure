@@ -1,4 +1,3 @@
-use anyhow::Result;
 use fast_smaz::Smaz;
 use postgres::Row;
 use varint_compression::*;
@@ -38,6 +37,12 @@ impl From<&Row> for TableRow {
     }
 }
 
+#[derive(Debug, Copy, Clone)]
+pub enum ReadError {
+    InitialNumber,
+    Needed(usize),
+}
+
 impl TableRow {
     pub fn from_row(row: &Row) -> Self {
         // Note: tokenized is nullable. Coerce to emptystring
@@ -54,24 +59,23 @@ impl TableRow {
         }
     }
 
-    pub fn from_bin(data: &[u8]) -> Result<(Self, &[u8])> {
-        let data = match decompress(data) {
+    pub fn from_bin(data: &[u8]) -> Result<(Self, &[u8]), ReadError> {
+        let (need_length, rest) = match decompress(data) {
             Ok(d) => d,
             Err(_) => {
-                return Err(anyhow::Error::msg("not enough input"));
+                return Err(ReadError::InitialNumber);
             }
         };
 
-        let (total_length, rest) = data;
-        let total_length = total_length as usize;
+        let need_length = need_length as usize;
 
-        if rest.len() < total_length {
-            return Err(anyhow::Error::msg("need more data"));
+        if rest.len() < need_length {
+            return Err(ReadError::Needed(need_length - rest.len()));
         }
 
         let v = TableRow::from_bin_raw(rest);
 
-        Ok((v, &rest[total_length..]))
+        Ok((v, &rest[need_length..]))
     }
 
     pub fn from_bin_raw(data: &[u8]) -> Self {
