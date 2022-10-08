@@ -117,17 +117,31 @@ mod tests {
             })
             .collect::<Vec<_>>();
 
-        let result = ii.get("c");
+        let cases = [
+            ("a", 0..=0),
+            ("c", 3..=5),
+            ("b", 1..=2),
+            ("d", 6..=9),
+            ("f", 10..=14),
+            ("w", 64..=64),
+            ("v", 63..=63),
+            ("u", 58..=62),
+            ("t", 57..=57),
+        ];
 
-        let expected = (3..=5)
-            .map(|tableid| TableLocation {
-                tableid,
-                rowid: 0,
-                colid: 0,
-            })
-            .collect::<Vec<_>>();
+        for (key, range) in cases {
+            let result = ii.get(key);
 
-        assert_eq!(result, expected);
+            let expected = range
+                .map(|tableid| TableLocation {
+                    tableid,
+                    rowid: 0,
+                    colid: 0,
+                })
+                .collect::<Vec<_>>();
+
+            assert_eq!(result, expected, "key {key} wasn't properly indexed");
+        }
     }
 }
 
