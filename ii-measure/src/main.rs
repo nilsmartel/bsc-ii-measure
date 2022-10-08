@@ -44,9 +44,20 @@ fn main() {
         factor = None;
     }
 
+    if let Some(f) = factor {
+        let percentage = f * 100.;
+        eprintln!(
+            "benchmarking {} on {:.3}% {}",
+            algorithm.str(),
+            percentage,
+            table
+        );
+    } else {
+        eprintln!("benchmarking {} on {}", algorithm.str(), table);
+    }
+
     // init information logger
     let log = Logger::new(algorithm.str(), basename(&table), header);
-    eprintln!("benchmarking {} on {}", algorithm.str(), table);
 
     let receiver = if bintable {
         indices_from_bintable(&table, factor)
