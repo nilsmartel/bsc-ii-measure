@@ -39,75 +39,48 @@ fn entry(row: &postgres::Row) -> Entry {
     )
 }
 
-// impl TableLakeReader for DatabaseCollection {
-//     fn read(&mut self, ch: Sender<Entry>) {
-//         let query = format!(
-//             "
-//                 SELECT tokenized, tableid, colid, rowid FROM {}
-//                 ORDER BY tokenized
-//             ",
-//             self.table,
-//         );
-
-//         eprintln!("execute query");
-//         let rows = self.client.query(&query, &[]).expect("query database");
-
-//         eprintln!("retrieved {} rows", rows.len());
-
-//         if let Some(f) = self.factor {
-//             let mut rng = rand::thread_rng();
-//             for row in rows {
-//                 if rng.gen::<f32>() < f {
-//                     continue;
-//                 }
-//                 let e = entry(&row);
-//                 ch.send(e).expect("send index to channel");
-//             }
-//         } else {
-//             for row in rows {
-//                 let e = entry(&row);
-//                 ch.send(e).expect("send index to channel");
-//             }
-//         }
-//     }
-// }
-
-// slow implementation, that works for big loads.
-// but we have 1/2T RAM. Lets put it to use.
-
 impl TableLakeReader for DatabaseCollection {
     fn read(&mut self, ch: Sender<Entry>) {
-        let query = format!(
-            "
+        let limit = 10_000;
+        let mut offset = 0;
+        loop {
+            let query = format!(
+                "
                 SELECT tokenized, tableid, colid, rowid
                 FROM {}
                 ORDER BY tokenized
+                LIMIT {limit}
+                OFFSET {offset}
             ",
-            self.table
-        );
+                self.table
+            );
 
-        let params: [bool; 0] = [];
-        let mut rows = self
-            .client
-            .query_raw(&query, params)
-            .expect("query database");
+            eprintln!("execute query");
+            let rows = self.client.query(&query, &[]).expect("query database");
 
-        let mut i = 0;
-        let mut rng = rand::thread_rng();
-        while let Some(row) = rows.next().expect("read next row") {
+            eprintln!("retrieved {} rows", rows.len());
+
+            if rows.is_empty() {
+                return;
+            }
+
             if let Some(f) = self.factor {
-                if rng.gen::<f32>() < f {
-                    continue;
+                let mut rng = rand::thread_rng();
+                for row in rows {
+                    if rng.gen::<f32>() < f {
+                        continue;
+                    }
+                    let e = entry(&row);
+                    ch.send(e).expect("send index to channel");
+                }
+            } else {
+                for row in rows {
+                    let e = entry(&row);
+                    ch.send(e).expect("send index to channel");
                 }
             }
 
-            let e = entry(&row);
-            ch.send(e).expect("send index to channel");
-            i += 1;
-
-            if i & 0x3ff == 0 {
-                eprint!(".");
-            }
+            offset += limit;
         }
     }
 }
