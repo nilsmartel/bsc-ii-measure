@@ -2,22 +2,21 @@ use crate::tablerow::ReadError;
 
 use super::tablerow::TableRow;
 use std::fs::File;
-use std::io::{prelude::*, BufReader};
+use std::io::Read;
 
 pub struct BinTable {
-    reader: BufReader<File>,
+    reader: File,
     buffer: Vec<u8>,
     offset: usize,
 }
 
 impl BinTable {
     pub fn open(path: &str) -> std::io::Result<BinTable> {
-        let file = File::open(path)?;
-        let reader = BufReader::new(file);
+        let reader = File::open(path)?;
 
         Ok(BinTable {
             reader,
-            buffer: Vec::with_capacity(1024),
+            buffer: Vec::with_capacity(1024 * 8),
             offset: 0,
         })
     }
