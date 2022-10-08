@@ -1,6 +1,6 @@
 use crate::{table_lake::TableLocation, Entry, TableLakeReader};
 use bintable::TableRow;
-use rand::Rng;
+use fallible_iterator::FallibleIterator;
 use std::sync::mpsc::Sender;
 
 pub struct DatabaseCollection {
@@ -38,70 +38,68 @@ fn entry(row: &postgres::Row) -> Entry {
     )
 }
 
-impl TableLakeReader for DatabaseCollection {
-    fn read(&mut self, ch: Sender<Entry>) {
-        let query = format!(
-            "
-                SELECT tokenized, tableid, colid, rowid FROM {}
-                ORDER BY tokenized
-            ",
-            self.table,
-        );
-
-        eprintln!("execute query");
-        let rows = self.client.query(&query, &[]).expect("query database");
-
-        eprintln!("retrieved {} rows", rows.len());
-
-        if let Some(f) = self.factor {
-            let mut rng = rand::thread_rng();
-            for row in rows {
-                if rng.gen::<f32>() < f {
-                    continue;
-                }
-                let e = entry(&row);
-                ch.send(e).expect("send index to channel");
-            }
-        } else {
-            for row in rows {
-                let e = entry(&row);
-                ch.send(e).expect("send index to channel");
-            }
-        }
-    }
-}
-
-// slow implementation, that works for big loads.
-// but we have 1/2T RAM. Lets put it to use.
-
 // impl TableLakeReader for DatabaseCollection {
 //     fn read(&mut self, ch: Sender<Entry>) {
 //         let query = format!(
 //             "
-//                 SELECT * FROM {}
-//                 LIMIT {}
+//                 SELECT tokenized, tableid, colid, rowid FROM {}
+//                 ORDER BY tokenized
 //             ",
-//             self.table, self.limit
+//             self.table,
 //         );
 
-//         let params: [bool; 0] = [];
-//         let mut rows = self
-//             .client
-//             .query_raw(&query, params)
-//             .expect("query database");
+//         eprintln!("execute query");
+//         let rows = self.client.query(&query, &[]).expect("query database");
 
-//         while let Some(row) = rows.next().expect("read next row") {
-//             // both saved as `integer`
-//             let table_id: i32 = row.get("tableid");
-//             let column_id: i32 = row.get("colid");
+//         eprintln!("retrieved {} rows", rows.len());
 
-//             // saved as bigint
-//             let row_id: i64 = row.get("rowid");
-
-//             let tokenized = row.get("tokenized");
-//             let index = TableIndex::new(table_id as u32, column_id as u32, row_id as u64);
-
-//             ch.send((tokenized, index)).expect("send index to channel");
+//         if let Some(f) = self.factor {
+//             let mut rng = rand::thread_rng();
+//             for row in rows {
+//                 if rng.gen::<f32>() < f {
+//                     continue;
+//                 }
+//                 let e = entry(&row);
+//                 ch.send(e).expect("send index to channel");
+//             }
+//         } else {
+//             for row in rows {
+//                 let e = entry(&row);
+//                 ch.send(e).expect("send index to channel");
+//             }
 //         }
 //     }
 // }
+
+// slow implementation, that works for big loads.
+// but we have 1/2T RAM. Lets put it to use.
+
+impl TableLakeReader for DatabaseCollection {
+    fn read(&mut self, ch: Sender<Entry>) {
+        let query = format!(
+            "
+                SELECT tokenized, tableid, colid, rowid
+                FROM {}
+                ORDER BY tokenized
+            ",
+            self.table
+        );
+
+        let params: [bool; 0] = [];
+        let mut rows = self
+            .client
+            .query_raw(&query, params)
+            .expect("query database");
+
+        let mut i = 0;
+        while let Some(row) = rows.next().expect("read next row") {
+            let e = entry(&row);
+            ch.send(e).expect("send index to channel");
+            i += 1;
+
+            if i & 0x3ff == 0 {
+                eprint!(".");
+            }
+        }
+    }
+}
