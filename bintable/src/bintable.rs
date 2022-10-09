@@ -59,16 +59,8 @@ impl Iterator for BinTable {
                 // now fill the buffer
             }
             Err(ReadError::Needed(n)) => {
-                let tmp = fresh_data.to_vec();
-                self.offset = 0;
-                self.buffer.clear();
-                self.buffer.extend(tmp);
-
-                // we need to seek more data.
-                // at times this even means extending the read buffer.
-                while self.buffer.len() + n > self.buffer.capacity() {
+                while (self.buffer.capacity() - self.offset) < n {
                     self.buffer.reserve(1024);
-                    eprint!("extending buffer to {}", self.buffer.capacity());
                 }
             }
         }
