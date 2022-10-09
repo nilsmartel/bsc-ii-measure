@@ -31,7 +31,6 @@ fn main() {
     {
         let mut last_value = String::new();
         for row in bintable {
-            println!("{row:?}");
             total_length_tokenized += row.tokenized.as_bytes().len() as u64;
             total_length_tableid += row.tableid as u64;
             total_length_colid += row.colid as u64;
