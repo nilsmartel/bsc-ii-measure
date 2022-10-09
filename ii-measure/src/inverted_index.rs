@@ -17,8 +17,6 @@ impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
                     if &a[index - 1].0 < elem {
                         Ordering::Equal
                     } else {
-                        // which one?
-                        Ordering::Greater
                     }
                 }
                 o => o,
@@ -42,6 +40,8 @@ impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
             }
         }
 
+        eprintln!("=> '{key}'");
+
         // just for the type checker
         let key = key.to_string();
 
@@ -61,12 +61,7 @@ impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
         let endindex =
             binary_search_by_index(self, 0, self.len(), get_end_point, &key).unwrap_or(6);
 
-        eprintln!(
-            "=> '{key}'\n[{}]: {}..{}",
-            endindex - startindex,
-            startindex,
-            endindex
-        );
+        eprintln!("[{}]: {}..{}", endindex - startindex, startindex, endindex);
 
         let mut v = Vec::with_capacity(endindex - startindex);
         v.extend(self[startindex..endindex].iter().map(|a| a.1));

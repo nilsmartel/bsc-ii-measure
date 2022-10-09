@@ -14,5 +14,7 @@ pub fn baseline(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration
         build_time += starttime.elapsed();
     }
 
+    eprintln!("entries: {}", ii.len());
+
     (ii.len(), build_time, ii)
 }
