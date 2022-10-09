@@ -59,9 +59,12 @@ impl Iterator for BinTable {
                 // now fill the buffer
             }
             Err(ReadError::Needed(n)) => {
-                while self.buffer.capacity() < n + self.offset {
+                eprint!("buffer to short ");
+                while (self.buffer.capacity() - self.offset) < n {
                     self.buffer.reserve(1024);
+                    eprint!("... ");
                 }
+                eprintln!();
             }
         }
 
