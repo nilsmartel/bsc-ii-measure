@@ -12,6 +12,10 @@ pub fn baseline(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration
         ii.push(data);
 
         build_time += starttime.elapsed();
+
+        if ii.len() & 0x3ff == 0 {
+            eprint!(".")
+        }
     }
 
     (ii.len(), build_time, ii)
