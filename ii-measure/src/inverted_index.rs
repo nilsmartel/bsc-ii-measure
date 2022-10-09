@@ -17,6 +17,7 @@ impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
                     if &a[index - 1].0 < elem {
                         Ordering::Equal
                     } else {
+                        Ordering::Greater
                     }
                 }
                 o => o,
