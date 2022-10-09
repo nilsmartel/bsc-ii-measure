@@ -15,6 +15,9 @@ pub fn baseline(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration
     }
 
     eprintln!("entries: {}", ii.len());
+    eprint!("sorting");
+    ii.sort_unstable();
+    eprint!(" complete");
 
     (ii.len(), build_time, ii)
 }
