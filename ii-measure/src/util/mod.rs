@@ -42,9 +42,9 @@ pub fn indices_postgresql(table: &str, factor: Option<f32>) -> Receiver<(String,
 pub fn indices_sqlx(table: &str, factor: Option<f32>) -> Receiver<(String, TableLocation)> {
     let (sender, receiver) = sync_channel(CHANNEL_BOUND);
 
-    let pool = PgPoolOptions::new()
-        .max_connections(2)
-        .connect(&db::client_config());
+    let cfg = db::client_config();
+
+    let pool = PgPoolOptions::new().max_connections(2).connect(&cfg);
 
     let pool = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
