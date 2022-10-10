@@ -33,11 +33,12 @@ impl TableLakeReader for SqlxCollection {
             self.table
         );
 
-        let query = sqlx::query_as::<_, (String, i32, i32, i32)>(&query);
-        let mut rows = query.fetch(&self.pool);
         let mut rng = thread_rng();
 
         let coroutine = async {
+            let query = sqlx::query_as::<_, (String, i32, i32, i32)>(&query);
+            let mut rows = query.fetch(&self.pool);
+
             eprintln!("start reading");
             while let Some(row) = rows.try_next().await.expect("read row from sqlx") {
                 eprint!(".");
