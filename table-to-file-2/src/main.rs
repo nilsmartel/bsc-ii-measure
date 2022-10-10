@@ -37,7 +37,7 @@ async fn main() -> Result<(), sqlx::Error> {
         eprintln!("reading rows after size {offset}");
 
         let query = format!(
-            "SELECT tokenized tableid colid rowid
+            "SELECT tokenized, tableid, colid, rowid
                 FROM {corpus}
                 ORDER BY tokenized
                 OFFSET {offset}
