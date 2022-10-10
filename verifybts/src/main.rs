@@ -1,4 +1,5 @@
 mod util;
+
 use util::*;
 
 mod table_lake;
@@ -20,6 +21,8 @@ fn main() {
 
     let bt = indices_from_bintable(&bintable, None);
     let t = indices(&table, None);
+
+    eprintln!("sampling data now...");
 
     let mut i = 0;
     loop {
