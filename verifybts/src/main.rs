@@ -23,13 +23,18 @@ fn main() {
 
     let mut i = 0;
     loop {
-        let bt = bt.recv().expect("read entry");
-        let t = t.recv().expect("read entry");
+        let t = t.recv().expect("table empty");
+        let bt = bt
+            .recv()
+            .expect("bintable is empty, while table still yields");
 
         if bt != t {
             eprintln!("{i} differing {} {}", bt.0, t.0);
         }
-        eprintln!("{i}");
+
+        if i & 0x7fff == 0 {
+            eprintln!("{i}");
+        }
         i += 1;
     }
 }
