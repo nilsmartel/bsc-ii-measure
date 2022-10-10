@@ -1,5 +1,6 @@
 use anyhow::Result;
 use postgres::{Client, NoTls};
+use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 /// returns (User, Password, Database)
 fn get_credentials() -> Result<[String; 3]> {
@@ -33,4 +34,18 @@ pub fn postgresql_client() -> Client {
             std::process::exit(1)
         }
     }
+}
+
+pub fn sqlx_pool() -> Pool<Postgres> {
+    let cfg = client_config();
+
+    let pool = PgPoolOptions::new().max_connections(2).connect(&cfg);
+
+    let pool = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .unwrap()
+        .block_on(pool);
+
+    pool.expect("set up sqlx postgres pool")
 }

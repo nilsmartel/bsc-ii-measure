@@ -7,7 +7,7 @@ use rand::random;
 pub use random_keys::RandomKeys;
 use sqlx::postgres::PgPoolOptions;
 
-use crate::db;
+use crate::db::{self, sqlx_pool};
 use crate::table_lake::*;
 use bintable::BinTable;
 
@@ -42,18 +42,7 @@ pub fn indices_postgresql(table: &str, factor: Option<f32>) -> Receiver<(String,
 pub fn indices_sqlx(table: &str, factor: Option<f32>) -> Receiver<(String, TableLocation)> {
     let (sender, receiver) = sync_channel(CHANNEL_BOUND);
 
-    let cfg = db::client_config();
-
-    let pool = PgPoolOptions::new().max_connections(2).connect(&cfg);
-
-    let pool = tokio::runtime::Builder::new_multi_thread()
-        .enable_all()
-        .build()
-        .unwrap()
-        .block_on(pool);
-
-    let pool = pool.expect("set up sqlx postgres pool");
-
+    let pool = sqlx_pool();
     let mut database = SqlxCollection::new(pool, table, factor);
 
     spawn(move || database.read(sender));
