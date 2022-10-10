@@ -32,7 +32,7 @@ fn main() {
             eprintln!("{i} differing {} {}", bt.0, t.0);
         }
 
-        if i & 0x7fff == 0 {
+        if i & 0xff == 0 {
             eprintln!("{i}");
         }
         i += 1;
