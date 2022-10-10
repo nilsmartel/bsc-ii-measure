@@ -1,6 +1,6 @@
 use std::thread::spawn;
 
-use std::sync::mpsc::channel;
+use std::sync::mpsc::sync_channel;
 
 use std::sync::mpsc::Receiver;
 
@@ -14,7 +14,7 @@ pub fn indices_from_bintable(
     bintable: &str,
     factor: Option<f32>,
 ) -> Receiver<(String, TableLocation)> {
-    let (sender, receiver) = channel();
+    let (sender, receiver) = sync_channel(32);
 
     let mut bintable = BinTable::open(bintable).expect("open bintable");
 
@@ -28,7 +28,7 @@ pub fn indices_from_bintable(
 }
 
 pub fn indices(table: &str, factor: Option<f32>) -> Receiver<(String, TableLocation)> {
-    let (sender, receiver) = channel();
+    let (sender, receiver) = sync_channel(32);
 
     let mut database = DatabaseCollection::new(db::client(), table, factor);
 

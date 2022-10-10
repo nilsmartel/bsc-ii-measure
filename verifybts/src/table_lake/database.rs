@@ -1,7 +1,7 @@
 use crate::{table_lake::TableLocation, Entry, TableLakeReader};
 use bintable::TableRow;
 use rand::*;
-use std::sync::mpsc::Sender;
+use std::sync::mpsc::{Sender, SyncSender};
 
 pub struct DatabaseCollection {
     client: postgres::Client,
@@ -39,7 +39,7 @@ fn entry(row: &postgres::Row) -> Entry {
 }
 
 impl TableLakeReader for DatabaseCollection {
-    fn read(&mut self, ch: Sender<Entry>) {
+    fn read(&mut self, ch: SyncSender<Entry>) {
         let limit = 10_000;
         let mut offset = 0;
         loop {

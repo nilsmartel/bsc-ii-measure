@@ -26,11 +26,10 @@ fn main() {
         let bt = bt.recv().expect("read entry");
         let t = t.recv().expect("read entry");
 
-        if bt.0 != t.0 {
+        if bt != t {
             eprintln!("{i} differing {} {}", bt.0, t.0);
         }
         eprintln!("{i}");
         i += 1;
     }
 }
-

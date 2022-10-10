@@ -4,7 +4,7 @@ pub use database::DatabaseCollection;
 
 pub use database::*;
 
-use std::sync::mpsc::Sender;
+use std::sync::mpsc::SyncSender;
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct TableLocation {
@@ -21,11 +21,11 @@ pub trait TableLakeReader
 where
     Self: Send,
 {
-    fn read(&mut self, ch: Sender<Entry>);
+    fn read(&mut self, ch: SyncSender<Entry>);
 }
 
 impl<I: Iterator<Item = TableRow> + Send> TableLakeReader for I {
-    fn read(&mut self, ch: Sender<Entry>) {
+    fn read(&mut self, ch: SyncSender<Entry>) {
         for row in self {
             let TableRow {
                 tokenized,
