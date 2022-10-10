@@ -29,10 +29,10 @@ pub fn indices_from_bintable(
     receiver
 }
 
-pub fn indices(table: &str, factor: Option<f32>) -> Receiver<(String, TableLocation)> {
+pub fn indices_postgresql(table: &str, factor: Option<f32>) -> Receiver<(String, TableLocation)> {
     let (sender, receiver) = sync_channel(CHANNEL_BOUND);
 
-    let mut database = DatabaseCollection::new(db::client(), table, factor);
+    let mut database = DatabaseCollection::new(db::postgresql_client(), table, factor);
 
     spawn(move || database.read(sender));
     receiver

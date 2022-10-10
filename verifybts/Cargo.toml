@@ -21,3 +21,4 @@ varint-compression = "0.1.0"    # variable length integer compression
 bintable = {path = "../bintable" }
 jemallocator = "0.5.0"                       # A Rust allocator backed by jemalloc
 jemalloc-ctl = "0.5.0"         # A safe wrapper over jemalloc's control and introspection APIs
+sqlx = { version = "0.6", features = [ "runtime-tokio-rustls" ] }

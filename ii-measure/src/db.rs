@@ -18,11 +18,14 @@ fn get_config_str([user, password, database]: [String; 3]) -> String {
     format!("postgresql://{user}:{password}@localhost/{database}")
 }
 
-pub fn client() -> Client {
-    let s = get_credentials()
+pub fn client_config() -> String {
+    get_credentials()
         .map(get_config_str)
-        .expect("to read credentials for database");
+        .expect("to read credentials for database")
+}
 
+pub fn postgresql_client() -> Client {
+    let s = client_config();
     match Client::connect(&s, NoTls) {
         Ok(c) => c,
         Err(e) => {
