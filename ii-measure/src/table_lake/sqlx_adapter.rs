@@ -37,6 +37,8 @@ impl TableLakeReader for SqlxCollection {
 
         let coroutine = async {
             while let Some(row) = rows.try_next().await.expect("read row from sqlx") {
+                eprint!(".");
+
                 if let Some(f) = self.factor {
                     let random_number = rng.gen::<f32>();
                     if random_number < f {
