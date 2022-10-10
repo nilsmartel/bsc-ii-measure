@@ -62,7 +62,7 @@ fn main() {
     let receiver = if bintable {
         indices_from_bintable(&table, factor)
     } else {
-        indices_postgresql(&table, factor)
+        indices_sqlx(&table, factor)
     };
 
     // Select Compression Algorithm and perfom
