@@ -38,6 +38,7 @@ impl TableLakeReader for SqlxCollection {
         let mut rng = thread_rng();
 
         let coroutine = async {
+            eprintln!("start reading");
             while let Some(row) = rows.try_next().await.expect("read row from sqlx") {
                 eprint!(".");
 
@@ -61,6 +62,7 @@ impl TableLakeReader for SqlxCollection {
             }
         };
 
+        eprintln!("blocking on future");
         tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
