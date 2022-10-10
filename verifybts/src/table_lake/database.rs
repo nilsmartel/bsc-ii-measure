@@ -1,7 +1,8 @@
 use crate::{table_lake::TableLocation, Entry, TableLakeReader};
 use bintable::TableRow;
+use fallible_iterator::FallibleIterator;
 use rand::*;
-use std::sync::mpsc::{Sender, SyncSender};
+use std::sync::mpsc::SyncSender;
 
 pub struct DatabaseCollection {
     client: postgres::Client,
@@ -40,43 +41,30 @@ fn entry(row: &postgres::Row) -> Entry {
 
 impl TableLakeReader for DatabaseCollection {
     fn read(&mut self, ch: SyncSender<Entry>) {
-        let limit = 10_000;
-        let mut offset = 0;
-        loop {
-            let query = format!(
-                "
+        let query = format!(
+            "
                 SELECT tokenized, tableid, colid, rowid
                 FROM {}
                 ORDER BY tokenized
-                LIMIT {limit}
-                OFFSET {offset}
             ",
-                self.table
-            );
+            self.table
+        );
 
-            let rows = self.client.query(&query, &[]).expect("query database");
+        let params: [bool; 0] = [];
+        let mut rows = self
+            .client
+            .query_raw(&query, &params)
+            .expect("query database");
 
-            if rows.is_empty() {
-                return;
-            }
-
+        let mut rng = rand::thread_rng();
+        while let Some(row) = rows.next().expect("read next row") {
             if let Some(f) = self.factor {
-                let mut rng = rand::thread_rng();
-                for row in rows {
-                    if rng.gen::<f32>() < f {
-                        continue;
-                    }
-                    let e = entry(&row);
-                    ch.send(e).expect("send index to channel");
-                }
-            } else {
-                for row in rows {
-                    let e = entry(&row);
-                    ch.send(e).expect("send index to channel");
+                if rng.gen::<f32>() > f {
+                    continue;
                 }
             }
-
-            offset += limit;
+            let e = entry(&row);
+            ch.send(e).expect("send index to channel");
         }
     }
 }
