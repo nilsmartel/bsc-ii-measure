@@ -38,22 +38,22 @@ impl TableLakeReader for SqlxCollection {
         let coroutine = async {
             while let Some(row) = rows.try_next().await.expect("read row from sqlx") {
                 if let Some(f) = self.factor {
-                    eprint!(".");
-                    if rng.gen::<f32>() < f {
+                    let random_number = rng.gen::<f32>();
+                    if random_number < f {
                         continue;
                     }
-
-                    let (tokenized, tableid, colid, rowid) = row;
-                    ch.send((
-                        tokenized,
-                        TableLocation {
-                            tableid: tableid as u32,
-                            colid: colid as u32,
-                            rowid: rowid as u64,
-                        },
-                    ))
-                    .expect("send to channel");
                 }
+
+                let (tokenized, tableid, colid, rowid) = row;
+                ch.send((
+                    tokenized,
+                    TableLocation {
+                        tableid: tableid as u32,
+                        colid: colid as u32,
+                        rowid: rowid as u64,
+                    },
+                ))
+                .expect("send to channel");
             }
         };
 
