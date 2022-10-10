@@ -1,10 +1,10 @@
 mod database;
-mod sqlx;
+mod sqlx_adapter;
 pub use bintable::TableRow;
 pub use database::DatabaseCollection;
 
 pub use database::*;
-pub use sqlx::*;
+pub use sqlx_adapter::*;
 
 use std::sync::mpsc::SyncSender;
 
