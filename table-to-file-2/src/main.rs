@@ -40,9 +40,10 @@ async fn main() -> Result<(), sqlx::Error> {
             "SELECT tokenized, tableid, colid, rowid
                 FROM {corpus}
                 ORDER BY tokenized
-                OFFSET {offset}
-                LIMIT {limit}"
+                LIMIT {limit}
+                OFFSET {offset}"
         );
+        eprintln!("{query}");
 
         let query = sqlx::query_as::<_, (String, i32, i32, i64)>(&query);
 
