@@ -22,6 +22,8 @@ impl SqlxCollection {
 
 impl TableLakeReader for SqlxCollection {
     fn read(&mut self, ch: SyncSender<Entry>) {
+        eprintln!("read called");
+
         let query = format!(
             "
             SELECT tokenized, tableid, colid, rowid
