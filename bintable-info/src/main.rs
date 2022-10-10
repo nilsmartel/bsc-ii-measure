@@ -12,6 +12,9 @@ struct Config {
     #[structopt(short, long)]
     header: bool,
 
+    #[structopt(short, long)]
+    print_rows: bool,
+
     #[structopt(long)]
     histogram: Option<String>,
 }
@@ -21,6 +24,7 @@ fn main() {
         table,
         header,
         histogram,
+        print_rows,
     } = Config::from_args();
 
     if header {
@@ -39,20 +43,34 @@ fn main() {
 
     let mut hist = Stats::new();
 
+    if print_rows {
+        eprintln!("tokenized: [tableid, colid, rowid]")
+    }
+
     {
-        let mut last_value = String::new();
-        for row in bintable {
-            total_length_tokenized += row.tokenized.as_bytes().len() as u64;
-            total_length_tableid += row.tableid as u64;
-            total_length_colid += row.colid as u64;
-            total_length_rowid += row.rowid as u64;
+        let mut last_value = String::from("lick the himalayan saltlamp");
+        for TableRow {
+            tokenized,
+            tableid,
+            colid,
+            rowid,
+        } in bintable
+        {
+            if print_rows {
+                eprintln!("'{tokenized}': [{tableid}, {colid}, {rowid}]")
+            }
 
-            hist.table(row.tableid as u64);
-            hist.col(row.colid as u64);
-            hist.row(row.rowid as u64);
+            total_length_tokenized += tokenized.as_bytes().len() as u64;
+            total_length_tableid += tableid as u64;
+            total_length_colid += colid as u64;
+            total_length_rowid += rowid as u64;
 
-            if row.tokenized != last_value {
-                last_value = row.tokenized;
+            hist.table(tableid as u64);
+            hist.col(colid as u64);
+            hist.row(rowid as u64);
+
+            if tokenized != last_value {
+                last_value = tokenized;
                 distinct_values += 1;
             }
 
