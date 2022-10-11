@@ -52,10 +52,10 @@ async fn main() -> Result<(), sqlx::Error> {
         row.write_bin(&mut output, &mut acc)
             .expect("write to outfile");
 
-        count += 1;
-        if count & 0xfff == 0 {
-            println!("{count} rows");
+        if count & 0xffff == 0 {
+            println!("{} rows", count + 1);
         }
+        count += 1;
     }
 
     output.flush().expect("flush file");
