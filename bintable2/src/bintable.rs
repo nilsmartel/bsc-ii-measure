@@ -1,4 +1,4 @@
-use crate::tablerow::ReadError;
+use crate::tablerow::{ReadError, ParseAcc};
 
 use super::tablerow::TableRow;
 use std::fs::File;
@@ -8,6 +8,7 @@ pub struct BinTable {
     reader: File,
     buffer: Vec<u8>,
     offset: usize,
+    acc: ParseAcc,
 }
 
 impl BinTable {
@@ -18,6 +19,7 @@ impl BinTable {
             reader,
             buffer: Vec::with_capacity(1024 * 8),
             offset: 0,
+            acc: ParseAcc::default(),
         })
     }
 }
@@ -44,7 +46,7 @@ impl Iterator for BinTable {
 
         let fresh_data = &self.buffer[self.offset..];
 
-        match TableRow::from_bin(fresh_data) {
+        match TableRow::from_bin(fresh_data, &mut self.acc) {
             Ok((row, rest)) => {
                 self.offset = self.buffer.len() - rest.len();
                 return Some(row);

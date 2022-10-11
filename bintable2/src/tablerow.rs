@@ -1,6 +1,6 @@
 use anyhow::Result;
 use fast_smaz::Smaz;
-use sqlx::{FromRow, postgres::PgRow, Row};
+use sqlx::{postgres::PgRow, FromRow, Row};
 use std::io::Write;
 use varint_compression::*;
 
@@ -18,8 +18,9 @@ pub enum ReadError {
     Needed(usize),
 }
 
-pub struct ParseAcc<'a> {
-    pub last_tokenized: &'a [u8]
+#[derive(Debug, Default)]
+pub struct ParseAcc {
+    pub last_tokenized: Vec<u8>,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq)]
@@ -45,8 +46,74 @@ impl Kind {
     }
 }
 
+#[cfg(test)]
+mod test {
+    use std::io::Write;
+
+    use super::*;
+
+    #[test]
+    fn serde() {
+        let mut input = vec![TableRow {
+            tokenized: b"".to_vec(),
+            tableid: 123,
+            rowid: 2345678,
+            colid: 321,
+        }];
+
+        for i in 0..1000 {
+            let tokenized = format!("{i}").as_bytes().to_vec();
+            let row = TableRow {
+                tokenized,
+                tableid: i as u32,
+                colid: i as u32,
+                rowid: i as u64,
+            };
+            input.push(row.clone());
+            input.push(row.clone());
+            input.push(row.clone());
+        }
+
+        // serialize
+
+        struct U8Reader(Vec<u8>);
+        impl Write for U8Reader {
+            fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+                self.0.extend(buf);
+                Ok(buf.len())
+            }
+
+            fn flush(&mut self) -> std::io::Result<()> {
+                Ok(())
+            }
+        }
+
+        let mut buffer = U8Reader(Vec::new());
+
+        let mut acc = ParseAcc::default();
+        for d in input.clone() {
+            d.write_bin(&mut buffer, &mut acc).unwrap();
+        }
+
+        // deserialize
+        let mut retrieved = Vec::new();
+
+        let mut acc = ParseAcc::default();
+        let mut data: &[u8] = &buffer.0;
+        while !data.is_empty() {
+            let (row, rest) = TableRow::from_bin(data, &mut acc).unwrap();
+            data = rest;
+            retrieved.push(row);
+        }
+
+        for i in 0..1001 {
+            assert_eq!(retrieved[i], input[i], "testing element {i}");
+        }
+    }
+}
+
 impl TableRow {
-    pub fn from_bin<'a, 'b>(data: &'b [u8], acc: &mut ParseAcc<'a>) -> Result<(Self, &'b[u8]), ReadError> {
+    pub fn from_bin<'b>(data: &'b [u8], acc: &mut ParseAcc) -> Result<(Self, &'b [u8]), ReadError> {
         let (need_length, rest) = match decompress(data) {
             Ok(d) => d,
             Err(_) => {
@@ -60,12 +127,12 @@ impl TableRow {
             return Err(ReadError::Needed(need_length - rest.len()));
         }
 
-        let v = TableRow::from_bin_raw(rest, &mut acc);
+        let v = TableRow::from_bin_raw(rest, acc);
 
         Ok((v, &rest[need_length..]))
     }
 
-    pub fn from_bin_raw<'a, 'b>(data: &'b [u8], acc: &mut ParseAcc<'a>) -> Self {
+    pub fn from_bin_raw(data: &[u8], acc: &mut ParseAcc) -> Self {
         let kind = Kind::from(data[0]);
         let data = &data[1..];
 
@@ -76,8 +143,8 @@ impl TableRow {
                 let n = len as usize;
                 let tokenized = &data[..n];
                 let tokenized = tokenized.smaz_decompress().unwrap();
-                
-                acc.last_tokenized = &tokenized;
+
+                acc.last_tokenized = tokenized.clone();
 
                 (tokenized, &data[n..])
             }
@@ -97,18 +164,37 @@ impl TableRow {
         }
     }
 
-    pub fn write_bin(&self, w: &mut impl Write) -> Result<()> {
-        let tokenized = self.tokenized.smaz_compress();
+    pub fn write_bin(&self, w: &mut impl Write, acc: &mut ParseAcc) -> Result<()> {
+        let kind = if self.tokenized == acc.last_tokenized {
+            Kind::Same
+        } else {
+            Kind::Compressed
+        };
+
+        let tokenized = if kind == Kind::Same {
+            Vec::new()
+        } else {
+            acc.last_tokenized = self.tokenized.clone();
+            self.tokenized.smaz_compress()
+        };
+
         let len = compress(tokenized.len() as u64);
         let nums = compress_list(&[self.tableid as u64, self.colid as u64, self.rowid as u64]);
 
-        let total_length = compress((len.len() + tokenized.len() + nums.len()) as u64);
+        let mut total_length = 1 + nums.len();
+        if kind != Kind::Same {
+            total_length += len.len() + tokenized.len();
+        }
+        let total_length = compress(total_length as u64);
 
         w.write_all(&total_length)?;
-        w.write_all(&len)?;
-        w.write_all(&tokenized)?;
+        w.write_all(&[kind.byte()])?;
+        if kind != Kind::Same {
+            w.write_all(&len)?;
+            w.write_all(&tokenized)?;
+        }
         w.write_all(&nums)?;
-
+        w.flush()?;
         Ok(())
     }
 }
