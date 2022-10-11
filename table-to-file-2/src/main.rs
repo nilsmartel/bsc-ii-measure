@@ -39,7 +39,6 @@ async fn main() -> Result<(), sqlx::Error> {
         let query = format!(
             "SELECT tokenized, tableid, colid, rowid
                 FROM {corpus}
-                ORDER BY tokenized
                 LIMIT {limit}
                 OFFSET {offset}"
         );
