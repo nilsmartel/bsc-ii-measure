@@ -6,7 +6,7 @@ use varint_compression::*;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TableRow {
-    pub tokenized: Vec<u8>,
+    pub tokenized: String,
     pub tableid: u32,
     pub colid: u32,
     pub rowid: u64,
@@ -20,7 +20,7 @@ pub enum ReadError {
 
 #[derive(Debug, Default)]
 pub struct ParseAcc {
-    pub last_tokenized: Vec<u8>,
+    pub last_tokenized: String,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq)]
@@ -55,14 +55,14 @@ mod test {
     #[test]
     fn serde() {
         let mut input = vec![TableRow {
-            tokenized: b"".to_vec(),
+            tokenized: "".to_string(),
             tableid: 123,
             rowid: 2345678,
             colid: 321,
         }];
 
         for i in 0..1000 {
-            let tokenized = format!("{i}").as_bytes().to_vec();
+            let tokenized = format!("{i}");
             let row = TableRow {
                 tokenized,
                 tableid: i as u32,
@@ -137,12 +137,13 @@ impl TableRow {
         let data = &data[1..];
 
         let (tokenized, data) = match kind {
-            Kind::Same => (acc.last_tokenized.to_vec(), data),
+            Kind::Same => (acc.last_tokenized.to_string(), data),
             Kind::Compressed => {
                 let (len, data) = decompress(data).unwrap();
                 let n = len as usize;
                 let tokenized = &data[..n];
                 let tokenized = tokenized.smaz_decompress().unwrap();
+                let tokenized = unsafe { String::from_utf8_unchecked(tokenized) };
 
                 acc.last_tokenized = tokenized.clone();
 
@@ -201,7 +202,7 @@ impl TableRow {
 
 impl<'r> FromRow<'r, PgRow> for TableRow {
     fn from_row(row: &'r PgRow) -> Result<Self, sqlx::Error> {
-        let tokenized: Option<Vec<u8>> = row.try_get(0)?;
+        let tokenized: Option<String> = row.try_get(0)?;
         let tokenized = tokenized.unwrap_or_default();
 
         let tableid = get_number(row, 1) as u32;
