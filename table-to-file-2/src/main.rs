@@ -1,6 +1,8 @@
 mod db;
 
-use sqlx::postgres::PgPoolOptions;
+use bintable::TableRow;
+use sqlx::{postgres::PgPoolOptions, FromRow, Postgres};
+use sqlx::{postgres::PgRow, Row};
 use tokio_stream::StreamExt;
 
 use structopt::StructOpt;
@@ -44,21 +46,12 @@ async fn main() -> Result<(), sqlx::Error> {
         );
         eprintln!("{query}");
 
-        let query = sqlx::query_as::<_, (String, i32, i32, i64)>(&query);
+        let query = sqlx::query_as::<_, RowWrap>(&query);
 
         let mut stream = query.fetch(&pool);
 
         let mut count = 0;
-        while let Some(row) = stream.try_next().await? {
-            let (tokenized, tableid, colid, rowid) = row;
-
-            let row = bintable::TableRow {
-                tokenized,
-                tableid: tableid as u32,
-                colid: colid as u32,
-                rowid: rowid as u64,
-            };
-
+        while let Some(RowWrap(row)) = stream.try_next().await? {
             row.write_bin(&mut output).expect("write to outfile");
 
             count += 1;
@@ -72,4 +65,38 @@ async fn main() -> Result<(), sqlx::Error> {
     }
 
     Ok(())
+}
+
+struct RowWrap(TableRow);
+
+impl<'r> FromRow<'r, PgRow> for RowWrap {
+    fn from_row(row: &'r PgRow) -> Result<Self, sqlx::Error> {
+        let tokenized: Option<String> = row.try_get(0)?;
+        let tokenized = tokenized.unwrap_or_default();
+
+        let tableid = get_number(row, 1) as u32;
+        let colid = get_number(row, 2) as u32;
+        let rowid = get_number(row, 3) as u64;
+
+        Ok(Self(TableRow {
+            tokenized,
+            tableid,
+            colid,
+            rowid,
+        }))
+    }
+}
+
+fn get_number(row: &PgRow, index: usize) -> i64 {
+    if let Ok(v) = row.try_get::<i64, usize>(index) {
+        return v;
+    }
+    if let Ok(v) = row.try_get::<i32, usize>(index) {
+        return v as i64;
+    }
+    if let Ok(v) = row.try_get::<i8, usize>(index) {
+        return v as i64;
+    }
+
+    row.try_get::<i16, usize>(index).unwrap() as i64
 }
