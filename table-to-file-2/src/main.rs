@@ -30,38 +30,26 @@ async fn main() -> Result<(), sqlx::Error> {
         .connect(&db::client_str())
         .await?;
 
-    let limit = 1_000_000;
-    let mut offset = 0;
-
     let mut output = std::fs::File::create(&config.outfile).expect("to create outfile");
 
-    loop {
-        eprintln!("reading rows after size {offset}");
+    let query = format!(
+        "SELECT tokenized, tableid, colid, rowid
+            FROM {corpus}"
+    );
+    eprintln!("{query}");
 
-        let query = format!(
-            "SELECT tokenized, tableid, colid, rowid
-                FROM {corpus}
-                LIMIT {limit}
-                OFFSET {offset}"
-        );
-        eprintln!("{query}");
+    let query = sqlx::query_as::<_, RowWrap>(&query);
 
-        let query = sqlx::query_as::<_, RowWrap>(&query);
+    let mut stream = query.fetch(&pool);
 
-        let mut stream = query.fetch(&pool);
+    let mut count = 0;
+    while let Some(RowWrap(row)) = stream.try_next().await? {
+        row.write_bin(&mut output).expect("write to outfile");
 
-        let mut count = 0;
-        while let Some(RowWrap(row)) = stream.try_next().await? {
-            row.write_bin(&mut output).expect("write to outfile");
-
-            count += 1;
+        count += 1;
+        if count & 0xfff == 0 {
+            eprintln!("{count} rows");
         }
-
-        if count == 0 {
-            break;
-        }
-
-        offset += limit;
     }
 
     Ok(())
