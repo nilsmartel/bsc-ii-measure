@@ -5,11 +5,10 @@ use std::sync::mpsc::{sync_channel, Receiver};
 mod random_keys;
 use rand::random;
 pub use random_keys::RandomKeys;
-use sqlx::postgres::PgPoolOptions;
 
 use crate::db::{self, sqlx_pool};
 use crate::table_lake::*;
-use bintable::BinTable;
+use bintable2::BinTable;
 
 const CHANNEL_BOUND: usize = 32;
 
@@ -27,15 +26,6 @@ pub fn indices_from_bintable(
         spawn(move || bintable.read(sender));
     }
 
-    receiver
-}
-
-pub fn indices_postgresql(table: &str, factor: Option<f32>) -> Receiver<(String, TableLocation)> {
-    let (sender, receiver) = sync_channel(CHANNEL_BOUND);
-
-    let mut database = DatabaseCollection::new(db::postgresql_client(), table, factor);
-
-    spawn(move || database.read(sender));
     receiver
 }
 
