@@ -1,5 +1,4 @@
 use anyhow::Result;
-use postgres::{Client, NoTls};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 /// returns (User, Password, Database)
@@ -23,17 +22,6 @@ pub fn client_config() -> String {
     get_credentials()
         .map(get_config_str)
         .expect("to read credentials for database")
-}
-
-pub fn postgresql_client() -> Client {
-    let s = client_config();
-    match Client::connect(&s, NoTls) {
-        Ok(c) => c,
-        Err(e) => {
-            eprintln!("failed to connect to database: {e}");
-            std::process::exit(1)
-        }
-    }
 }
 
 pub fn sqlx_pool() -> Pool<Postgres> {

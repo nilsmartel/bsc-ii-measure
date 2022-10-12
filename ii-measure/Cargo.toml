@@ -8,7 +8,6 @@ edition = "2021"
 [dependencies]
 csv = "1.1.6"                    # Fast CSV parsing with support for serde.
 threadpool = "1.8.1"                      # A thread pool for running a number of jobs on a fixed set of worker threads.
-postgres = "0.19.4"                         # A native, synchronous PostgreSQL client
 anyhow = "1.0.65"                                   # Flexible concrete Error type built on std::error::Error
 fallible-iterator = "0.2.0"              # Fallible iterator traits
 structopt = "0.3.26"               # Parse command line argument by defining a struct.

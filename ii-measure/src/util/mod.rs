@@ -6,7 +6,7 @@ mod random_keys;
 use rand::random;
 pub use random_keys::RandomKeys;
 
-use crate::db::{self, sqlx_pool};
+use crate::db::sqlx_pool;
 use crate::table_lake::*;
 use bintable2::BinTable;
 
