@@ -21,7 +21,7 @@ pub struct Config {
     pub table: String,
 
     #[structopt(short, long)]
-    pub bintable: bool,
+    pub database: bool,
 
     /// Wether or not to include header in output csv
     #[structopt(short, long)]

@@ -27,7 +27,7 @@ fn basename(s: &str) -> String {
 }
 fn main() {
     let Config {
-        bintable,
+        database,
         algorithm,
         table,
         header,
@@ -59,10 +59,10 @@ fn main() {
     // init information logger
     let log = Logger::new(algorithm.str(), basename(&table), header);
 
-    let receiver = if bintable {
-        indices_from_bintable(&table, factor)
-    } else {
+    let receiver = if database {
         indices_sqlx(&table, factor)
+    } else {
+        indices_from_bintable(&table, factor)
     };
 
     // Select Compression Algorithm and perfom

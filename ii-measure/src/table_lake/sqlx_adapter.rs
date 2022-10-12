@@ -22,8 +22,6 @@ impl SqlxCollection {
 
 impl TableLakeReader for SqlxCollection {
     fn read(&mut self, ch: SyncSender<Entry>) {
-        eprintln!("read called");
-
         let query = format!(
             "
             SELECT tokenized, tableid, colid, rowid
@@ -41,8 +39,6 @@ impl TableLakeReader for SqlxCollection {
 
             eprintln!("start reading");
             while let Some(row) = rows.try_next().await.expect("read row from sqlx") {
-                eprint!(".");
-
                 if let Some(f) = self.factor {
                     let random_number = rng.gen::<f32>();
                     if random_number < f {
@@ -63,7 +59,6 @@ impl TableLakeReader for SqlxCollection {
             }
         };
 
-        eprintln!("blocking on future");
         tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
