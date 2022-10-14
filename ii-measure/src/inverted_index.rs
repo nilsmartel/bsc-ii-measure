@@ -199,7 +199,7 @@ impl InvertedIndex<Option<Vec<TableLocation>>> for Compressed4Wise {
         for i in (0..v.len()).step_by(3) {
             let tableid = v[i];
             let colid = v[i + 2];
-            let rowid = v[i + 1] as u64;
+            let rowid = v[i + 1];
             ti.push(TableLocation {
                 tableid,
                 colid,

@@ -9,7 +9,7 @@ use std::sync::mpsc::SyncSender;
 pub struct TableLocation {
     pub tableid: u32,
     pub colid: u32,
-    pub rowid: u64,
+    pub rowid: u32,
 }
 
 impl TableLocation {
@@ -19,16 +19,6 @@ impl TableLocation {
             colid,
             rowid,
         } = self;
-
-        let rowid = if rowid <= std::u32::MAX as u64 {
-            rowid as u32
-        } else {
-            println!(
-                "error in TableIndex::integers, row index (TableLocation::rowid) is to high {}",
-                rowid
-            );
-            rowid.min(std::u32::MAX as u64) as u32
-        };
 
         [tableid, colid, rowid]
     }

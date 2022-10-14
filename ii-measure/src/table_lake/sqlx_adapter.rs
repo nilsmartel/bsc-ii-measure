@@ -52,7 +52,7 @@ impl TableLakeReader for SqlxCollection {
                     TableLocation {
                         tableid: tableid as u32,
                         colid: colid as u32,
-                        rowid: rowid as u64,
+                        rowid: rowid as u32,
                     },
                 ))
                 .expect("send to channel");
