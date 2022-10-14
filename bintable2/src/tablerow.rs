@@ -9,7 +9,7 @@ pub struct TableRow {
     pub tokenized: String,
     pub tableid: u32,
     pub colid: u32,
-    pub rowid: u64,
+    pub rowid: u32,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -67,7 +67,7 @@ mod test {
                 tokenized,
                 tableid: i as u32,
                 colid: i as u32,
-                rowid: i as u64,
+                rowid: i as u32,
             };
             input.push(row.clone());
             input.push(row.clone());
@@ -155,7 +155,7 @@ impl TableRow {
 
         let tableid = tableid as u32;
         let colid = colid as u32;
-        let rowid = rowid as u64;
+        let rowid = rowid as u32;
 
         Self {
             tokenized,
@@ -207,7 +207,7 @@ impl<'r> FromRow<'r, PgRow> for TableRow {
 
         let tableid = get_number(row, 1) as u32;
         let colid = get_number(row, 2) as u32;
-        let rowid = get_number(row, 3) as u64;
+        let rowid = get_number(row, 3) as u32;
 
         Ok(TableRow {
             tokenized,
