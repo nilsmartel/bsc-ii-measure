@@ -1,6 +1,6 @@
 use std::fs::File;
 
-use bintable::*;
+use bintable2::*;
 use structopt::StructOpt;
 
 #[derive(StructOpt)]
