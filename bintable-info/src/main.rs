@@ -16,6 +16,14 @@ struct Config {
     histogram: Option<String>,
 }
 
+fn basefile(s: &str) -> &str {
+    if !s.contains('/') {
+        return s;
+    }
+
+    s.rsplit_once('/').unwrap().1
+}
+
 fn main() {
     let Config {
         table,
@@ -80,7 +88,8 @@ fn main() {
 
     println!("table;values;distinct_values;mean_cardinality;avg_cell_len;avg_tableid;avg_colid;avg_rowid");
 
-    println!("{table};{values};{distinct_values};{mean_cardinality};{cell_len};{tableid};{colid};{rowid}");
+    let tablename = basefile(&table);
+    println!("{tablename};{values};{distinct_values};{mean_cardinality};{cell_len};{tableid};{colid};{rowid}");
 
     if histogram.is_none() {
         return;
