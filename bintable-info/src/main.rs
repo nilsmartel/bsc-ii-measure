@@ -67,7 +67,7 @@ fn main() {
 
             hist.table(tableid as u64);
             hist.col(colid as u64);
-            hist.row(rowid as u64);
+            hist.row(rowid);
 
             if tokenized != last_value {
                 last_value = tokenized;
@@ -106,7 +106,7 @@ fn main() {
         writeln!(
             &mut f,
             "{};{};{}",
-            hist.row_bins[i], hist.row_bins[i], hist.row_bins[i],
+            hist.row_bins[i], hist.col_bins[i], hist.tableid_bins[i],
         )
         .expect("to write row of histogram");
     }
@@ -118,7 +118,7 @@ fn main() {
         writeln!(
             &mut f,
             "{};{};{}",
-            hist.row_width[i], hist.row_width[i], hist.row_width[i],
+            hist.row_width[i], hist.col_width[i], hist.tableid_width[i],
         )
         .expect("to write row of histogram");
     }
