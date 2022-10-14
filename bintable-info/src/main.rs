@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::{fmt::Display, fs::File};
 
 use bintable::*;
 use structopt::StructOpt;
@@ -94,7 +94,7 @@ fn main() {
 
     let histogram = histogram.unwrap();
 
-    let mut f = File::create(histogram).expect("create file for histogram");
+    let mut f = File::create(histogram.clone()).expect("create file for histogram");
     use std::io::Write;
 
     writeln!(&mut f, "rows;cols;tableids").expect("write header of histogram");
@@ -104,6 +104,18 @@ fn main() {
             &mut f,
             "{};{};{}",
             hist.row_bins[i], hist.row_bins[i], hist.row_bins[i],
+        )
+        .expect("to write row of histogram");
+    }
+
+    drop(f);
+    let mut f = File::create(histogram + "-bitwidth.csv").expect("create bitwidth histogram file");
+    writeln!(&mut f, "rows;cols;tableids").expect("write header of histogram");
+    for i in 0..64 {
+        writeln!(
+            &mut f,
+            "{};{};{}",
+            hist.row_width[i], hist.row_width[i], hist.row_width[i],
         )
         .expect("to write row of histogram");
     }
@@ -117,6 +129,10 @@ struct Stats {
     row_bins: [u64; BINS],
     col_bins: [u64; BINS],
     tableid_bins: [u64; BINS],
+
+    row_width: [u64; 64],
+    col_width: [u64; 64],
+    tableid_width: [u64; 64],
 }
 
 impl Stats {
@@ -125,22 +141,29 @@ impl Stats {
             row_bins: [0; BINS],
             col_bins: [0; BINS],
             tableid_bins: [0; BINS],
+
+            row_width: [0; 64],
+            col_width: [0; 64],
+            tableid_width: [0; 64],
         }
     }
 
     pub fn row(&mut self, id: u64) {
-        Stats::log_stat(id, &mut self.row_bins);
+        Stats::linear_bin(id, &mut self.row_bins);
+        Stats::bit_bin(id, &mut self.row_width);
     }
 
     pub fn col(&mut self, id: u64) {
-        Stats::log_stat(id, &mut self.col_bins);
+        Stats::linear_bin(id, &mut self.col_bins);
+        Stats::bit_bin(id, &mut self.col_width);
     }
 
     pub fn table(&mut self, id: u64) {
-        Stats::log_stat(id, &mut self.tableid_bins);
+        Stats::linear_bin(id, &mut self.tableid_bins);
+        Stats::bit_bin(id, &mut self.tableid_width);
     }
 
-    fn log_stat(value: u64, bins: &mut [u64]) {
+    fn linear_bin(value: u64, bins: &mut [u64]) {
         let mut value = value / BIN_SPAN;
 
         if value >= bins.len() as u64 {
@@ -148,5 +171,46 @@ impl Stats {
         }
 
         bins[value as usize] += 1;
+    }
+
+    fn bit_bin(value: u64, bins: &mut [u64]) {
+        let mut bitwidth = bitwidth(value);
+
+        bins[bitwidth as usize] += 1;
+    }
+}
+
+fn bitwidth(mut v: u64) -> u8 {
+    let mut w = 1;
+
+    while v > 1 {
+        v >>= 1;
+        w += 1;
+    }
+
+    w
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn width_of_integers() {
+        use super::bitwidth;
+
+        assert_eq!(bitwidth(0), 1);
+        assert_eq!(bitwidth(1), 1);
+        assert_eq!(bitwidth(0b10), 2);
+        assert_eq!(bitwidth(0b11), 2);
+        assert_eq!(bitwidth(0b100), 3);
+        assert_eq!(bitwidth(0b111), 3);
+        assert_eq!(bitwidth(0b1000), 4);
+        assert_eq!(bitwidth(0b1000000), 7);
+        assert_eq!(bitwidth(0b1111111), 7);
+        assert_eq!(bitwidth(0b10000000), 8);
+        assert_eq!(bitwidth(0b11111111), 8);
+        assert_eq!(bitwidth(0b100000000), 9);
+        assert_eq!(bitwidth(0b111111111), 9);
+        assert_eq!(bitwidth(0b1000000000), 10);
+        assert_eq!(bitwidth(0b1111111111), 10);
     }
 }
