@@ -1,4 +1,4 @@
-use std::{fmt::Display, fs::File};
+use std::fs::File;
 
 use bintable::*;
 use structopt::StructOpt;
@@ -10,9 +10,6 @@ struct Config {
     table: String,
 
     #[structopt(short, long)]
-    header: bool,
-
-    #[structopt(short, long)]
     print_rows: bool,
 
     #[structopt(long)]
@@ -22,14 +19,9 @@ struct Config {
 fn main() {
     let Config {
         table,
-        header,
         histogram,
         print_rows,
     } = Config::from_args();
-
-    if header {
-        println!("table;values;distinct_values;mean_cardinality;avg_cell_len;avg_tableid;avg_colid;avg_rowid");
-    }
 
     let bintable = BinTable::open(&table).expect("open bintable file");
 
@@ -85,6 +77,8 @@ fn main() {
     let tableid = total_length_tableid as f64 / values;
     let colid = total_length_colid as f64 / values;
     let rowid = total_length_rowid as f64 / values;
+
+    println!("table;values;distinct_values;mean_cardinality;avg_cell_len;avg_tableid;avg_colid;avg_rowid");
 
     println!("{table};{values};{distinct_values};{mean_cardinality};{cell_len};{tableid};{colid};{rowid}");
 
@@ -174,7 +168,7 @@ impl Stats {
     }
 
     fn bit_bin(value: u64, bins: &mut [u64]) {
-        let mut bitwidth = bitwidth(value);
+        let bitwidth = bitwidth(value);
 
         bins[bitwidth as usize] += 1;
     }
