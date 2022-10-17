@@ -45,6 +45,11 @@ fn main() {
     }
 
     if let Some(f) = factor {
+        if f >= 0.5 && &table == "main_tokenized" {
+            eprintln!("exiting, because this will crash anyway");
+            std::process::exit(0);
+        }
+
         let percentage = f * 100.;
         eprintln!(
             "benchmarking {} on {}% {}",
