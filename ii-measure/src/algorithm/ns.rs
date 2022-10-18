@@ -1,5 +1,7 @@
+use crate::inverted_index::{InvertedIndex, binary_search_by_index};
 use crate::table_lake::*;
-use int_compression_4_wise::compress;
+use int_compression_4_wise::{ compress, decompress };
+use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::sync::mpsc::Receiver;
 use std::time::{Duration, Instant};
@@ -49,4 +51,109 @@ pub(crate) fn ns_4_wise(
     }
 
     (entry_count, build_time, ii)
+}
+
+pub struct InvIdxNsRaw {
+    data: Vec<(String, Vec<u8>)>,
+}
+
+/// Baseline measure of data, the way it is present in database
+pub fn ns_raw(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration, InvIdxNsRaw) {
+    let mut data = Vec::new();
+    let mut build_time = Duration::new(0, 0);
+
+    for (key, location) in receiver {
+        let starttime = Instant::now();
+        let mut location =  compress(location.integers());
+        // remove last byte of redundancy
+        location.pop().unwrap();
+        // shrink vector perfectly
+        location.shrink_to_fit();
+        
+        data.push((key, location));
+
+        build_time += starttime.elapsed();
+    }
+
+    eprintln!("entries: {}", data.len());
+    eprint!("sorting");
+    data.sort_unstable();
+    eprint!(" complete");
+
+    (data.len(), build_time, InvIdxNsRaw {data})
+}
+
+impl InvertedIndex<Vec<TableLocation>> for InvIdxNsRaw {
+    fn get(&self, key: &str) -> Vec<TableLocation> {
+        fn get_start_point(a: &[(String, Vec<u8>)], index: usize, elem: &String) -> Ordering {
+            if index == 0 {
+                return a[0].0.cmp(elem);
+            }
+
+            match a[index].0.cmp(elem) {
+                Ordering::Equal => {
+                    if &a[index - 1].0 < elem {
+                        Ordering::Equal
+                    } else {
+                        Ordering::Greater
+                    }
+                }
+                o => o,
+            }
+        }
+
+        fn get_end_point(a: &[(String, Vec<u8>)], index: usize, elem: &String) -> Ordering {
+            if a.len() == index + 1 {
+                return a[index].0.cmp(elem);
+            }
+
+            match a[index].0.cmp(elem) {
+                Ordering::Equal => {
+                    if &a[index + 1].0 > elem {
+                        Ordering::Equal
+                    } else {
+                        Ordering::Less
+                    }
+                }
+                o => o,
+            }
+        }
+
+        // just for the type checker
+        let key = key.to_string();
+
+        let startindex =
+            binary_search_by_index(&self.data, 0, self.data.len(), get_start_point, &key).unwrap_or(0);
+
+        let endindex =
+            binary_search_by_index(&self.data, 0, self.data.len(), get_end_point, &key).unwrap_or(6);
+
+        if startindex > endindex || endindex - startindex > 1000 {
+            eprintln!("=> '{key}'");
+            eprintln!("[{}]: {}..{}", endindex - startindex, startindex, endindex);
+        }
+
+        let size = endindex - startindex;
+
+        let mut v = Vec::with_capacity(size);
+
+        // decode all
+        for (_, location) in &self.data[startindex..endindex] {
+            // append leading 0
+            let mut location = location.to_vec();
+            location.push(0);
+
+            let location = decompress(&location).collect();
+            let location = TableLocation::from_integers(&location);
+            v.push(location);
+        }
+
+        v
+    }
+}
+
+impl crate::util::RandomKeys for InvIdxNsRaw {
+    fn random_keys_potentially_ordered(&self) -> Vec<String> {
+        self.data.random_keys_potentially_ordered()
+    }
 }

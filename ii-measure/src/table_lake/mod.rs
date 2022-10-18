@@ -3,6 +3,7 @@ pub use bintable2::TableRow;
 
 pub use sqlx_adapter::*;
 
+use core::panic;
 use std::sync::mpsc::SyncSender;
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]
@@ -21,6 +22,18 @@ impl TableLocation {
         } = self;
 
         [tableid, colid, rowid]
+    }
+
+    pub fn from_integers(data: &[u32]) -> Self {
+        if data.len() < 3 {
+            panic!("data not long enough for TableLocation. Expected 3 numbers.")
+        }
+
+        TableLocation {
+            tableid: data[0],
+            colid: data[1],
+            rowid: data[2],
+        }
     }
 }
 

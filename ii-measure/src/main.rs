@@ -45,7 +45,8 @@ fn main() {
     }
 
     if let Some(f) = factor {
-        if f >= 0.5 && &table == "main_tokenized" {
+        if f >= 0.5 && &table == "main_tokenized" && (algorithm == Baseline || algorithm.str().contains("raw") ){
+            eprintln!("using {} on more than 50% of corpus {table} is not expected to work", algorithm.str());
             eprintln!("exiting, because this will crash anyway");
             std::process::exit(0);
         }
@@ -62,7 +63,7 @@ fn main() {
     }
 
     // init information logger
-    let log = Logger::new(algorithm.str(), basename(&table), header);
+    let log = Logger::new(algorithm.str().to_string(), basename(&table), header);
 
     let receiver = if database {
         indices_sqlx(&table, factor)
@@ -76,6 +77,11 @@ fn main() {
         Baseline => measure_logging(algorithm::baseline, receiver, log),
         DedupHash => measure_logging(algorithm::dedup_hash, receiver, log),
         DedupBTree => measure_logging(algorithm::dedup_btree, receiver, log),
+
         NS => measure_logging(algorithm::ns_4_wise, receiver, log),
+
+        NSRaw => measure_logging(algorithm::ns_raw, receiver, log),
+
+        _ => panic!("algorithm {} not yet implemented", algorithm.str()),
     }
 }

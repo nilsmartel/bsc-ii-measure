@@ -69,10 +69,10 @@ impl CompressionAlgorithm {
         ]
     }
 
-    pub fn str(self) -> String {
+    pub fn str(self) -> &'static str {
         CompressionAlgorithm::lookup()
             .into_iter()
-            .find_map(|(elem, s)| (elem == self).then(|| s.to_string()))
+            .find_map(|(elem, s)| (elem == self).then(|| s))
             .unwrap()
     }
 }

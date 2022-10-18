@@ -73,7 +73,7 @@ impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
     }
 }
 
-fn binary_search_by_index<T, T2>(
+pub(crate) fn binary_search_by_index<T, T2>(
     a: &[T],
     start: usize,
     end: usize,
