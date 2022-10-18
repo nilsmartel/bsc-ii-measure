@@ -90,6 +90,8 @@ fn main() {
         Smaz => measure_logging(algorithm::smaz, receiver, log),
         SmazRaw => measure_logging(algorithm::smaz_raw, receiver, log),
 
+        SmazNS => measure_logging(algorithm::smaz_ns, receiver, log),
+
         _ => panic!("algorithm {} not yet implemented", algorithm.str()),
     }
 }
