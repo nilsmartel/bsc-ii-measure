@@ -2,7 +2,7 @@ use rand::random;
 use rand::seq::SliceRandom;
 use std::collections::*;
 
-const DESIRED_KEY_COUNT: usize = 10_000;
+pub const DESIRED_KEY_COUNT: usize = 10_000;
 
 pub trait RandomKeys {
     fn random_keys_potentially_ordered(&self) -> Vec<String>;
@@ -24,7 +24,7 @@ pub trait RandomKeys {
 
 impl<T> RandomKeys for &[(String, T)] {
     fn random_keys_potentially_ordered(&self) -> Vec<String> {
-        eprintln!("Getting random keys");
+        eprintln!("Getting rndom keys");
         // NOTE
         // It's super important to sample unique values,
         // otherwise the population of keys will be heavily biased

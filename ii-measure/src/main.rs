@@ -45,8 +45,14 @@ fn main() {
     }
 
     if let Some(f) = factor {
-        if f >= 0.5 && &table == "main_tokenized" && (algorithm == Baseline || algorithm.str().contains("raw") ){
-            eprintln!("using {} on more than 50% of corpus {table} is not expected to work", algorithm.str());
+        if f >= 0.5
+            && &table == "main_tokenized"
+            && (algorithm == Baseline || algorithm.str().contains("raw"))
+        {
+            eprintln!(
+                "using {} on more than 50% of corpus {table} is not expected to work",
+                algorithm.str()
+            );
             eprintln!("exiting, because this will crash anyway");
             std::process::exit(0);
         }
@@ -79,8 +85,10 @@ fn main() {
         DedupBTree => measure_logging(algorithm::dedup_btree, receiver, log),
 
         NS => measure_logging(algorithm::ns_4_wise, receiver, log),
-
         NSRaw => measure_logging(algorithm::ns_raw, receiver, log),
+
+        Smaz => measure_logging(algorithm::smaz, receiver, log),
+        SmazRaw => measure_logging(algorithm::smaz_raw, receiver, log),
 
         _ => panic!("algorithm {} not yet implemented", algorithm.str()),
     }

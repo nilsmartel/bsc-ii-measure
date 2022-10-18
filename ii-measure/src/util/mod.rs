@@ -2,7 +2,7 @@ use std::thread::spawn;
 
 use std::sync::mpsc::{sync_channel, Receiver};
 
-mod random_keys;
+pub mod random_keys;
 use rand::random;
 pub use random_keys::RandomKeys;
 

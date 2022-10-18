@@ -1,6 +1,6 @@
-use crate::inverted_index::{InvertedIndex, binary_search_by_index};
+use crate::inverted_index::{binary_search_by_index, InvertedIndex};
 use crate::table_lake::*;
-use int_compression_4_wise::{ compress, decompress };
+use int_compression_4_wise::{compress, decompress};
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::sync::mpsc::Receiver;
@@ -64,12 +64,12 @@ pub fn ns_raw(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration, 
 
     for (key, location) in receiver {
         let starttime = Instant::now();
-        let mut location =  compress(location.integers());
+        let mut location = compress(location.integers());
         // remove last byte of redundancy
         location.pop().unwrap();
         // shrink vector perfectly
         location.shrink_to_fit();
-        
+
         data.push((key, location));
 
         build_time += starttime.elapsed();
@@ -80,7 +80,7 @@ pub fn ns_raw(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration, 
     data.sort_unstable();
     eprint!(" complete");
 
-    (data.len(), build_time, InvIdxNsRaw {data})
+    (data.len(), build_time, InvIdxNsRaw { data })
 }
 
 impl InvertedIndex<Vec<TableLocation>> for InvIdxNsRaw {
@@ -123,10 +123,11 @@ impl InvertedIndex<Vec<TableLocation>> for InvIdxNsRaw {
         let key = key.to_string();
 
         let startindex =
-            binary_search_by_index(&self.data, 0, self.data.len(), get_start_point, &key).unwrap_or(0);
+            binary_search_by_index(&self.data, 0, self.data.len(), get_start_point, &key)
+                .unwrap_or(0);
 
-        let endindex =
-            binary_search_by_index(&self.data, 0, self.data.len(), get_end_point, &key).unwrap_or(6);
+        let endindex = binary_search_by_index(&self.data, 0, self.data.len(), get_end_point, &key)
+            .unwrap_or(6);
 
         if startindex > endindex || endindex - startindex > 1000 {
             eprintln!("=> '{key}'");
