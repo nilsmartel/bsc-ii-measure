@@ -85,13 +85,13 @@ fn main() {
         DedupHash => measure_logging(algorithm::dedup_hash, receiver, log),
         DedupBTree => measure_logging(algorithm::dedup_btree, receiver, log),
 
-        NS => measure_logging(algorithm::ns_4_wise, receiver, log),
+        NSDedup => measure_logging(algorithm::ns_4_wise, receiver, log),
         NSRaw => measure_logging(algorithm::ns_raw, receiver, log),
 
-        Smaz => measure_logging(algorithm::smaz, receiver, log),
+        SmazDedup => measure_logging(algorithm::smaz, receiver, log),
         SmazRaw => measure_logging(algorithm::smaz_raw, receiver, log),
 
-        SmazNS => measure_logging(algorithm::smaz_ns, receiver, log),
+        SmazNSDedup => measure_logging(algorithm::smaz_ns, receiver, log),
 
         _ => panic!("algorithm {} not yet implemented", algorithm.str()),
     }
