@@ -1,6 +1,7 @@
 mod util;
 use util::*;
 
+mod kinds;
 mod inverted_index;
 mod measure;
 mod table_lake;
@@ -78,7 +79,7 @@ fn main() {
     };
 
     // Select Compression Algorithm and perfom
-    use cli::CompressionAlgorithm::*;
+    use kinds::CompressionAlgorithm::*;
     match algorithm {
         Baseline => measure_logging(algorithm::baseline, receiver, log),
         DedupHash => measure_logging(algorithm::dedup_hash, receiver, log),

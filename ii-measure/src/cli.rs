@@ -1,6 +1,5 @@
-use std::str::FromStr;
-
 use structopt::StructOpt;
+use crate::kinds::CompressionAlgorithm;
 
 #[derive(StructOpt)]
 #[structopt(
@@ -30,65 +29,4 @@ pub struct Config {
     /// if true, print only the csv header and exit
     #[structopt(long)]
     pub header_only: bool,
-}
-
-#[derive(Copy, Clone, Eq, PartialEq)]
-pub enum CompressionAlgorithm {
-    Baseline,
-    DedupHash,
-    DedupBTree,
-
-    NS,
-    NSRaw,
-
-    Smaz,
-    SmazRaw,
-
-    FastPfor,
-
-    SmazFastPfor,
-    SmazNS,
-}
-
-impl CompressionAlgorithm {
-    fn lookup() -> Vec<(CompressionAlgorithm, &'static str)> {
-        use CompressionAlgorithm::*;
-        vec![
-            (Baseline, "baseline"),
-            (DedupHash, "dedup_hash"),
-            (DedupBTree, "dedup_btree"),
-            (NS, "ns"),
-            (NSRaw, "ns_raw"),
-            (Smaz, "smaz"),
-            (SmazRaw, "smaz_raw"),
-            (FastPfor, "pfor"),
-            (SmazFastPfor, "smaz+pfor"),
-            (SmazNS, "smaz+ns"),
-        ]
-    }
-
-    pub fn str(self) -> &'static str {
-        CompressionAlgorithm::lookup()
-            .into_iter()
-            .find_map(|(elem, s)| (elem == self).then(|| s))
-            .unwrap()
-    }
-}
-
-impl FromStr for CompressionAlgorithm {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        CompressionAlgorithm::lookup()
-            .into_iter()
-            .find_map(|(elem, name)| (name == s).then(|| elem))
-            .ok_or_else(|| {
-                let mut s = String::from("allowed: ");
-                for name in Self::lookup().into_iter().map(|a| a.1) {
-                    s += name;
-                    s += " ";
-                }
-                s
-            })
-    }
 }
