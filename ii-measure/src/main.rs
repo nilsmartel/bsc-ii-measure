@@ -48,7 +48,7 @@ fn main() {
     if let Some(f) = factor {
         if f >= 0.5
             && &table == "main_tokenized"
-            && (algorithm == Baseline || algorithm.str().contains("raw"))
+            && (algorithm == Baseline || algorithm == SmazRaw || algorithm == NSRaw)
         {
             eprintln!(
                 "using {} on more than 50% of corpus {table} is not expected to work",
