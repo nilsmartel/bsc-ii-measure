@@ -45,7 +45,6 @@ pub enum CompressionAlgorithm {
     SmazRaw,
 
     FastPfor,
-    FastPforRaw,
 
     SmazFastPfor,
     SmazNS,
@@ -63,7 +62,6 @@ impl CompressionAlgorithm {
             (Smaz, "smaz"),
             (SmazRaw, "smaz_raw"),
             (FastPfor, "pfor"),
-            (FastPforRaw, "pfor_raw"),
             (SmazFastPfor, "smaz+pfor"),
             (SmazNS, "smaz+ns"),
         ]
