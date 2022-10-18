@@ -32,23 +32,48 @@ pub struct Config {
     pub header_only: bool,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 pub enum CompressionAlgorithm {
     Baseline,
     DedupHash,
     DedupBTree,
+
     NS,
+    NSRaw,
+
+    Smaz,
+    SmazRaw,
+
+    FastPfor,
+    FastPforRaw,
+
+    SmazFastPfor,
+    SmazNS,
 }
 
 impl CompressionAlgorithm {
+    fn lookup() -> Vec<(CompressionAlgorithm, &'static str)> {
+        use CompressionAlgorithm::*;
+        vec![
+            (Baseline, "baseline"),
+            (DedupHash, "dedup_hash"),
+            (DedupBTree, "dedup_btree"),
+            (NS, "ns"),
+            (NSRaw, "ns_raw"),
+            (Smaz, "smaz"),
+            (SmazRaw, "smaz_raw"),
+            (FastPfor, "pfor"),
+            (FastPforRaw, "pfor_raw"),
+            (SmazFastPfor, "smaz+pfor"),
+            (SmazNS, "smaz+ns"),
+        ]
+    }
+
     pub fn str(self) -> String {
-        match self {
-            Self::Baseline => "baseline",
-            Self::DedupHash => "dedup_hash",
-            Self::DedupBTree => "dedup_btree",
-            Self::NS => "ns",
-        }
-        .to_string()
+        CompressionAlgorithm::lookup()
+            .into_iter()
+            .find_map(|(elem, s)| (elem == self).then(|| s.to_string()))
+            .unwrap()
     }
 }
 
@@ -56,12 +81,16 @@ impl FromStr for CompressionAlgorithm {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "baseline" => Ok(CompressionAlgorithm::Baseline),
-            "dedup_hash" => Ok(CompressionAlgorithm::DedupHash),
-            "dedup_btree" => Ok(CompressionAlgorithm::DedupBTree),
-            "ns" => Ok(CompressionAlgorithm::NS),
-            _ => Err(String::from("allowed: baseline dedup_hash dedup_btree ns")),
-        }
+        CompressionAlgorithm::lookup()
+            .into_iter()
+            .find_map(|(elem, name)| (name == s).then(|| elem))
+            .ok_or_else(|| {
+                let mut s = String::from("allowed: ");
+                for name in Self::lookup().into_iter().map(|a| a.1) {
+                    s += name;
+                    s += " ";
+                }
+                s
+            })
     }
 }
