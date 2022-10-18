@@ -178,7 +178,7 @@ impl InvertedIndex<Option<Vec<TableLocation>>> for BTreeMap<String, Vec<TableLoc
 
 impl InvertedIndex<Option<Vec<TableLocation>>> for Compressed4Wise {
     fn get(&self, key: &str) -> Option<Vec<TableLocation>> {
-        use int_compression_4_wise::decompress;
+        use group_varint_encoding::decompress;
         let v = {
             let (data, overshoot) = self.get(key)?;
 

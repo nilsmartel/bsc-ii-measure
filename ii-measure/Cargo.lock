@@ -419,6 +419,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "group-varint-encoding"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f86bfc89adf153aad6f6c6d5820044a554f3a36efe0b16eb9daf6b65e823222"
+dependencies = [
+ "smallvec",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -506,7 +515,7 @@ dependencies = [
  "csv",
  "fallible-iterator",
  "fast-smaz",
- "int-compression-4-wise",
+ "group-varint-encoding",
  "jemalloc-ctl",
  "jemallocator",
  "lz4_flex",

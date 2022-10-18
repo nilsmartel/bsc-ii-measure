@@ -1,6 +1,6 @@
 use crate::inverted_index::{binary_search_by_index, InvertedIndex};
 use crate::table_lake::*;
-use int_compression_4_wise::{compress, decompress};
+use group_varint_encoding::{compress, decompress};
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::sync::mpsc::Receiver;

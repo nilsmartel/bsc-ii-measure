@@ -1,7 +1,7 @@
 use crate::inverted_index::InvertedIndex;
 use crate::table_lake::*;
 use crate::util::random_keys::{RandomKeys, DESIRED_KEY_COUNT};
-use int_compression_4_wise::{compress, decompress};
+use group_varint_encoding::{compress, decompress};
 use rand::random;
 use std::collections::HashMap;
 use std::sync::mpsc::Receiver;
