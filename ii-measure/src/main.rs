@@ -48,7 +48,7 @@ fn main() {
     if let Some(f) = factor {
         if f >= 0.5
             && &table == "main_tokenized"
-            && (algorithm == Baseline || algorithm == SmazRaw || algorithm == NSRaw)
+            && (algorithm == Baseline || algorithm == Smaz || algorithm == NS)
         {
             eprintln!(
                 "using {} on more than 50% of corpus {table} is not expected to work",
@@ -86,10 +86,11 @@ fn main() {
         DedupBTree => measure_logging(algorithm::dedup_btree, receiver, log),
 
         NSDedup => measure_logging(algorithm::ns_4_wise, receiver, log),
-        NSRaw => measure_logging(algorithm::ns_raw, receiver, log),
+        NS => measure_logging(algorithm::ns_raw, receiver, log),
+        NSArena => measure_logging(algorithm::ns_arena::ns_arena, receiver, log),
 
         SmazDedup => measure_logging(algorithm::smaz, receiver, log),
-        SmazRaw => measure_logging(algorithm::smaz_raw, receiver, log),
+        Smaz => measure_logging(algorithm::smaz_raw, receiver, log),
 
         SmazNSDedup => measure_logging(algorithm::smaz_ns, receiver, log),
 

@@ -18,7 +18,7 @@ pub struct NSIndex {
 }
 
 /// Baseline measure of data, the way it is present in database
-pub fn ns_arena(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration, NsIndex) {
+pub fn ns_arena(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration, NSIndex) {
     let mut data = Vec::new();
     let mut build_time = Duration::new(0, 0);
 
@@ -41,6 +41,7 @@ pub fn ns_arena(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration
     }
 
     eprintln!("entries: {}", data.len());
+    // sorting is required, because postgres does not return it's entries in the same fashion rust expects it.
     eprint!("sorting");
     data.sort_unstable();
     eprint!(" complete");
@@ -50,7 +51,7 @@ pub fn ns_arena(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration
 
 impl InvertedIndex<Vec<TableLocation>> for NSIndex {
     fn get(&self, key: &str) -> Vec<TableLocation> {
-        fn get_start_point(a: &[(String, Vec<u8>)], index: usize, elem: &String) -> Ordering {
+        fn get_start_point<T>(a: &[(String, T)], index: usize, elem: &String) -> Ordering {
             if index == 0 {
                 return a[0].0.cmp(elem);
             }
@@ -67,7 +68,7 @@ impl InvertedIndex<Vec<TableLocation>> for NSIndex {
             }
         }
 
-        fn get_end_point(a: &[(String, Vec<u8>)], index: usize, elem: &String) -> Ordering {
+        fn get_end_point<T>(a: &[(String, T)], index: usize, elem: &String) -> Ordering {
             if a.len() == index + 1 {
                 return a[index].0.cmp(elem);
             }
@@ -94,22 +95,20 @@ impl InvertedIndex<Vec<TableLocation>> for NSIndex {
         let endindex = binary_search_by_index(&self.data, 0, self.data.len(), get_end_point, &key)
             .unwrap_or(6);
 
-        if startindex > endindex || endindex - startindex > 1000 {
-            eprintln!("=> '{key}'");
-            eprintln!("[{}]: {}..{}", endindex - startindex, startindex, endindex);
-        }
-
         let size = endindex - startindex;
 
         let mut v = Vec::with_capacity(size);
 
         // decode all
+        let mut buffer = Vec::with_capacity(32);
         for (_, location) in &self.data[startindex..endindex] {
-            // append leading 0
-            let mut location = location.to_vec();
-            location.push(0);
+            let ArenaIndex { start, length } = *location;
+            let end = start + length;
+            buffer.clear();
+            buffer.extend(&self.arena[start..end]);
+            buffer.push(0);
 
-            let location = decompress(&location).collect();
+            let location = decompress(&buffer).collect();
             let location = TableLocation::from_integers(&location);
             v.push(location);
         }

@@ -8,10 +8,11 @@ pub enum CompressionAlgorithm {
     DedupBTree,
 
     NSDedup,
-    NSRaw,
+    NS,
+    NSArena,
 
     SmazDedup,
-    SmazRaw,
+    Smaz,
 
     FastPforDedup,
 
@@ -27,8 +28,9 @@ impl CompressionAlgorithm {
             (DedupHash, "dedup_hash"),
             (DedupBTree, "dedup_btree"),
             (NSDedup, "ns+dedup"),
-            (NSRaw, "ns"),
-            (SmazRaw, "smaz"),
+            (NS, "ns"),
+            (NSArena, "ns_arena"),
+            (Smaz, "smaz"),
             (SmazDedup, "smaz+dedup"),
             (FastPforDedup, "pfor+dedup"),
             (SmazFastPforDedup, "smaz+pfor+dedup"),
