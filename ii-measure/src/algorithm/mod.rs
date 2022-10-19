@@ -3,6 +3,7 @@ mod dedup;
 mod ns;
 mod smaz;
 mod smaz_ns;
+pub mod ns_arena;
 
 pub use baseline::*;
 pub use dedup::*;

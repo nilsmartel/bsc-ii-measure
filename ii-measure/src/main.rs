@@ -1,8 +1,8 @@
 mod util;
 use util::*;
 
-mod kinds;
 mod inverted_index;
+mod kinds;
 mod measure;
 mod table_lake;
 use log::Logger;
