@@ -23,7 +23,7 @@ fn main() {
         rowid,
     } in bintable
     {
-        if last < tokenized {
+        if last <= tokenized {
             last = tokenized;
             i += 1;
             continue;
