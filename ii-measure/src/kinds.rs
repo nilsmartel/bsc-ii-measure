@@ -50,6 +50,7 @@ impl FromStr for CompressionAlgorithm {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let s = s.trim();
         CompressionAlgorithm::lookup()
             .into_iter()
             .find_map(|(elem, name)| (name == s).then(|| elem))
