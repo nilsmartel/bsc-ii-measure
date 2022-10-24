@@ -37,7 +37,7 @@ fn main() {
 
     // write back data
 
-    let mut out = File::open(output).expect("open output file");
+    let mut out = File::create(output).expect("open output file");
     let mut acc = ParseAcc::default();
 
     let mut rnd = rand::thread_rng();

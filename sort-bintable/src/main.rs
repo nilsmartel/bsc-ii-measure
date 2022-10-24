@@ -63,7 +63,7 @@ fn main() {
 
     // write back data
 
-    let mut out = File::open(output).expect("open output file");
+    let mut out = File::create(output).expect("open output file");
     let mut acc = ParseAcc::default();
 
     eprintln!("writing");
