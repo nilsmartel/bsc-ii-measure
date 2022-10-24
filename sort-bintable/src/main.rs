@@ -53,9 +53,12 @@ fn main() {
         panic!("input must not be output");
     }
 
+    eprintln!("streaming");
     let rows = get_rows(input);
 
     let mut groups = group(rows);
+
+    eprintln!("sorting");
     groups.sort_unstable();
 
     // write back data
@@ -63,6 +66,7 @@ fn main() {
     let mut out = File::open(output).expect("open output file");
     let mut acc = ParseAcc::default();
 
+    eprintln!("writing");
     for g in groups {
         for row in g {
             row.write_bin(&mut out, &mut acc).expect("write to output");
