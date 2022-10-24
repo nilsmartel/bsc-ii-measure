@@ -60,11 +60,6 @@ impl InvertedIndex<Vec<TableLocation>> for Vec<(String, TableLocation)> {
         let endindex =
             binary_search_by_index(self, 0, self.len(), get_end_point, &key).unwrap_or(6);
 
-        if startindex > endindex || endindex - startindex > 1000 {
-            eprintln!("=> '{key}'");
-            eprintln!("[{}]: {}..{}", endindex - startindex, startindex, endindex);
-        }
-
         let size = endindex - startindex;
 
         let mut v = Vec::with_capacity(size);

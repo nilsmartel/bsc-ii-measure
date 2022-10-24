@@ -24,7 +24,7 @@ pub trait RandomKeys {
 
 impl<T> RandomKeys for &[(String, T)] {
     fn random_keys_potentially_ordered(&self) -> Vec<String> {
-        eprintln!("Getting rndom keys");
+        eprintln!("Getting random keys");
         // NOTE
         // It's super important to sample unique values,
         // otherwise the population of keys will be heavily biased

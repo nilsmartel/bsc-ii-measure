@@ -129,11 +129,6 @@ impl InvertedIndex<Vec<TableLocation>> for InvIdxNsRaw {
         let endindex = binary_search_by_index(&self.data, 0, self.data.len(), get_end_point, &key)
             .unwrap_or(6);
 
-        if startindex > endindex || endindex - startindex > 1000 {
-            eprintln!("=> '{key}'");
-            eprintln!("[{}]: {}..{}", endindex - startindex, startindex, endindex);
-        }
-
         let size = endindex - startindex;
 
         let mut v = Vec::with_capacity(size);
