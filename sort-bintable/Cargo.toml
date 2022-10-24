@@ -1,0 +1,12 @@
+[package]
+name = "sort-bintable"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bintable2 = { path = "../bintable2" }
+# Flexible concrete Error type built on std::error::Error
+anyhow = "1.0.66"
+
