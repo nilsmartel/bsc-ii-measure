@@ -67,7 +67,7 @@ fn main() {
 
             hist.table(tableid as u64);
             hist.col(colid as u64);
-            hist.row(rowid);
+            hist.row(rowid as u64);
 
             if tokenized != last_value {
                 last_value = tokenized;
