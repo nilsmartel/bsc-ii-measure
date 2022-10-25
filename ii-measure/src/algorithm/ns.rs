@@ -6,8 +6,6 @@ use std::collections::HashMap;
 use std::sync::mpsc::Receiver;
 use std::time::{Duration, Instant};
 
-use is_sorted::
-
 // we're storing the overshooting length,
 // as the implementation does not consider that elements may not come in blocks of precisely 4.
 pub type Compressed4Wise = HashMap<String, (Vec<u8>, u8)>;

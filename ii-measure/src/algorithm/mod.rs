@@ -1,9 +1,9 @@
 mod baseline;
 mod dedup;
 mod ns;
+pub mod ns_arena;
 mod smaz;
 mod smaz_ns;
-pub mod ns_arena;
 
 pub use baseline::*;
 pub use dedup::*;

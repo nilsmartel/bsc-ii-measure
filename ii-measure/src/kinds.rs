@@ -1,6 +1,5 @@
 use std::str::FromStr;
 
-
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub enum CompressionAlgorithm {
     Baseline,
