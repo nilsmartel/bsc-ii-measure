@@ -6,6 +6,8 @@ use std::collections::HashMap;
 use std::sync::mpsc::Receiver;
 use std::time::{Duration, Instant};
 
+use is_sorted::
+
 // we're storing the overshooting length,
 // as the implementation does not consider that elements may not come in blocks of precisely 4.
 pub type Compressed4Wise = HashMap<String, (Vec<u8>, u8)>;
@@ -76,10 +78,11 @@ pub fn ns_raw(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration, 
     }
 
     eprintln!("entries: {}", data.len());
-    eprint!("sorting");
-    data.sort_unstable();
-    eprint!(" complete");
-
+    if !is_sorted::IsSorted::is_sorted(&mut data.iter()) {
+        eprint!("sorting");
+        data.sort_unstable();
+        eprint!(" complete");
+    }
     (data.len(), build_time, InvIdxNsRaw { data })
 }
 

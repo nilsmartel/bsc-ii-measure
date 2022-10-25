@@ -25,3 +25,6 @@ sqlx = { version = "0.6", features = [ "runtime-tokio-native-tls" , "postgres" ]
 tokio = { version = "1", features = ["full"] }
 
 tokio-stream = "0.1.10"          # Utilities to work with `Stream` and `tokio`.
+# Is an Iterator sorted?
+is_sorted = "0.1.1"
+

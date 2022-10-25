@@ -5,7 +5,6 @@ use std::cmp::Ordering;
 use std::sync::mpsc::Receiver;
 use std::time::{Duration, Instant};
 
-
 #[derive(Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 struct ArenaIndex {
     start: usize,
@@ -14,7 +13,7 @@ struct ArenaIndex {
 
 pub struct NSIndex {
     data: Vec<(String, ArenaIndex)>,
-    arena: Vec<u8>
+    arena: Vec<u8>,
 }
 
 /// Baseline measure of data, the way it is present in database
@@ -34,17 +33,19 @@ pub fn ns_arena(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration
         let length = location.len();
         arena.extend(location);
 
-
-        data.push((key, ArenaIndex {start, length}));
+        data.push((key, ArenaIndex { start, length }));
 
         build_time += starttime.elapsed();
     }
 
     eprintln!("entries: {}", data.len());
+
     // sorting is required, because postgres does not return it's entries in the same fashion rust expects it.
-    eprint!("sorting");
-    data.sort_unstable();
-    eprint!(" complete");
+    if !is_sorted::IsSorted::is_sorted(&mut data.iter()) {
+        eprint!("sorting");
+        data.sort_unstable();
+        eprint!(" complete");
+    }
 
     (data.len(), build_time, NSIndex { data, arena })
 }

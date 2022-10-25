@@ -94,9 +94,11 @@ pub fn smaz_raw(
 
     let starttime = Instant::now();
     eprintln!("entries: {}", data.len());
-    eprint!("sorting");
-    data.sort_unstable();
-    eprint!(" complete");
+    if !is_sorted::IsSorted::is_sorted(&mut data.iter()) {
+        eprint!("sorting");
+        data.sort_unstable();
+        eprint!(" complete");
+    }
     build_time += starttime.elapsed();
 
     (data.len(), build_time, SmazInvertedIndexRaw { data })

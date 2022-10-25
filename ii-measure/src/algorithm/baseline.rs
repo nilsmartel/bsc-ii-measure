@@ -1,4 +1,5 @@
 use crate::table_lake::*;
+use is_sorted::IsSorted;
 use std::sync::mpsc::Receiver;
 use std::time::{Duration, Instant};
 
@@ -15,9 +16,11 @@ pub fn baseline(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration
     }
 
     eprintln!("entries: {}", ii.len());
-    eprint!("sorting");
-    ii.sort_unstable();
-    eprint!(" complete");
+    if IsSorted::is_sorted(&mut ii.iter()) {
+        eprint!("sorting");
+        ii.sort_unstable();
+        eprint!(" complete");
+    }
 
     (ii.len(), build_time, ii)
 }
