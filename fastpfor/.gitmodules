@@ -1,0 +1,3 @@
+[submodule "fastpfor"]
+	path = fastpfor
+	url = git@github.com:lemire/fastpfor
