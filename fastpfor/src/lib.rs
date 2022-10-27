@@ -12,7 +12,6 @@ mod tests {
             result as u32
         }
 
-        
         (0..len).map(random_from_seed).collect()
     }
 
@@ -25,7 +24,7 @@ mod tests {
         let n = 1024;
         let data = random_data(n);
 
-        let mut compressed_data = vec![0; n+1];
+        let mut compressed_data = vec![0; n + 1];
         let compressed_data = &mut compressed_data[1..];
 
         let size = codec
