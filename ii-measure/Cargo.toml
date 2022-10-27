@@ -28,3 +28,5 @@ tokio-stream = "0.1.10"          # Utilities to work with `Stream` and `tokio`.
 # Is an Iterator sorted?
 is_sorted = "0.1.1"
 
+fastpfor = {path = "../fastpfor" }
+
