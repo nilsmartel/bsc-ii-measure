@@ -5,6 +5,9 @@ mod tests {
     use super::*;
 
     #[test]
+    fn nothing() {}
+
+    #[test]
     fn compress_and_decompress_raw_bindings() {
         let n = 1024 * 1024usize;
 
