@@ -20,6 +20,31 @@ mod tests {
     fn nothing() {}
 
     #[test]
+    fn unaligned() {
+        let codec = Codec::simdfastpfor256();
+        let n = 1024;
+        let data = random_data(n);
+
+        let mut compressed_data = vec![0; n+1];
+        let compressed_data = &mut compressed_data[1..];
+
+        let size = codec
+            .compress(&data, &mut compressed_data)
+            .expect("to compress data");
+        compressed_data.resize(size, 0);
+
+        let mut result = vec![0; n];
+
+        let bytes_written = codec
+            .decompress(&compressed_data, &mut result)
+            .expect("enough space to transfer bytes");
+
+        assert_eq!(n, bytes_written, "expect size of in and out to be the same");
+
+        assert_eq!(data, result);
+    }
+
+    #[test]
     fn rust_interface() {
         let codec = Codec::simdfastpfor256();
         let n = 1024;
@@ -170,16 +195,16 @@ impl Codec {
         data: &[u32],
         destination: &mut [u32],
     ) -> Result<usize, BufferSizeError> {
-        assert_eq!(
-            data.as_ptr().align_offset(16),
-            0,
-            "expected 16 bytes aligned input data"
-        );
-        assert_eq!(
-            destination.as_ptr().align_offset(16),
-            0,
-            "expected 16 bytes aligned destination"
-        );
+        // assert_eq!(
+        //     data.as_ptr().align_offset(16),
+        //     0,
+        //     "expected 16 bytes aligned input data"
+        // );
+        // assert_eq!(
+        //     destination.as_ptr().align_offset(16),
+        //     0,
+        //     "expected 16 bytes aligned destination"
+        // );
 
         // Compress and return how many bytes were written.
         let bytes_written = unsafe {
@@ -204,16 +229,16 @@ impl Codec {
         compressed_data: &[u32],
         destination: &mut [u32],
     ) -> Result<usize, BufferSizeError> {
-        assert_eq!(
-            compressed_data.as_ptr().align_offset(16),
-            0,
-            "expected 16 bytes aligned compressed input data"
-        );
-        assert_eq!(
-            destination.as_ptr().align_offset(16),
-            0,
-            "expected 16 bytes aligned destination"
-        );
+        // assert_eq!(
+        //     compressed_data.as_ptr().align_offset(16),
+        //     0,
+        //     "expected 16 bytes aligned compressed input data"
+        // );
+        // assert_eq!(
+        //     destination.as_ptr().align_offset(16),
+        //     0,
+        //     "expected 16 bytes aligned destination"
+        // );
 
         // Compress and return how many bytes were written.
         let bytes_written = unsafe {

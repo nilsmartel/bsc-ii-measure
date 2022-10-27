@@ -48,7 +48,7 @@ pub fn pfor(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration, II
                 .compress(&curr_group, compressed_data)
                 .expect("no buffer overflow");
             
-            eprintln!("written % 16 {}", written % 16);
+            eprintln!("written % 16 = {}", written % 16);
 
             // calculate position of compressed data inside buffer
             let start = offset;
