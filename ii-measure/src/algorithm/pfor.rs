@@ -32,7 +32,10 @@ pub fn pfor(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration, II
     let (mut curr_key, loc) = receiver.recv().expect("first item");
     let mut curr_group = Vec::from_iter(loc.integers());
 
+    let mut count = 0;
+
     for (key, location) in receiver {
+        count += 1;
         let starttime = Instant::now();
 
         if key != curr_key {
@@ -77,7 +80,7 @@ pub fn pfor(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration, II
         compressed_data,
         codec,
     };
-    (ii.ii.len(), build_time, ii)
+    (count, build_time, ii)
 }
 
 impl InvertedIndex<Vec<TableLocation>> for IIFastPfor {
