@@ -40,7 +40,7 @@ impl CompressionAlgorithm {
     pub fn str(self) -> &'static str {
         CompressionAlgorithm::lookup()
             .into_iter()
-            .find_map(|(elem, s)| (elem == self).then(|| s))
+            .find_map(|(elem, s)| (elem == self).then_some(s))
             .unwrap()
     }
 }
@@ -52,7 +52,7 @@ impl FromStr for CompressionAlgorithm {
         let s = s.trim();
         CompressionAlgorithm::lookup()
             .into_iter()
-            .find_map(|(elem, name)| (name == s).then(|| elem))
+            .find_map(|(elem, name)| (name == s).then_some(elem))
             .ok_or_else(|| {
                 let mut s = String::from("allowed: ");
                 for name in Self::lookup().into_iter().map(|a| a.1) {

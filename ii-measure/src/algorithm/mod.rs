@@ -5,6 +5,8 @@ pub mod ns_arena;
 mod smaz;
 mod smaz_ns;
 
+pub mod pfor;
+
 pub use baseline::*;
 pub use dedup::*;
 pub use ns::*;

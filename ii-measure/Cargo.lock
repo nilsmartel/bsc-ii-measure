@@ -301,6 +301,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6625d0b7fa35899042f4ba9940ddf9053ba137fa7c0f218820e8c3e5de69ac18"
 
 [[package]]
+name = "fastpfor"
+version = "0.1.0"
+
+[[package]]
 name = "fastrand"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -515,6 +519,7 @@ dependencies = [
  "csv",
  "fallible-iterator",
  "fast-smaz",
+ "fastpfor",
  "group-varint-encoding",
  "is_sorted",
  "jemalloc-ctl",

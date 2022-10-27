@@ -15,24 +15,23 @@ where
     let keys = ii.random_keys();
 
     let total_attempts = keys.len() as u32;
-    let total_attempts_f = total_attempts as f32;
-
-    let err = std::io::stderr();
-    let mut stdout = err.lock();
-
     let starttime = Instant::now();
-    // TODO ensure that this is not getting optimized out!
-    for (index, key) in keys.into_iter().enumerate() {
-        let _table_indices = ii.get(&key);
 
-        if index & 0x1ff == 0 {
-            let percentage = (index as f32 / total_attempts_f) * 100.0;
-            writeln!(&mut stdout, "{:02}%", percentage).expect("log progress");
+    {
+        let total_attempts_f = total_attempts as f32;
+        let err = std::io::stderr();
+        let mut stdout = err.lock();
+
+        // TODO ensure that this is not getting optimized out!
+        for (index, key) in keys.into_iter().enumerate() {
+            let _table_indices = ii.get(&key);
+
+            if index & 0x1ff == 0 {
+                let percentage = (index as f32 / total_attempts_f) * 100.0;
+                writeln!(&mut stdout, "{:02}%", percentage).expect("log progress");
+            }
         }
     }
-
-    drop(stdout);
-    drop(err);
 
     let average_retrieval_time = starttime.elapsed() / total_attempts;
 
