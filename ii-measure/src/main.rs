@@ -34,6 +34,7 @@ fn main() {
         header,
         header_only,
         mut factor,
+        multi_proc,
     } = cli::Config::from_args();
 
     if header_only {
@@ -70,7 +71,12 @@ fn main() {
     }
 
     // init information logger
-    let log = Logger::new(algorithm.str().to_string(), basename(&table), header);
+    let log = Logger::new(
+        algorithm.str().to_string(),
+        basename(&table),
+        header,
+        multi_proc,
+    );
 
     let receiver = if database {
         indices_sqlx(&table, factor)

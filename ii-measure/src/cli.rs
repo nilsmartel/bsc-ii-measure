@@ -29,4 +29,8 @@ pub struct Config {
     /// if true, print only the csv header and exit
     #[structopt(long)]
     pub header_only: bool,
+
+    /// Wether this run was performed in parrallel along with other instances
+    #[structopt(short, long)]
+    pub multi_proc: bool,
 }
