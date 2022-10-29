@@ -1,6 +1,6 @@
 use anyhow::Result;
 use fast_smaz::Smaz;
-use sqlx::{postgres::PgRow, FromRow, Row};
+// use sqlx::{postgres::PgRow, FromRow, Row};
 use std::io::Write;
 use varint_compression::*;
 
@@ -200,34 +200,34 @@ impl TableRow {
     }
 }
 
-impl<'r> FromRow<'r, PgRow> for TableRow {
-    fn from_row(row: &'r PgRow) -> Result<Self, sqlx::Error> {
-        let tokenized: Option<String> = row.try_get(0)?;
-        let tokenized = tokenized.unwrap_or_default();
+// impl<'r> FromRow<'r, PgRow> for TableRow {
+//     fn from_row(row: &'r PgRow) -> Result<Self, sqlx::Error> {
+//         let tokenized: Option<String> = row.try_get(0)?;
+//         let tokenized = tokenized.unwrap_or_default();
 
-        let tableid = get_number(row, 1) as u32;
-        let colid = get_number(row, 2) as u32;
-        let rowid = get_number(row, 3) as u32;
+//         let tableid = get_number(row, 1) as u32;
+//         let colid = get_number(row, 2) as u32;
+//         let rowid = get_number(row, 3) as u32;
 
-        Ok(TableRow {
-            tokenized,
-            tableid,
-            colid,
-            rowid,
-        })
-    }
-}
+//         Ok(TableRow {
+//             tokenized,
+//             tableid,
+//             colid,
+//             rowid,
+//         })
+//     }
+// }
 
-fn get_number(row: &PgRow, index: usize) -> i64 {
-    if let Ok(v) = row.try_get::<i64, usize>(index) {
-        return v;
-    }
-    if let Ok(v) = row.try_get::<i32, usize>(index) {
-        return v as i64;
-    }
-    if let Ok(v) = row.try_get::<i8, usize>(index) {
-        return v as i64;
-    }
+// fn get_number(row: &PgRow, index: usize) -> i64 {
+//     if let Ok(v) = row.try_get::<i64, usize>(index) {
+//         return v;
+//     }
+//     if let Ok(v) = row.try_get::<i32, usize>(index) {
+//         return v as i64;
+//     }
+//     if let Ok(v) = row.try_get::<i8, usize>(index) {
+//         return v as i64;
+//     }
 
-    row.try_get::<i16, usize>(index).unwrap() as i64
-}
+//     row.try_get::<i16, usize>(index).unwrap() as i64
+// }

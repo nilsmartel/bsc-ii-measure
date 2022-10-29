@@ -1,6 +1,6 @@
 [package]
 name = "bintable2"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -11,5 +11,7 @@ lz4_flex = "0.9.5"         # Fastest LZ4 implementation in Rust, no unsafe by de
 fast-smaz = "0.1.0"    # Pure Rust SMAZ compression implementation
 varint-compression = "0.2.0"    # variable length integer compression
 anyhow = "1.0.65"                                   # Flexible concrete Error type built on std::error::Error
-sqlx = { version = "0.6", features = [ "runtime-tokio-native-tls" , "postgres" ] }
-tokio = { version = "1", features = ["full"] }
+
+# sqlx = { version = "0.6", features = [ "runtime-tokio-native-tls" , "postgres" ] }
+
+# tokio = { version = "1", features = ["full"] }
