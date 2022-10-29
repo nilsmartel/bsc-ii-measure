@@ -113,6 +113,10 @@ mod test {
 }
 
 impl TableRow {
+    pub fn integers(&self) -> [u32; 3] {
+        [self.tableid, self.colid, self.rowid]
+    }
+
     pub fn from_bin<'b>(data: &'b [u8], acc: &mut ParseAcc) -> Result<(Self, &'b [u8]), ReadError> {
         let (need_length, rest) = match decompress(data) {
             Ok(d) => d,

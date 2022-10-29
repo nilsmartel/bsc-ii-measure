@@ -1,0 +1,20 @@
+[package]
+name = "compression-analyzer"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+structopt = "*"
+
+bintable2 = { path = "../bintable2" }
+
+fastpfor = { path = "../fastpfor" }
+
+# Pure Rust SMAZ compression implementation
+fast-smaz = "0.1.0"
+
+# Fast algorithm to compress lists if integers in blocks of 4. Appends 0s to blocks, if length…
+group-varint-encoding = "0.1.0"
+
