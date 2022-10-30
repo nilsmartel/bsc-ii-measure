@@ -47,6 +47,11 @@ fn main() {
     }
 
     if let Some(f) = factor {
+        if f < 0.00001 {
+            eprintln!("to small");
+            std::process::exit(0);
+        }
+
         if f >= 0.5
             && &table == "main_tokenized"
             && (algorithm == Baseline || algorithm == Smaz || algorithm == NS)
