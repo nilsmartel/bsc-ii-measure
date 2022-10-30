@@ -6,6 +6,7 @@ mod smaz;
 mod smaz_ns;
 
 pub mod pfor;
+pub mod pfor_x;
 
 pub use baseline::*;
 pub use dedup::*;
