@@ -35,7 +35,7 @@ impl CompressionAlgorithm {
             (Smaz, "smaz"),
             (FrontCoding, "frontcode"),
             (SmazDedup, "smaz+dedup"),
-            (FastPforDedup, "pfor+dedup"),
+            // (FastPforDedup, "pfor+dedup"),
             (FastPforExactDedup, "pforx+dedup"),
             (SmazFastPforDedup, "smaz+pfor+dedup"),
             (SmazNSDedup, "smaz+ns+dedup"),
