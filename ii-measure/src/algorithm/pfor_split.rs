@@ -50,7 +50,7 @@ pub fn pforsplit(
 
                 let start = offset;
 
-                let mut length = [0,0,0];
+                let mut length = [0, 0, 0];
                 let uncompressed_length = groups[0].len() as u32;
                 for i in 0..3 {
                     let group = &groups[i];
@@ -66,7 +66,7 @@ pub fn pforsplit(
 
                     // calculate position of compressed data inside buffer
                     length[i] = written as u32
-                };
+                }
 
                 let index = ArenaIndex {
                     start,
