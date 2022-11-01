@@ -6,6 +6,7 @@ mod smaz;
 mod smaz_ns;
 
 pub mod pfor_x;
+pub mod pfor_split;
 pub mod frontcoding;
 
 pub use baseline::*;

@@ -104,7 +104,7 @@ fn main() {
         SmazDedup => measure_logging(algorithm::smaz, receiver, log),
         Smaz => measure_logging(algorithm::smaz_raw, receiver, log),
 
-        FrontCoding => measure_logging(algorithm::frontcoding::frontcoding, receiver, log),
+        FrontCodingDedup => measure_logging(algorithm::frontcoding::frontcoding, receiver, log),
 
         SmazNSDedup => measure_logging(algorithm::smaz_ns, receiver, log),
 
