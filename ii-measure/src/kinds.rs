@@ -17,7 +17,8 @@ pub enum CompressionAlgorithm {
 
     FrontCodingDedup,
 
-    FastPforExactDedup,
+    FastPforDedup,
+    FastPforSplitDedup,
 
     SmazFastPforDedup,
     SmazNSDedup,
@@ -37,7 +38,8 @@ impl CompressionAlgorithm {
             (Smaz, "smaz"),
             (FrontCodingDedup, "frontcoding+dedup"),
             (SmazDedup, "smaz+dedup"),
-            (FastPforExactDedup, "pfor+dedup"),
+            (FastPforDedup, "pfor+dedup"),
+            (FastPforSplitDedup, "pfor_split+dedup"),
             (SmazFastPforDedup, "smaz+pfor+dedup"),
             (SmazNSDedup, "smaz+ns+dedup"),
         ]

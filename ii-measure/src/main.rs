@@ -108,7 +108,8 @@ fn main() {
 
         SmazNSDedup => measure_logging(algorithm::smaz_ns, receiver, log),
 
-        FastPforExactDedup => measure_logging(algorithm::pfor_x::pfor, receiver, log),
+        FastPforDedup => measure_logging(algorithm::pfor_x::pfor, receiver, log),
+        FastPforSplitDedup => measure_logging(algorithm::pfor_split::pforsplit, receiver, log),
 
         _ => panic!("algorithm {} not yet implemented", algorithm.str()),
     }

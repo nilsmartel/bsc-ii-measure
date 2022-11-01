@@ -9,7 +9,7 @@ use std::time::{Duration, Instant};
 #[derive(Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 struct ArenaIndex {
     start: usize,
-    length: u32,
+    length: [u32; 3],
     uncompressed_length: u32,
 }
 
@@ -19,8 +19,9 @@ pub struct IIFastPforSplit {
     codec: Codec,
 }
 
-// EXAKT pfor algorithm
-pub fn pforsplit(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration, IIFastPforSplit) {
+pub fn pforsplit(
+    receiver: Receiver<(String, TableLocation)>,
+) -> (usize, Duration, IIFastPforSplit) {
     let codec = Codec::simdfastpfor128();
 
     let mut ii = HashMap::new();
@@ -34,7 +35,8 @@ pub fn pforsplit(receiver: Receiver<(String, TableLocation)>) -> (usize, Duratio
 
     {
         let (mut curr_key, loc) = receiver.recv().expect("first item");
-        let mut curr_group = Vec::from_iter(loc.integers());
+        let loc = loc.integers();
+        let mut groups = loc.map(|elem| vec![elem]);
 
         for (key, location) in receiver {
             count += 1;
@@ -42,24 +44,29 @@ pub fn pforsplit(receiver: Receiver<(String, TableLocation)>) -> (usize, Duratio
 
             if key != curr_key {
                 // make sure that compressed data has at least 4 times the amount of data available, as the uncompressed data needs.
-                while curr_group.len() * 4 > compressed_data[offset..].len() {
+                while groups[0].len() * 9 > compressed_data[offset..].len() {
                     compressed_data.extend((0..1024).map(|_| 0));
                 }
 
-                let compressed_data = &mut compressed_data[offset..];
-
-                // compress integers of current group
-                let written = codec
-                    .compress(&curr_group, compressed_data)
-                    .expect("no buffer overflow");
-
-                // calculate position of compressed data inside buffer
                 let start = offset;
-                let length = written as u32;
-                let uncompressed_length = curr_group.len() as u32;
 
-                // offset compressed data
-                offset += written;
+                let mut length = [0,0,0];
+                let uncompressed_length = groups[0].len() as u32;
+                for i in 0..3 {
+                    let group = &groups[i];
+                    let compressed_data = &mut compressed_data[offset..];
+
+                    // compress integers of current group
+                    let written = codec
+                        .compress(group, compressed_data)
+                        .expect("no buffer overflow");
+
+                    // offset compressed data
+                    offset += written;
+
+                    // calculate position of compressed data inside buffer
+                    length[i] = written as u32
+                };
 
                 let index = ArenaIndex {
                     start,
@@ -69,10 +76,14 @@ pub fn pforsplit(receiver: Receiver<(String, TableLocation)>) -> (usize, Duratio
                 ii.insert(curr_key, index);
 
                 curr_key = key;
-                curr_group.clear();
+
+                groups.iter_mut().for_each(Vec::clear);
             }
 
-            curr_group.extend(location.integers());
+            let ints = location.integers();
+            for i in 0..3 {
+                groups[i].push(ints[i]);
+            }
 
             build_time += starttime.elapsed();
         }
@@ -102,20 +113,27 @@ impl InvertedIndex<Vec<TableLocation>> for IIFastPforSplit {
     fn get(&self, key: &str) -> Vec<TableLocation> {
         let index = *self.ii.get(key).expect("to find index");
 
-        let compressed_data =
-            &self.compressed_data[index.start..(index.start + index.length as usize)];
-        let mut destination = vec![0; index.uncompressed_length as usize];
+        let mut start = index.start;
+        let values = index.length.map(|length| {
+            let length = length as usize;
+            let compressed_data = &self.compressed_data[start..(index.start + length)];
+            let mut destination = vec![0; index.uncompressed_length as usize];
 
-        self.codec
-            .decompress(compressed_data, &mut destination)
-            .expect("decompress data");
+            self.codec
+                .decompress(compressed_data, &mut destination)
+                .expect("decompress data");
 
-        let mut tables = Vec::with_capacity(destination.len());
-        for i in (0..destination.len()).step_by(3) {
+            start += length;
+            destination
+        });
+
+        let mut tables = Vec::with_capacity(index.uncompressed_length as usize);
+        for i in 0..index.uncompressed_length {
+            let i = i as usize;
             let l = TableLocation {
-                tableid: destination[i],
-                colid: destination[i + 1],
-                rowid: destination[i + 2],
+                tableid: values[0][i],
+                colid: values[1][i],
+                rowid: values[2][i],
             };
 
             tables.push(l);
