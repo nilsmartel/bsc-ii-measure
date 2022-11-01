@@ -1,7 +1,8 @@
+
 # cd table-to-file-2
 # cargo install --path . --force &
 
-cd ../subportion-bintable
+cd ./subportion-bintable
 cargo install --path . --force &
 
 cd ../sort-bintable
