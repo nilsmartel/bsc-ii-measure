@@ -116,7 +116,7 @@ impl InvertedIndex<Vec<TableLocation>> for IIFastPforSplit {
         let mut start = index.start;
         let values = index.length.map(|length| {
             let length = length as usize;
-            let compressed_data = &self.compressed_data[start..(index.start + length)];
+            let compressed_data = &self.compressed_data[start..(start + length)];
             let mut destination = vec![0; index.uncompressed_length as usize];
 
             self.codec
