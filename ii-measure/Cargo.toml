@@ -30,3 +30,4 @@ is_sorted = "0.1.1"
 
 fastpfor = {path = "../fastpfor" }
 
+dict-front-coding = { path = "../../dict-front-coding" }
