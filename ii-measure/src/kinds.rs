@@ -3,6 +3,8 @@ use std::str::FromStr;
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub enum CompressionAlgorithm {
     Baseline,
+    BaselineExact,
+
     DedupHash,
     DedupBTree,
 
@@ -15,7 +17,6 @@ pub enum CompressionAlgorithm {
 
     FrontCoding,
 
-    FastPforDedup,
     FastPforExactDedup,
 
     SmazFastPforDedup,
@@ -27,6 +28,7 @@ impl CompressionAlgorithm {
         use CompressionAlgorithm::*;
         vec![
             (Baseline, "baseline"),
+            (BaselineExact, "baselinex"),
             (DedupHash, "dedup_hash"),
             (DedupBTree, "dedup_btree"),
             (NSDedup, "ns+dedup"),
@@ -35,7 +37,6 @@ impl CompressionAlgorithm {
             (Smaz, "smaz"),
             (FrontCoding, "frontcode"),
             (SmazDedup, "smaz+dedup"),
-            // (FastPforDedup, "pfor+dedup"),
             (FastPforExactDedup, "pforx+dedup"),
             (SmazFastPforDedup, "smaz+pfor+dedup"),
             (SmazNSDedup, "smaz+ns+dedup"),

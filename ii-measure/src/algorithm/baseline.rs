@@ -24,3 +24,11 @@ pub fn baseline(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration
 
     (ii.len(), build_time, ii)
 }
+
+
+pub fn baseline_exact(receiver: Receiver<(String, TableLocation)>) -> (usize, Duration, Vec<Entry>) {
+    let (count, time, mut ii) = baseline(receiver);
+    ii.shrink_to_fit();
+    (count, time, ii)
+
+}

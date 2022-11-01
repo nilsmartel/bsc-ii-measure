@@ -93,6 +93,7 @@ fn main() {
     use kinds::CompressionAlgorithm::*;
     match algorithm {
         Baseline => measure_logging(algorithm::baseline, receiver, log),
+        BaselineExact => measure_logging(algorithm::baseline_exact, receiver, log),
         DedupHash => measure_logging(algorithm::dedup_hash, receiver, log),
         DedupBTree => measure_logging(algorithm::dedup_btree, receiver, log),
 
@@ -107,7 +108,6 @@ fn main() {
 
         SmazNSDedup => measure_logging(algorithm::smaz_ns, receiver, log),
 
-        // FastPforDedup => measure_logging(algorithm::pfor::pfor, receiver, log),
         FastPforExactDedup => measure_logging(algorithm::pfor_x::pfor, receiver, log),
 
         _ => panic!("algorithm {} not yet implemented", algorithm.str()),
