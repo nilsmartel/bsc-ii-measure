@@ -15,6 +15,7 @@ pub enum CompressionAlgorithm {
     SmazDedup,
     Smaz,
 
+    FrontCodingBaseline,
     FrontCodingDedup,
 
     FastPforDedup,
@@ -36,6 +37,7 @@ impl CompressionAlgorithm {
             (NS, "ns"),
             (NSArena, "ns_arena"),
             (Smaz, "smaz"),
+            (FrontCodingBaseline, "frontcoding"),
             (FrontCodingDedup, "frontcoding+dedup"),
             (SmazDedup, "smaz+dedup"),
             (FastPforDedup, "pfor+dedup"),
