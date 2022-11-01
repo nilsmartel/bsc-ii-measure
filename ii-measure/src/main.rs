@@ -52,17 +52,17 @@ fn main() {
             std::process::exit(0);
         }
 
-        if f >= 0.5
-            && &table == "main_tokenized"
-            && (algorithm == Baseline || algorithm == Smaz || algorithm == NS)
-        {
-            eprintln!(
-                "using {} on more than 50% of corpus {table} is not expected to work",
-                algorithm.str()
-            );
-            eprintln!("exiting, because this will crash anyway");
-            std::process::exit(0);
-        }
+        // if f >= 0.5
+        //     && &table == "main_tokenized"
+        //     && (algorithm == Baseline || algorithm == Smaz || algorithm == NS)
+        // {
+        //     eprintln!(
+        //         "using {} on more than 50% of corpus {table} is not expected to work",
+        //         algorithm.str()
+        //     );
+        //     eprintln!("exiting, because this will crash anyway");
+        //     std::process::exit(0);
+        // }
 
         let percentage = f * 100.;
         eprintln!(
@@ -102,6 +102,8 @@ fn main() {
 
         SmazDedup => measure_logging(algorithm::smaz, receiver, log),
         Smaz => measure_logging(algorithm::smaz_raw, receiver, log),
+
+        FrontCoding => measure_logging(algorithm::frontcoding::frontcoding, receiver, log),
 
         SmazNSDedup => measure_logging(algorithm::smaz_ns, receiver, log),
 
