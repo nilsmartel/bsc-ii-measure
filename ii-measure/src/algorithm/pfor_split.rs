@@ -44,7 +44,7 @@ pub fn pforsplit(
 
             if key != curr_key {
                 // make sure that compressed data has at least 4 times the amount of data available, as the uncompressed data needs.
-                while groups[0].len() * 9 > compressed_data[offset..].len() {
+                while groups[0].len() * 15 > compressed_data[offset..].len() {
                     compressed_data.extend((0..1024).map(|_| 0));
                 }
 
