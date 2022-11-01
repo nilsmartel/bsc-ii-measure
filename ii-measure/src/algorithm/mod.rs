@@ -5,7 +5,6 @@ pub mod ns_arena;
 mod smaz;
 mod smaz_ns;
 
-pub mod pfor;
 pub mod pfor_x;
 pub mod frontcoding;
 
