@@ -65,7 +65,7 @@ fn main() {
     // write back data
 
     let out = File::create(output).expect("open output file");
-    let mut out = BufWriter::new(out);
+    let mut out = BufWriter::with_capacity(1024 * 1024 /*1Mb*/, out);
     let mut acc = ParseAcc::default();
 
     eprintln!("writing");
