@@ -41,14 +41,11 @@ pub type Entry = (String, TableLocation);
 
 /// Trait used to digest multiple tables
 /// from various sources.
-pub trait TableLakeReader
-where
-    Self: Send,
-{
+pub trait TableLakeReader {
     fn read(&mut self, ch: SyncSender<Entry>);
 }
 
-impl<I: Iterator<Item = TableRow> + Send> TableLakeReader for I {
+impl<I: Iterator<Item = TableRow>> TableLakeReader for I {
     fn read(&mut self, ch: SyncSender<Entry>) {
         for row in self {
             let TableRow {
