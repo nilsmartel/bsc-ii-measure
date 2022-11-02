@@ -1,6 +1,7 @@
 use anyhow::Result;
 use bintable2::*;
 use std::fs::File;
+use std::io::{BufWriter, Write};
 use std::sync::mpsc::{sync_channel, Receiver};
 use std::thread::spawn;
 
@@ -63,15 +64,20 @@ fn main() {
 
     // write back data
 
-    let mut out = File::create(output).expect("open output file");
+    let out = File::create(output).expect("open output file");
+    let mut out = BufWriter::new(out);
     let mut acc = ParseAcc::default();
 
     eprintln!("writing");
     for g in groups {
         for row in g {
             row.write_bin(&mut out, &mut acc).expect("write to output");
+
+            drop(row)
         }
     }
+
+    out.flush().expect("flush buffered writer");
 }
 
 fn group(rows: Receiver<TableRow>) -> Vec<Group> {
