@@ -77,7 +77,9 @@ fn main() {
     let out = File::create_new(output).expect("open output file");
     let mut out = BufWriter::new(out);
     let mut acc = ParseAcc::default();
-    firstrow.write_bin(&mut out, &mut acc).expect("write to output");
+    firstrow
+        .write_bin(&mut out, &mut acc)
+        .expect("write to output");
 
     for row in rows {
         row.write_bin(&mut out, &mut acc).expect("write to output");
