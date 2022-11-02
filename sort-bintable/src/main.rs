@@ -98,6 +98,8 @@ fn group(rows: Receiver<TableRow>) -> Vec<Group> {
     } in rows
     {
         if current.id != tokenized {
+            current.id.shrink_to_fit();
+            current.data.shrink_to_fit();
             v.push(current);
             current = Group {
                 id: tokenized,
