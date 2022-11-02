@@ -27,7 +27,7 @@ fn parse_bintable_name(path: String) -> BintableName {
     let path = path.to_string();
     let name = name.to_string();
 
-    let (name, _factor) = if let Some((name, factor)) = name.rsplit_once("-") {
+    let (name, _factor) = if let Some((name, factor)) = name.rsplit_once('-') {
         (
             name.to_string(),
             factor
@@ -72,9 +72,12 @@ fn main() {
 
     // write back data
 
+    // This is done so that the file will be created well after the sampler has picked an appropriate one
+    let firstrow = rows.recv().expect("read first row");
     let out = File::create_new(output).expect("open output file");
     let mut out = BufWriter::new(out);
     let mut acc = ParseAcc::default();
+    firstrow.write_bin(&mut out, &mut acc).expect("write to output");
 
     for row in rows {
         row.write_bin(&mut out, &mut acc).expect("write to output");
@@ -88,7 +91,6 @@ fn get_rows(path: &str, factor: f32) -> Receiver<TableRow> {
     let (s, r) = sync_channel(1024);
     spawn(move || {
         let table = BinTableSampler::open(&path, factor).expect("open bintable");
-
         for row in table {
             s.send(row).expect("send to channel");
         }
