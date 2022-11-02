@@ -1,6 +1,6 @@
 [package]
 name = "bintable2"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -15,3 +15,6 @@ anyhow = "1.0.65"                                   # Flexible concrete Error ty
 # sqlx = { version = "0.6", features = [ "runtime-tokio-native-tls" , "postgres" ] }
 
 # tokio = { version = "1", features = ["full"] }
+# Random number generators and other randomness functionality.
+rand = "0.8.5"
+

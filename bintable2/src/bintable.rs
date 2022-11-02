@@ -1,8 +1,49 @@
-use crate::tablerow::{ReadError, ParseAcc};
+use crate::util::*;
+use rand::rngs::ThreadRng;
+use rand::Rng;
 
 use super::tablerow::TableRow;
+use crate::tablerow::{ParseAcc, ReadError};
 use std::fs::File;
 use std::io::Read;
+
+pub struct BinTableSampler {
+    bintable: BinTable,
+    factor: f32,
+    rng: ThreadRng,
+}
+impl BinTableSampler {
+    pub fn open(path: &str, factor: f32) -> std::io::Result<BinTableSampler> {
+        // first search, if a better bintable exists beside the original one.
+        let (path, factor) = if let Some((path, corpus)) = path.rsplit_once('/') {
+            find_best_input(path, corpus, factor)
+        } else {
+            find_best_input(".", path, factor)
+        }?;
+
+        let bintable = BinTable::open(&path)?;
+        let rng = rand::thread_rng();
+
+        Ok(BinTableSampler {
+            bintable,
+            factor,
+            rng,
+        })
+    }
+}
+
+impl Iterator for BinTableSampler {
+    type Item = TableRow;
+    fn next(&mut self) -> Option<Self::Item> {
+        loop {
+            let item = self.bintable.next()?;
+
+            if self.rng.gen::<f32>() < self.factor {
+                return Some(item);
+            }
+        }
+    }
+}
 
 pub struct BinTable {
     reader: File,
