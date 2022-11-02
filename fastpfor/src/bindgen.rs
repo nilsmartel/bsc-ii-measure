@@ -40,7 +40,7 @@ pub const __GNU_LIBRARY__: u32 = 6;
 pub const __GLIBC__: u32 = 2;
 pub const __GLIBC_MINOR__: u32 = 35;
 pub const _SYS_CDEFS_H: u32 = 1;
-pub const __glibc_c99_flexarr_available: u32 = 1;
+// pub const __glibc_c99_flexarr_available: u32 = 1;
 pub const __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI: u32 = 0;
 pub const __HAVE_GENERIC_SELECTION: u32 = 1;
 pub const __GLIBC_USE_LIB_EXT2: u32 = 0;
@@ -62,215 +62,215 @@ pub const _BITS_TIME64_H: u32 = 1;
 pub const _BITS_WCHAR_H: u32 = 1;
 pub const _BITS_STDINT_INTN_H: u32 = 1;
 pub const _BITS_STDINT_UINTN_H: u32 = 1;
-pub const INT8_MIN: i32 = -128;
-pub const INT16_MIN: i32 = -32768;
-pub const INT32_MIN: i32 = -2147483648;
-pub const INT8_MAX: u32 = 127;
-pub const INT16_MAX: u32 = 32767;
-pub const INT32_MAX: u32 = 2147483647;
-pub const UINT8_MAX: u32 = 255;
-pub const UINT16_MAX: u32 = 65535;
-pub const UINT32_MAX: u32 = 4294967295;
-pub const INT_LEAST8_MIN: i32 = -128;
-pub const INT_LEAST16_MIN: i32 = -32768;
-pub const INT_LEAST32_MIN: i32 = -2147483648;
-pub const INT_LEAST8_MAX: u32 = 127;
-pub const INT_LEAST16_MAX: u32 = 32767;
-pub const INT_LEAST32_MAX: u32 = 2147483647;
-pub const UINT_LEAST8_MAX: u32 = 255;
-pub const UINT_LEAST16_MAX: u32 = 65535;
-pub const UINT_LEAST32_MAX: u32 = 4294967295;
-pub const INT_FAST8_MIN: i32 = -128;
-pub const INT_FAST16_MIN: i64 = -9223372036854775808;
-pub const INT_FAST32_MIN: i64 = -9223372036854775808;
-pub const INT_FAST8_MAX: u32 = 127;
-pub const INT_FAST16_MAX: u64 = 9223372036854775807;
-pub const INT_FAST32_MAX: u64 = 9223372036854775807;
-pub const UINT_FAST8_MAX: u32 = 255;
-pub const UINT_FAST16_MAX: i32 = -1;
-pub const UINT_FAST32_MAX: i32 = -1;
-pub const INTPTR_MIN: i64 = -9223372036854775808;
-pub const INTPTR_MAX: u64 = 9223372036854775807;
-pub const UINTPTR_MAX: i32 = -1;
-pub const PTRDIFF_MIN: i64 = -9223372036854775808;
-pub const PTRDIFF_MAX: u64 = 9223372036854775807;
-pub const SIG_ATOMIC_MIN: i32 = -2147483648;
-pub const SIG_ATOMIC_MAX: u32 = 2147483647;
-pub const SIZE_MAX: i32 = -1;
-pub const WINT_MIN: u32 = 0;
-pub const WINT_MAX: u32 = 4294967295;
-pub type size_t = ::std::os::raw::c_ulong;
-pub type wchar_t = ::std::os::raw::c_int;
+// pub const INT8_MIN: i32 = -128;
+// pub const INT16_MIN: i32 = -32768;
+// pub const INT32_MIN: i32 = -2147483648;
+// pub const INT8_MAX: u32 = 127;
+// pub const INT16_MAX: u32 = 32767;
+// pub const INT32_MAX: u32 = 2147483647;
+// pub const UINT8_MAX: u32 = 255;
+// pub const UINT16_MAX: u32 = 65535;
+// pub const UINT32_MAX: u32 = 4294967295;
+// pub const INT_LEAST8_MIN: i32 = -128;
+// pub const INT_LEAST16_MIN: i32 = -32768;
+// pub const INT_LEAST32_MIN: i32 = -2147483648;
+// pub const INT_LEAST8_MAX: u32 = 127;
+// pub const INT_LEAST16_MAX: u32 = 32767;
+// pub const INT_LEAST32_MAX: u32 = 2147483647;
+// pub const UINT_LEAST8_MAX: u32 = 255;
+// pub const UINT_LEAST16_MAX: u32 = 65535;
+// pub const UINT_LEAST32_MAX: u32 = 4294967295;
+// pub const INT_FAST8_MIN: i32 = -128;
+// pub const INT_FAST16_MIN: i64 = -9223372036854775808;
+// pub const INT_FAST32_MIN: i64 = -9223372036854775808;
+// pub const INT_FAST8_MAX: u32 = 127;
+// pub const INT_FAST16_MAX: u64 = 9223372036854775807;
+// pub const INT_FAST32_MAX: u64 = 9223372036854775807;
+// pub const UINT_FAST8_MAX: u32 = 255;
+// pub const UINT_FAST16_MAX: i32 = -1;
+// pub const UINT_FAST32_MAX: i32 = -1;
+// pub const INTPTR_MIN: i64 = -9223372036854775808;
+// pub const INTPTR_MAX: u64 = 9223372036854775807;
+// pub const UINTPTR_MAX: i32 = -1;
+// pub const PTRDIFF_MIN: i64 = -9223372036854775808;
+// pub const PTRDIFF_MAX: u64 = 9223372036854775807;
+// pub const SIG_ATOMIC_MIN: i32 = -2147483648;
+// pub const SIG_ATOMIC_MAX: u32 = 2147483647;
+// pub const SIZE_MAX: i32 = -1;
+// pub const WINT_MIN: u32 = 0;
+// pub const WINT_MAX: u32 = 4294967295;
+pub type Size = ::std::os::raw::c_ulong;
+// pub type wchar_t = ::std::os::raw::c_int;
 #[repr(C)]
 #[repr(align(16))]
 #[derive(Debug, Copy, Clone)]
-pub struct max_align_t {
+pub struct MaxAlign {
     pub __clang_max_align_nonce1: ::std::os::raw::c_longlong,
     pub __bindgen_padding_0: u64,
     pub __clang_max_align_nonce2: u128,
 }
 #[test]
-fn bindgen_test_layout_max_align_t() {
+fn bindgen_test_layout_max_align() {
     assert_eq!(
-        ::std::mem::size_of::<max_align_t>(),
+        ::std::mem::size_of::<MaxAlign>(),
         32usize,
-        concat!("Size of: ", stringify!(max_align_t))
+        concat!("Size of: ", stringify!(MaxAlign))
     );
     assert_eq!(
-        ::std::mem::align_of::<max_align_t>(),
+        ::std::mem::align_of::<MaxAlign>(),
         16usize,
-        concat!("Alignment of ", stringify!(max_align_t))
+        concat!("Alignment of ", stringify!(MaxAlign))
     );
-    fn test_field___clang_max_align_nonce1() {
+    fn test_field_clang_max_align_nonce1() {
         assert_eq!(
             unsafe {
-                let uninit = ::std::mem::MaybeUninit::<max_align_t>::uninit();
+                let uninit = ::std::mem::MaybeUninit::<MaxAlign>::uninit();
                 let ptr = uninit.as_ptr();
                 ::std::ptr::addr_of!((*ptr).__clang_max_align_nonce1) as usize - ptr as usize
             },
             0usize,
             concat!(
                 "Offset of field: ",
-                stringify!(max_align_t),
+                stringify!(MaxAlign),
                 "::",
                 stringify!(__clang_max_align_nonce1)
             )
         );
     }
-    test_field___clang_max_align_nonce1();
-    fn test_field___clang_max_align_nonce2() {
+    test_field_clang_max_align_nonce1();
+    fn test_field_clang_max_align_nonce2() {
         assert_eq!(
             unsafe {
-                let uninit = ::std::mem::MaybeUninit::<max_align_t>::uninit();
+                let uninit = ::std::mem::MaybeUninit::<MaxAlign>::uninit();
                 let ptr = uninit.as_ptr();
                 ::std::ptr::addr_of!((*ptr).__clang_max_align_nonce2) as usize - ptr as usize
             },
             16usize,
             concat!(
                 "Offset of field: ",
-                stringify!(max_align_t),
+                stringify!(MaxAlign),
                 "::",
                 stringify!(__clang_max_align_nonce2)
             )
         );
     }
-    test_field___clang_max_align_nonce2();
+    test_field_clang_max_align_nonce2();
 }
-pub type __u_char = ::std::os::raw::c_uchar;
-pub type __u_short = ::std::os::raw::c_ushort;
-pub type __u_int = ::std::os::raw::c_uint;
-pub type __u_long = ::std::os::raw::c_ulong;
-pub type __int8_t = ::std::os::raw::c_schar;
-pub type __uint8_t = ::std::os::raw::c_uchar;
-pub type __int16_t = ::std::os::raw::c_short;
-pub type __uint16_t = ::std::os::raw::c_ushort;
-pub type __int32_t = ::std::os::raw::c_int;
-pub type __uint32_t = ::std::os::raw::c_uint;
-pub type __int64_t = ::std::os::raw::c_long;
-pub type __uint64_t = ::std::os::raw::c_ulong;
-pub type __int_least8_t = __int8_t;
-pub type __uint_least8_t = __uint8_t;
-pub type __int_least16_t = __int16_t;
-pub type __uint_least16_t = __uint16_t;
-pub type __int_least32_t = __int32_t;
-pub type __uint_least32_t = __uint32_t;
-pub type __int_least64_t = __int64_t;
-pub type __uint_least64_t = __uint64_t;
-pub type __quad_t = ::std::os::raw::c_long;
-pub type __u_quad_t = ::std::os::raw::c_ulong;
-pub type __intmax_t = ::std::os::raw::c_long;
-pub type __uintmax_t = ::std::os::raw::c_ulong;
-pub type __dev_t = ::std::os::raw::c_ulong;
-pub type __uid_t = ::std::os::raw::c_uint;
-pub type __gid_t = ::std::os::raw::c_uint;
-pub type __ino_t = ::std::os::raw::c_ulong;
-pub type __ino64_t = ::std::os::raw::c_ulong;
-pub type __mode_t = ::std::os::raw::c_uint;
-pub type __nlink_t = ::std::os::raw::c_ulong;
-pub type __off_t = ::std::os::raw::c_long;
-pub type __off64_t = ::std::os::raw::c_long;
-pub type __pid_t = ::std::os::raw::c_int;
+// pub type __u_char = ::std::os::raw::c_uchar;
+// pub type __u_short = ::std::os::raw::c_ushort;
+// pub type __u_int = ::std::os::raw::c_uint;
+// pub type __u_long = ::std::os::raw::c_ulong;
+// pub type __int8_t = ::std::os::raw::c_schar;
+// pub type __uint8_t = ::std::os::raw::c_uchar;
+// pub type __int16_t = ::std::os::raw::c_short;
+// pub type __uint16_t = ::std::os::raw::c_ushort;
+// pub type __int32_t = ::std::os::raw::c_int;
+// pub type __uint32_t = ::std::os::raw::c_uint;
+// pub type __int64_t = ::std::os::raw::c_long;
+// pub type __uint64_t = ::std::os::raw::c_ulong;
+// pub type __int_least8_t = __int8_t;
+// pub type __uint_least8_t = __uint8_t;
+// pub type __int_least16_t = __int16_t;
+// pub type __uint_least16_t = __uint16_t;
+// pub type __int_least32_t = __int32_t;
+// pub type __uint_least32_t = __uint32_t;
+// pub type __int_least64_t = __int64_t;
+// pub type __uint_least64_t = __uint64_t;
+// pub type __quad_t = ::std::os::raw::c_long;
+// pub type __u_quad_t = ::std::os::raw::c_ulong;
+// pub type __intmax_t = ::std::os::raw::c_long;
+// pub type __uintmax_t = ::std::os::raw::c_ulong;
+// pub type __dev_t = ::std::os::raw::c_ulong;
+// pub type __uid_t = ::std::os::raw::c_uint;
+// pub type __gid_t = ::std::os::raw::c_uint;
+// pub type __ino_t = ::std::os::raw::c_ulong;
+// pub type __ino64_t = ::std::os::raw::c_ulong;
+// pub type __mode_t = ::std::os::raw::c_uint;
+// pub type __nlink_t = ::std::os::raw::c_ulong;
+// pub type __off_t = ::std::os::raw::c_long;
+// pub type __off64_t = ::std::os::raw::c_long;
+// pub type __pid_t = ::std::os::raw::c_int;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct __fsid_t {
+pub struct Fsid {
     pub __val: [::std::os::raw::c_int; 2usize],
 }
 #[test]
-fn bindgen_test_layout___fsid_t() {
+fn bindgen_test_layout_fsid() {
     assert_eq!(
-        ::std::mem::size_of::<__fsid_t>(),
+        ::std::mem::size_of::<Fsid>(),
         8usize,
-        concat!("Size of: ", stringify!(__fsid_t))
+        concat!("Size of: ", stringify!(Fsid))
     );
     assert_eq!(
-        ::std::mem::align_of::<__fsid_t>(),
+        ::std::mem::align_of::<Fsid>(),
         4usize,
-        concat!("Alignment of ", stringify!(__fsid_t))
+        concat!("Alignment of ", stringify!(Fsid))
     );
-    fn test_field___val() {
+    fn test_field_val() {
         assert_eq!(
             unsafe {
-                let uninit = ::std::mem::MaybeUninit::<__fsid_t>::uninit();
+                let uninit = ::std::mem::MaybeUninit::<Fsid>::uninit();
                 let ptr = uninit.as_ptr();
                 ::std::ptr::addr_of!((*ptr).__val) as usize - ptr as usize
             },
             0usize,
             concat!(
                 "Offset of field: ",
-                stringify!(__fsid_t),
+                stringify!(Fsid),
                 "::",
                 stringify!(__val)
             )
         );
     }
-    test_field___val();
+    test_field_val();
 }
-pub type __clock_t = ::std::os::raw::c_long;
-pub type __rlim_t = ::std::os::raw::c_ulong;
-pub type __rlim64_t = ::std::os::raw::c_ulong;
-pub type __id_t = ::std::os::raw::c_uint;
-pub type __time_t = ::std::os::raw::c_long;
-pub type __useconds_t = ::std::os::raw::c_uint;
-pub type __suseconds_t = ::std::os::raw::c_long;
-pub type __suseconds64_t = ::std::os::raw::c_long;
-pub type __daddr_t = ::std::os::raw::c_int;
-pub type __key_t = ::std::os::raw::c_int;
-pub type __clockid_t = ::std::os::raw::c_int;
-pub type __timer_t = *mut ::std::os::raw::c_void;
-pub type __blksize_t = ::std::os::raw::c_long;
-pub type __blkcnt_t = ::std::os::raw::c_long;
-pub type __blkcnt64_t = ::std::os::raw::c_long;
-pub type __fsblkcnt_t = ::std::os::raw::c_ulong;
-pub type __fsblkcnt64_t = ::std::os::raw::c_ulong;
-pub type __fsfilcnt_t = ::std::os::raw::c_ulong;
-pub type __fsfilcnt64_t = ::std::os::raw::c_ulong;
-pub type __fsword_t = ::std::os::raw::c_long;
-pub type __ssize_t = ::std::os::raw::c_long;
-pub type __syscall_slong_t = ::std::os::raw::c_long;
-pub type __syscall_ulong_t = ::std::os::raw::c_ulong;
-pub type __loff_t = __off64_t;
-pub type __caddr_t = *mut ::std::os::raw::c_char;
-pub type __intptr_t = ::std::os::raw::c_long;
-pub type __socklen_t = ::std::os::raw::c_uint;
-pub type __sig_atomic_t = ::std::os::raw::c_int;
-pub type int_least8_t = __int_least8_t;
-pub type int_least16_t = __int_least16_t;
-pub type int_least32_t = __int_least32_t;
-pub type int_least64_t = __int_least64_t;
-pub type uint_least8_t = __uint_least8_t;
-pub type uint_least16_t = __uint_least16_t;
-pub type uint_least32_t = __uint_least32_t;
-pub type uint_least64_t = __uint_least64_t;
-pub type int_fast8_t = ::std::os::raw::c_schar;
-pub type int_fast16_t = ::std::os::raw::c_long;
-pub type int_fast32_t = ::std::os::raw::c_long;
-pub type int_fast64_t = ::std::os::raw::c_long;
-pub type uint_fast8_t = ::std::os::raw::c_uchar;
-pub type uint_fast16_t = ::std::os::raw::c_ulong;
-pub type uint_fast32_t = ::std::os::raw::c_ulong;
-pub type uint_fast64_t = ::std::os::raw::c_ulong;
-pub type intmax_t = __intmax_t;
-pub type uintmax_t = __uintmax_t;
+// pub type __clock_t = ::std::os::raw::c_long;
+// pub type __rlim_t = ::std::os::raw::c_ulong;
+// pub type __rlim64_t = ::std::os::raw::c_ulong;
+// pub type __id_t = ::std::os::raw::c_uint;
+// pub type __time_t = ::std::os::raw::c_long;
+// pub type __useconds_t = ::std::os::raw::c_uint;
+// pub type __suseconds_t = ::std::os::raw::c_long;
+// pub type __suseconds64_t = ::std::os::raw::c_long;
+// pub type __daddr_t = ::std::os::raw::c_int;
+// pub type __key_t = ::std::os::raw::c_int;
+// pub type __clockid_t = ::std::os::raw::c_int;
+// pub type __timer_t = *mut ::std::os::raw::c_void;
+// pub type __blksize_t = ::std::os::raw::c_long;
+// pub type __blkcnt_t = ::std::os::raw::c_long;
+// pub type __blkcnt64_t = ::std::os::raw::c_long;
+// pub type __fsblkcnt_t = ::std::os::raw::c_ulong;
+// pub type __fsblkcnt64_t = ::std::os::raw::c_ulong;
+// pub type __fsfilcnt_t = ::std::os::raw::c_ulong;
+// pub type __fsfilcnt64_t = ::std::os::raw::c_ulong;
+// pub type __fsword_t = ::std::os::raw::c_long;
+// pub type __ssize_t = ::std::os::raw::c_long;
+// pub type __syscall_slong_t = ::std::os::raw::c_long;
+// pub type __syscall_ulong_t = ::std::os::raw::c_ulong;
+// pub type __loff_t = __off64_t;
+// pub type __caddr_t = *mut ::std::os::raw::c_char;
+// pub type __intptr_t = ::std::os::raw::c_long;
+// pub type __socklen_t = ::std::os::raw::c_uint;
+// pub type __sig_atomic_t = ::std::os::raw::c_int;
+// pub type int_least8_t = __int_least8_t;
+// pub type int_least16_t = __int_least16_t;
+// pub type int_least32_t = __int_least32_t;
+// pub type int_least64_t = __int_least64_t;
+// pub type uint_least8_t = __uint_least8_t;
+// pub type uint_least16_t = __uint_least16_t;
+// pub type uint_least32_t = __uint_least32_t;
+// pub type uint_least64_t = __uint_least64_t;
+// pub type int_fast8_t = ::std::os::raw::c_schar;
+// pub type int_fast16_t = ::std::os::raw::c_long;
+// pub type int_fast32_t = ::std::os::raw::c_long;
+// pub type int_fast64_t = ::std::os::raw::c_long;
+// pub type uint_fast8_t = ::std::os::raw::c_uchar;
+// pub type uint_fast16_t = ::std::os::raw::c_ulong;
+// pub type uint_fast32_t = ::std::os::raw::c_ulong;
+// pub type uint_fast64_t = ::std::os::raw::c_ulong;
+// pub type intmax_t = __intmax_t;
+// pub type uintmax_t = __uintmax_t;
 pub type IntegerCODECPtr = *mut ::std::os::raw::c_void;
 extern "C" {
     pub fn CODECFactory_getFromName(name: *const ::std::os::raw::c_char) -> IntegerCODECPtr;
@@ -282,17 +282,17 @@ extern "C" {
     pub fn CODEC_encodeArray(
         codec: IntegerCODECPtr,
         in_: *const u32,
-        length: size_t,
+        length: Size,
         out: *mut u32,
-        outlen: size_t,
-    ) -> size_t;
+        outlen: Size,
+    ) -> Size;
 }
 extern "C" {
     pub fn CODEC_decodeArray(
         codec: IntegerCODECPtr,
         in_: *const u32,
-        length: size_t,
+        length: Size,
         out: *mut u32,
-        outlen: size_t,
-    ) -> size_t;
+        outlen: Size,
+    ) -> Size;
 }
