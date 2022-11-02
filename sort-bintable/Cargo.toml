@@ -7,6 +7,3 @@ edition = "2021"
 
 [dependencies]
 bintable2 = { path = "../bintable2" }
-# Flexible concrete Error type built on std::error::Error
-anyhow = "1.0.66"
-

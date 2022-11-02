@@ -1,4 +1,3 @@
-use anyhow::Result;
 use bintable2::*;
 use std::fs::File;
 use std::io::{BufWriter, Write};
