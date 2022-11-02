@@ -94,6 +94,7 @@ mod test {
         for d in input.clone() {
             d.write_bin(&mut buffer, &mut acc).unwrap();
         }
+        buffer.flush();
 
         // deserialize
         let mut retrieved = Vec::new();
