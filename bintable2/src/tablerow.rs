@@ -199,7 +199,6 @@ impl TableRow {
             w.write_all(&tokenized)?;
         }
         w.write_all(&nums)?;
-        w.flush()?;
         Ok(())
     }
 }
