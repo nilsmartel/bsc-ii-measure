@@ -107,6 +107,7 @@ fn group(rows: Receiver<TableRow>) -> Vec<Group> {
             current.data.extend([tableid, colid, rowid]);
         }
     }
+    v.push(current);
 
     v
 }
