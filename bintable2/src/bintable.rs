@@ -21,6 +21,7 @@ impl BinTableSampler {
             find_best_input(".", path, factor)
         }?;
 
+        eprintln!("reading {path}");
         let bintable = BinTable::open(&path)?;
         let rng = rand::thread_rng();
 
