@@ -1,9 +1,8 @@
 #![feature(file_create_new)]
 
 use bintable2::*;
-use rand::Rng;
 use std::fs::File;
-use std::io::{self, BufWriter, Write};
+use std::io::{BufWriter, Write};
 use std::sync::mpsc::{sync_channel, Receiver};
 use std::thread::spawn;
 
@@ -15,7 +14,7 @@ fn print_help() -> ! {
 struct BintableName {
     path: String,
     name: String,
-    factor: f32,
+    _factor: f32,
 }
 
 fn parse_bintable_name(path: String) -> BintableName {
@@ -28,7 +27,7 @@ fn parse_bintable_name(path: String) -> BintableName {
     let path = path.to_string();
     let name = name.to_string();
 
-    let (name, factor) = if let Some((name, factor)) = name.rsplit_once("-") {
+    let (name, _factor) = if let Some((name, factor)) = name.rsplit_once("-") {
         (
             name.to_string(),
             factor
@@ -39,7 +38,11 @@ fn parse_bintable_name(path: String) -> BintableName {
         (name, 1.0f32)
     };
 
-    BintableName { path, name, factor }
+    BintableName {
+        path,
+        name,
+        _factor,
+    }
 }
 
 fn args() -> (BintableName, f32) {
@@ -58,53 +61,14 @@ fn args() -> (BintableName, f32) {
     (parse_bintable_name(input), factor)
 }
 
-fn find_best_input(path: &str, corpus: &str, factor: f32) -> io::Result<(String, f32)> {
-    use std::fs::read_dir;
-
-    if path.ends_with('/') {
-        panic!("path musn't end with /");
-    }
-
-    let mut bestfactor = 1.0;
-    let mut bestfile = format!("{}/{}", path, corpus);
-
-    for entry in read_dir(path)? {
-        if entry.is_err() {
-            continue;
-        }
-        let entry = entry?;
-
-        let filename = entry.file_name().into_string().unwrap();
-        if !filename.starts_with(&corpus) {
-            continue;
-        }
-
-        let f = parse_bintable_name(filename.clone()).factor;
-
-        if f < factor {
-            continue;
-        }
-
-        if f < bestfactor {
-            bestfactor = f;
-            bestfile = format!("{}/{}", path, filename);
-        }
-    }
-
-    Ok((bestfile, factor / bestfactor))
-}
-
 fn main() {
     let (input, factor) = args();
-    let (inputfile, factor_derived) = find_best_input(&input.path, &input.name, factor).unwrap();
 
     let output = format!("{}/{}-{}", input.path, input.name, factor);
 
-    if inputfile == output {
-        panic!("input must not be output, filename {output} is the same as input.");
-    }
+    let inputfile = format!("{}/{}", input.path, input.name);
 
-    let rows = get_rows(&inputfile);
+    let rows = get_rows(&inputfile, factor);
 
     // write back data
 
@@ -112,23 +76,18 @@ fn main() {
     let mut out = BufWriter::new(out);
     let mut acc = ParseAcc::default();
 
-    let mut rnd = rand::thread_rng();
     for row in rows {
-        if rnd.gen::<f32>() > factor_derived {
-            continue;
-        }
-
         row.write_bin(&mut out, &mut acc).expect("write to output");
     }
 
     out.flush().expect("flush output");
 }
 
-fn get_rows(path: &str) -> Receiver<TableRow> {
+fn get_rows(path: &str, factor: f32) -> Receiver<TableRow> {
     let path = path.to_string();
     let (s, r) = sync_channel(1024);
     spawn(move || {
-        let table = BinTable::open(&path).expect("open bintable");
+        let table = BinTableSampler::open(&path, factor).expect("open bintable");
 
         for row in table {
             s.send(row).expect("send to channel");
