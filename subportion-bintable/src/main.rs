@@ -75,7 +75,7 @@ fn main() {
     // This is done so that the file will be created well after the sampler has picked an appropriate one
     let firstrow = rows.recv().expect("read first row");
     let out = File::create_new(output).expect("open output file");
-    let mut out = BufWriter::new(out);
+    let mut out = BufWriter::with_capacity(1024 * 1024 /* 1MB */, out);
     let mut acc = ParseAcc::default();
     firstrow
         .write_bin(&mut out, &mut acc)
