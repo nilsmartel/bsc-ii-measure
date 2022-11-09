@@ -243,6 +243,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "dict-incremental-coding"
+version = "0.1.0"
+dependencies = [
+ "varint-compression 0.2.0",
+]
+
+[[package]]
 name = "digest"
 version = "0.10.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -518,12 +525,13 @@ dependencies = [
 
 [[package]]
 name = "ii-measure"
-version = "0.6.3"
+version = "0.7.0"
 dependencies = [
  "anyhow",
  "bintable2",
  "csv",
  "dict-front-coding",
+ "dict-incremental-coding",
  "fallible-iterator",
  "fast-smaz",
  "fastpfor",

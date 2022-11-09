@@ -1,6 +1,6 @@
 [package]
 name = "ii-measure"
-version = "0.6.3"
+version = "0.7.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -31,3 +31,4 @@ is_sorted = "0.1.1"
 fastpfor = {path = "../fastpfor" }
 
 dict-front-coding = { path = "../dict-front-coding" }
+dict-incremental-coding = { path = "../dict-incremental-coding" }
