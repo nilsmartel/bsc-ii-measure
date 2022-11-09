@@ -247,6 +247,7 @@ where
         None
     }
 
+    /// Push a new key into the dictionary. Input MUST BE SORTED. 
     pub fn push(&mut self, key: Vec<u8>, value: V) {
         // NOTE actually it is vital to assert that our input data is sorted at this point.
 
