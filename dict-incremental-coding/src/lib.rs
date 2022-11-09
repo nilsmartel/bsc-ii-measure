@@ -65,10 +65,12 @@ analyst"
             d.push(w.as_bytes().to_vec(), w.len());
         }
 
+        d.finish();
+
         for w in words {
             let res = d.get(w.as_bytes());
 
-            assert_eq!(res, Some(&w.len()), "expect key lenghts to match up");
+            assert_eq!(res, Some(&w.len()), "expect key {w} to be in dictionary");
         }
     }
 }
@@ -117,7 +119,7 @@ where
     }
 
     // makes inserted values reliably available for retrieval
-    pub fn flush_insert(&mut self) {
+    pub fn finish(&mut self) {
         if self.current_block.is_empty() {
             return;
         }
