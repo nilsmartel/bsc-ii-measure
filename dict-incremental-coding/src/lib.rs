@@ -1,5 +1,78 @@
 use std::cmp::Ordering;
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn dictionary_insertion() {
+        // randomly generated words
+        let words = "absorb
+animal
+application
+arrow
+assertive
+affect
+attack
+anger
+ash
+abundant
+acid
+appeal
+activity
+air
+aware
+afford
+appearance
+administration
+accompany
+anniversary
+association
+acquaintance
+AIDS
+accent
+acquit
+address
+aquarium
+am
+approval
+adult
+apparatus
+album
+absence
+academy
+arch
+abandon
+avant-garde
+acute
+archive
+apathy
+autonomy
+arm
+adventure
+advocate
+allocation
+agriculture
+aunt
+assume
+affair
+analyst"
+            .lines()
+            .collect::<Vec<_>>();
+
+        let mut d = Dict::<usize, 5>::new();
+        for w in &words {
+            d.push(w.as_bytes().to_vec(), w.len());
+        }
+
+        for w in words {
+            let res = d.get(w.as_bytes());
+
+            assert_eq!(res, Some(&w.len()), "expect key lenghts to match up");
+        }
+    }
+}
+
 #[derive(Default)]
 pub struct Dict<V, const BLOCKSIZE: usize = 16> {
     keys: Vec<Block<BLOCKSIZE>>,
@@ -27,11 +100,41 @@ where
         self.len() == 0
     }
 
-    pub fn key(&self, index: usize) -> Vec<u8> {
+    pub fn key_at_index(&self, index: usize) -> Vec<u8> {
         let blockid = index / B;
         let position = index % B;
 
         self.keys[blockid].to_vec().remove(position)
+    }
+
+    pub fn value_at_index(&self, index: usize) -> &V {
+        self.values.get(index).expect("index to be in range")
+    }
+
+    pub fn get(&self, key: &[u8]) -> Option<&V> {
+        let index = self.index_of(key)?;
+        self.values.get(index)
+    }
+
+    // makes inserted values reliably available for retrieval
+    pub fn flush_insert(&mut self) {
+        if self.current_block.is_empty() {
+            return;
+        }
+
+        let values = self
+            .current_block
+            .iter()
+            .map(|elem| &elem.0)
+            .cloned()
+            .collect::<Vec<_>>();
+
+        self.values
+            .extend(self.current_block.iter().map(|elem| elem.1.clone()));
+
+        let block = Block::<B>::new(&values);
+        self.keys.push(block);
+        self.current_block.clear();
     }
 
     pub fn values(&self) -> &[V] {
@@ -125,9 +228,8 @@ impl<const B: usize> Block<B> {
     fn new(values: &[Vec<u8>]) -> Self {
         use varint_compression::compress;
 
-        assert_eq!(
-            values.len(),
-            B,
+        assert!(
+            values.len() <= B,
             "expect size of values to be equal to block size"
         );
 
