@@ -21,7 +21,7 @@ mod tests {
         let values = [b"aal".to_vec(), b"aachen".to_vec(), b"aachiluah".to_vec()];
 
         let b = Block::new(&values);
-        let data = b.data;
+        let data = &b.data;
         assert_eq!(&data[1..=3], b"aal", "expected aal to be uncompressed");
         assert_eq!(data[4], 2, "expected 2 bytes to be saved");
         assert_eq!(data[5], 4, "expected 4 bytes to compress aachen");
@@ -35,6 +35,10 @@ mod tests {
             b"iluah",
             "expected incremental encoding to transfer"
         );
+
+        let result = b.to_vec();
+
+        assert_eq!(result, values, "expected decoded values to match result");
     }
 
     #[test]
@@ -62,7 +66,7 @@ mod tests {
     #[test]
     fn dictionary_insertion() {
         // randomly generated words
-        let words = "absorb
+        let mut words = "absorb
 animal
 application
 arrow
@@ -114,8 +118,9 @@ affair
 analyst"
             .lines()
             .collect::<Vec<_>>();
+        words.sort();
 
-        let mut d = Dict::<usize, 5>::new();
+        let mut d = Dict::<usize, 8>::new();
         for w in &words {
             d.push(w.as_bytes().to_vec(), w.len());
         }
@@ -162,6 +167,16 @@ where
         let position = index % B;
 
         self.keys[blockid].to_vec().remove(position)
+    }
+
+    pub fn collect_keys(&self) -> Vec<Vec<u8>> {
+        let mut result = Vec::with_capacity(self.len());
+
+        for b in &self.keys {
+            result.extend(b.to_vec());
+        }
+
+        result
     }
 
     pub fn value_at_index(&self, index: usize) -> &V {
@@ -214,8 +229,16 @@ where
         }
 
         let block_id = binary_search(&self.keys, key)?;
+        let block = self.keys[block_id].to_vec();
+        if key == b"animal" {
+            eprintln!("blockid: #{block_id}");
+            for v in &block {
+                let v = String::from_utf8_lossy(v);
+                eprintln!("[{v}]");
+            }
+        }
 
-        for (i, v) in self.keys[block_id].to_vec().into_iter().enumerate() {
+        for (i, v) in block.into_iter().enumerate() {
             if v == key {
                 return Some(block_id * B + i);
             }
@@ -225,7 +248,7 @@ where
     }
 
     pub fn push(&mut self, key: Vec<u8>, value: V) {
-        // actually it is vital to assert that our input data is sorted at this point.
+        // NOTE actually it is vital to assert that our input data is sorted at this point.
 
         self.current_block.push((key, value));
 
