@@ -5,6 +5,13 @@ mod tests {
     use super::*;
 
     #[test]
+    fn incrementalcoding() {
+        let values = ["aal".as_bytes().to_vec(), "aachen".as_bytes().to_vec()];
+
+        let b = Block::new(&values);
+    }
+
+    #[test]
     fn dictionary_insertion() {
         // randomly generated words
         let words = "absorb
@@ -77,7 +84,7 @@ analyst"
 
 #[derive(Default)]
 pub struct Dict<V, const BLOCKSIZE: usize = 16> {
-    keys: Vec<Block<BLOCKSIZE>>,
+    keys: Vec<Block>,
     values: Vec<V>,
     current_block: Vec<(Vec<u8>, V)>,
 }
@@ -134,7 +141,7 @@ where
         self.values
             .extend(self.current_block.iter().map(|elem| elem.1.clone()));
 
-        let block = Block::<B>::new(&values);
+        let block = Block::new(&values);
         self.keys.push(block);
         self.current_block.clear();
     }
@@ -144,7 +151,7 @@ where
     }
 
     pub fn index_of(&self, key: &[u8]) -> Option<usize> {
-        fn binary_search<const B: usize>(data: &[Block<B>], elem: &[u8]) -> Option<usize> {
+        fn binary_search(data: &[Block], elem: &[u8]) -> Option<usize> {
             if data.is_empty() {
                 return None;
             }
@@ -175,7 +182,7 @@ where
         self.current_block.push((key, value));
 
         if self.current_block.len() == B {
-            let values = self
+            let keys = self
                 .current_block
                 .iter()
                 .map(|elem| &elem.0)
@@ -185,14 +192,14 @@ where
             self.values
                 .extend(self.current_block.iter().map(|elem| elem.1.clone()));
 
-            let block = Block::<B>::new(&values);
+            let block = Block::new(&keys);
             self.keys.push(block);
             self.current_block.clear();
         }
     }
 }
 
-struct Block<const BLOCKSIZE: usize> {
+struct Block {
     /*
         Scheme: prefix: <varint>data
         for b in Blocksize:
@@ -212,14 +219,14 @@ fn common_prefix_len(a: &[u8], b: &[u8]) -> usize {
     maxlen
 }
 
-impl<const B: usize> Block<B> {
+impl Block {
     fn cmp(&self, other: &[u8]) -> Ordering {
         let values = self.to_vec();
 
         match (&values[0] as &[u8]).cmp(other) {
             Ordering::Greater => Ordering::Greater,
             Ordering::Equal => Ordering::Equal,
-            Ordering::Less => match (&values[B - 1] as &[u8]).cmp(other) {
+            Ordering::Less => match (&values[values.len() - 1] as &[u8]).cmp(other) {
                 Ordering::Less => Ordering::Less,
                 Ordering::Equal => Ordering::Equal,
                 Ordering::Greater => Ordering::Equal,
@@ -229,11 +236,6 @@ impl<const B: usize> Block<B> {
 
     fn new(values: &[Vec<u8>]) -> Self {
         use varint_compression::compress;
-
-        assert!(
-            values.len() <= B,
-            "expect size of values to be equal to block size"
-        );
 
         let mut data = Vec::new();
         data.extend(compress(values[0].len() as u64));
@@ -255,7 +257,7 @@ impl<const B: usize> Block<B> {
     fn to_vec(&self) -> Vec<Vec<u8>> {
         use varint_compression::decompress;
 
-        let mut v = Vec::with_capacity(B);
+        let mut v = Vec::new();
 
         let (n, input) = decompress(&self.data).unwrap();
         let n = n as usize;
