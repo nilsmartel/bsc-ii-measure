@@ -5,10 +5,58 @@ mod tests {
     use super::*;
 
     #[test]
-    fn incrementalcoding() {
-        let values = ["aal".as_bytes().to_vec(), "aachen".as_bytes().to_vec()];
+    fn incrementalcoding1() {
+        let values = [b"aal".to_vec(), b"aachen".to_vec()];
 
         let b = Block::new(&values);
+        let data = b.data;
+        assert_eq!(&data[1..=3], b"aal", "expected aal to be uncompressed");
+        assert_eq!(data[4], 2, "expected 2 bytes to be saved");
+        assert_eq!(data[5], 4, "expected 4 bytes to compress aachen");
+        assert_eq!(&data[6..], b"chen", "aachen => chen");
+    }
+
+    #[test]
+    fn incrementalcoding2() {
+        let values = [b"aal".to_vec(), b"aachen".to_vec(), b"aachiluah".to_vec()];
+
+        let b = Block::new(&values);
+        let data = b.data;
+        assert_eq!(&data[1..=3], b"aal", "expected aal to be uncompressed");
+        assert_eq!(data[4], 2, "expected 2 bytes to be saved");
+        assert_eq!(data[5], 4, "expected 4 bytes to compress aachen");
+        assert_eq!(&data[6..10], b"chen", "aachen => chen");
+
+        assert_eq!(data[10], 4, "4 bytes to be ommited for aachen => aachiluah");
+        assert_eq!(data[11], 5, "5 bytes to be used for iluah");
+
+        assert_eq!(
+            &data[12..],
+            b"iluah",
+            "expected incremental encoding to transfer"
+        );
+    }
+
+    #[test]
+    fn prefixes() {
+        let testcases = [
+            ("aachen", "aachiluah", 4),
+            ("anderthen", "mond", 0),
+            ("arnold", "arsch", 2),
+            ("babc", "aabc", 0),
+            ("aal", "aal", 3),
+            ("aaligatoah", "aaligatoah", 10),
+            ("aaligatoah", "aaligatoahxyz", 10),
+            ("aaligatoahxyz", "aaligatoah", 10),
+        ];
+
+        for (a, b, n) in testcases {
+            assert_eq!(
+                common_prefix_len(a.as_bytes(), b.as_bytes()),
+                n,
+                "expected {a} and {b} to have a common prefix of {n}"
+            )
+        }
     }
 
     #[test]
@@ -243,12 +291,15 @@ impl Block {
 
         let mut last = &values[0] as &[u8];
         for v in values.iter().skip(1) {
-            let prefix = common_prefix_len(last, v);
-            let v = &v[prefix..];
-            data.extend(compress(prefix as u64));
-            data.extend(compress(v.len() as u64));
-            data.extend(v);
+            let prefixlen = common_prefix_len(last, v);
             last = v;
+            let v = &v[prefixlen..];
+            // first compress the length of the prefix
+            data.extend(compress(prefixlen as u64));
+            // then compress the length of the remaining bytes
+            data.extend(compress(v.len() as u64));
+            // and finally the remaining bytes
+            data.extend(v);
         }
 
         Block { data }
