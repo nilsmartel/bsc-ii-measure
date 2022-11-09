@@ -107,8 +107,16 @@ fn main() {
         FrontCodingBaseline => {
             measure_logging(algorithm::frontcoding::frontcoding_baseline, receiver, log)
         }
-
         FrontCodingDedup => measure_logging(algorithm::frontcoding::frontcoding, receiver, log),
+
+        IncrCodingBaseline => measure_logging(
+            algorithm::incremental::incrementalcoding_baseline,
+            receiver,
+            log,
+        ),
+        IncrCodingDedup => {
+            measure_logging(algorithm::incremental::incrementalcoding, receiver, log)
+        }
 
         SmazNSDedup => measure_logging(algorithm::smaz_ns, receiver, log),
 

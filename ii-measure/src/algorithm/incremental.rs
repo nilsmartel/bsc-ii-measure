@@ -61,7 +61,7 @@ impl crate::util::RandomKeys for IIIncrementalCodiding {
         (0..DESIRED_KEY_COUNT)
             .map(|_| {
                 let position = (random::<f64>() * max).floor() as usize;
-                let bytes = self.dict.key(position);
+                let bytes = self.dict.key_at_index(position);
 
                 String::from_utf8(bytes).expect("bytes to be valid utf-8")
             })
@@ -123,7 +123,7 @@ impl crate::util::RandomKeys for IIIncrementalCodidingBaseline {
         (0..DESIRED_KEY_COUNT)
             .map(|_| {
                 let position = (random::<f64>() * max).floor() as usize;
-                let bytes = self.dict.key(position);
+                let bytes = self.dict.key_at_index(position);
 
                 String::from_utf8(bytes).expect("bytes to be valid utf-8")
             })

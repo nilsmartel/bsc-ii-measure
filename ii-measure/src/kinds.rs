@@ -18,6 +18,9 @@ pub enum CompressionAlgorithm {
     FrontCodingBaseline,
     FrontCodingDedup,
 
+    IncrCodingBaseline,
+    IncrCodingDedup,
+
     FastPforDedup,
     FastPforSplitDedup,
 
@@ -39,6 +42,10 @@ impl CompressionAlgorithm {
             (Smaz, "smaz"),
             (FrontCodingBaseline, "frontcoding"),
             (FrontCodingDedup, "frontcoding+dedup"),
+
+            (IncrCodingBaseline, "incr"),
+            (IncrCodingDedup, "incr+dedup"),
+
             (SmazDedup, "smaz+dedup"),
             (FastPforDedup, "pfor+dedup"),
             (FastPforSplitDedup, "pfor_split+dedup"),
