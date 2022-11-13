@@ -118,6 +118,12 @@ fn main() {
             measure_logging(algorithm::incremental::incrementalcoding, receiver, log)
         }
 
+        IncrCodingDedupNS => measure_logging(
+            algorithm::incr_ns::InvertedIndexIncrementalCodingNS::new,
+            receiver,
+            log,
+        ),
+
         SmazNSDedup => measure_logging(algorithm::smaz_ns, receiver, log),
 
         FastPforDedup => measure_logging(algorithm::pfor_x::pfor, receiver, log),
