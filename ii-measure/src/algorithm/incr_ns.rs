@@ -12,13 +12,16 @@ use rand::random;
 /// List of u32s compressed using Group Varint Encoding (ns)
 #[derive(Clone)]
 struct CompressedLocations {
-    data: Vec<u8>,
+    data: Box<[u8]>,
 }
 
 impl CompressedLocations {
     fn new(vs: Vec<TableLocation>) -> Self {
         let data = vs.into_iter().flat_map(TableLocation::integers);
-        let data = group_varint_encoding::compress(data);
+        let mut data = group_varint_encoding::compress(data);
+        data.shrink_to_fit();
+
+        let data = data.into_boxed_slice();
 
         Self { data }
     }
