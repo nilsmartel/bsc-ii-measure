@@ -9,13 +9,13 @@ use crate::{
 use dict_incremental_coding::Dict;
 use rand::random;
 
-pub struct IIIncrementalCodiding {
+pub struct IIIncrementalCoding {
     dict: Dict<Vec<TableLocation>, 16>,
 }
 
 pub fn incrementalcoding(
     receiver: Receiver<(String, TableLocation)>,
-) -> (usize, Duration, IIIncrementalCodiding) {
+) -> (usize, Duration, IIIncrementalCoding) {
     let mut dict = Dict::new();
 
     let mut build_time = Duration::new(0, 0);
@@ -39,12 +39,12 @@ pub fn incrementalcoding(
         build_time += starttime.elapsed();
     }
 
-    let ii = IIIncrementalCodiding { dict };
+    let ii = IIIncrementalCoding { dict };
 
     (count, build_time, ii)
 }
 
-impl InvertedIndex<Vec<TableLocation>> for IIIncrementalCodiding {
+impl InvertedIndex<Vec<TableLocation>> for IIIncrementalCoding {
     fn get(&self, key: &str) -> Vec<TableLocation> {
         let index = self
             .dict
@@ -55,7 +55,7 @@ impl InvertedIndex<Vec<TableLocation>> for IIIncrementalCodiding {
     }
 }
 
-impl crate::util::RandomKeys for IIIncrementalCodiding {
+impl crate::util::RandomKeys for IIIncrementalCoding {
     fn random_keys_potentially_ordered(&self) -> Vec<String> {
         let max = self.dict.len() as f64;
         (0..DESIRED_KEY_COUNT)
@@ -69,13 +69,13 @@ impl crate::util::RandomKeys for IIIncrementalCodiding {
     }
 }
 
-pub struct IIIncrementalCodidingBaseline {
+pub struct IIIncrementalCodingBaseline {
     dict: Dict<TableLocation, 8>,
 }
 
 pub fn incrementalcoding_baseline(
     receiver: Receiver<(String, TableLocation)>,
-) -> (usize, Duration, IIIncrementalCodidingBaseline) {
+) -> (usize, Duration, IIIncrementalCodingBaseline) {
     let mut dict = Dict::new();
 
     let mut build_time = Duration::new(0, 0);
@@ -91,12 +91,12 @@ pub fn incrementalcoding_baseline(
         build_time += starttime.elapsed();
     }
 
-    let ii = IIIncrementalCodidingBaseline { dict };
+    let ii = IIIncrementalCodingBaseline { dict };
 
     (count, build_time, ii)
 }
 
-impl InvertedIndex<Vec<TableLocation>> for IIIncrementalCodidingBaseline {
+impl InvertedIndex<Vec<TableLocation>> for IIIncrementalCodingBaseline {
     fn get(&self, key: &str) -> Vec<TableLocation> {
         // we do this twice. More than anything to emulate the binary search
         let _index = self
@@ -117,7 +117,7 @@ impl InvertedIndex<Vec<TableLocation>> for IIIncrementalCodidingBaseline {
     }
 }
 
-impl crate::util::RandomKeys for IIIncrementalCodidingBaseline {
+impl crate::util::RandomKeys for IIIncrementalCodingBaseline {
     fn random_keys_potentially_ordered(&self) -> Vec<String> {
         let max = self.dict.len() as f64;
         (0..DESIRED_KEY_COUNT)

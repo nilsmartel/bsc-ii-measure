@@ -7,6 +7,7 @@ mod smaz_ns;
 
 pub mod frontcoding;
 pub mod incremental;
+pub mod incr_ns;
 pub mod pfor_split;
 pub mod pfor_x;
 
