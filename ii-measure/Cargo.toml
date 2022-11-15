@@ -32,3 +32,4 @@ fastpfor = {path = "../fastpfor" }
 
 dict-front-coding = { path = "../dict-front-coding" }
 dict-incremental-coding = { path = "../dict-incremental-coding" }
+dict-incremental-coding-improved = { path = "../dict-incremental-coding-improved" }

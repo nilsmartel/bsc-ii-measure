@@ -248,7 +248,7 @@ where
 
                         // we now know, that it's supposedly in block `index`.
                         util::Ordering::Greater => {
-                            let values = data[index].to_vec();
+                            let values = &data[index];
                             for (i, value) in values.into_iter().enumerate() {
                                 if value == elem {
                                     return Some(index * B + i);

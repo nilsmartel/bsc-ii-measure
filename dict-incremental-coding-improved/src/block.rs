@@ -14,6 +14,14 @@ pub(crate) struct Block {
 }
 
 impl Block {
+    pub fn into_iter<'a>(&'a self) -> BlockIter<'a> {
+        BlockIter {
+            data: &self.data,
+            last: Vec::new(),
+            start: true,
+        }
+    }
+
     pub(crate) fn cmp(&self, other: &[u8]) -> util::Ordering {
         let first = self.first();
 
@@ -95,5 +103,51 @@ impl Block {
         }
 
         v
+    }
+}
+
+pub struct BlockIter<'a> {
+    data: &'a [u8],
+    last: Vec<u8>,
+    start: bool,
+}
+
+impl<'a> Iterator for BlockIter<'a> {
+    type Item = Vec<u8>;
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.data.is_empty() {
+            return None;
+        }
+
+        if self.start {
+            self.start = false;
+
+            let (n, input) = decompress(&self.data).unwrap();
+            let n = n as usize;
+            self.last.clear();
+            self.last.extend(&input[..n]);
+            self.data = &input[n..];
+            return Some(self.last.to_vec());
+        }
+
+        let (prefixlen, input) = decompress(&self.data).unwrap();
+        let (remainlen, input) = decompress(&input).unwrap();
+        let prefixlen = prefixlen as usize;
+        let remainlen = remainlen as usize;
+
+        // now we know exactly how many bytes are needed, allocate as much.
+        let mut value = Vec::with_capacity(prefixlen + remainlen);
+
+        // and push the correct amount of bytes from the previously decoded value
+        // + the new information to this value
+        value.extend(&self.last[..prefixlen]);
+        value.extend(&input[..remainlen]);
+
+        self.last.clear();
+        self.last.extend(&value);
+        self.data = &input[remainlen..];
+
+        // we have a new entry in the vector!
+        return Some(value);
     }
 }
