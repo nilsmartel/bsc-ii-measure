@@ -10,7 +10,7 @@ pub(crate) struct Block {
         for b in Blocksize:
             <varint>data
     */
-    pub(crate) data: Vec<u8>,
+    pub(crate) data: Box<[u8]>,
 }
 
 impl Block {
@@ -48,6 +48,9 @@ impl Block {
             // and finally the remaining bytes
             data.extend(v);
         }
+
+        data.shrink_to_fit();
+        let data = data.into_boxed_slice();
 
         Block { data }
     }
