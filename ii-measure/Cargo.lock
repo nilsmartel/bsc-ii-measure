@@ -452,6 +452,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "group-varint-offset-encoding"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c77f80d89dbbbbf80e2276f84573a3a12b3224a274a4cf525cef20d36ab34323"
+dependencies = [
+ "smallvec",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -532,7 +541,7 @@ dependencies = [
 
 [[package]]
 name = "ii-measure"
-version = "0.8.0"
+version = "0.9.0"
 dependencies = [
  "anyhow",
  "bintable2",
@@ -544,6 +553,7 @@ dependencies = [
  "fast-smaz",
  "fastpfor",
  "group-varint-encoding",
+ "group-varint-offset-encoding",
  "is_sorted",
  "jemalloc-ctl",
  "jemallocator",

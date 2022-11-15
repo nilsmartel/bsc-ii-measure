@@ -25,6 +25,8 @@ pub enum CompressionAlgorithm {
 
     IncrCodingAdvancedDedupNS,
 
+    IncrCodingAdvancedDedupNSAdvanced,
+
     FastPforDedup,
     FastPforSplitDedup,
 
@@ -50,6 +52,7 @@ impl CompressionAlgorithm {
             (IncrCodingDedup, "incr+dedup"),
             (IncrCodingDedupNS, "incr+dedup+ns"),
             (IncrCodingAdvancedDedupNS, "incr_adv+dedup+ns"),
+            (IncrCodingAdvancedDedupNS, "incr_adv+dedup+ns_adv"),
             (SmazDedup, "smaz+dedup"),
             (FastPforDedup, "pfor+dedup"),
             (FastPforSplitDedup, "pfor_split+dedup"),
