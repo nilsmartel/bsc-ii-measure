@@ -123,12 +123,16 @@ analyst"
         words.sort();
 
         let mut d = Dict::<usize, 8>::new();
+
+        eprintln!("pushing to dictionary");
         for w in &words {
             d.push(w.as_bytes().to_vec(), w.len());
         }
 
+        eprintln!("completing");
         d.finish();
 
+        eprintln!("retrieving words");
         for w in words {
             let res = d.get(w.as_bytes());
 
@@ -224,13 +228,20 @@ where
             let index = data.len() / 2;
 
             Some(match data[index].cmp(elem) {
+                // since we're only ever comparing the first element, this means the first element
+                // already was it.
                 util::Ordering::FoundAt(i) => index * B + i,
                 util::Ordering::Greater => binary_search::<B>(&data[..index], elem)?,
                 util::Ordering::LessOrInHere => {
-                    match data[index + 1].cmp(elem) {
+                    let next_data_point = if data.len() > (index + 1) {
+                        data[index + 1].cmp(elem)
+                    } else {
+                        util::Ordering::Greater
+                    };
+                    match next_data_point {
                         // if the next block is also less, we don't need to search this block at all.
                         util::Ordering::LessOrInHere => {
-                            index + 1 + binary_search::<B>(&data[(index + 1)..], elem)?
+                            (index + 1) * B + binary_search::<B>(&data[(index + 1)..], elem)?
                         }
 
                         util::Ordering::FoundAt(i) => (index + 1) * B + i,
