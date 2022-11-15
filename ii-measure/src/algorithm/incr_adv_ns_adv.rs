@@ -39,20 +39,25 @@ impl CompressedLocations {
         data.extend(tableids);
 
         data.extend(gve::compress(ids));
+
+        data.shrink_to_fit();
+        let data = data.into_boxed_slice();
+
+        Self { data }
     }
 
-    fn get_data(&self) -> Vec<u32> {
+    fn locations(&self) -> Vec<TableLocation> {
         let (len, rest) = varint_compression::decompress(&self.data);
         let len = len as usize;
         let tableids = &rest[..len];
         let tableids = gvoe::decompress(&tableids);
 
         let ids = &rest[len..];
-        let mut ids = gve::decompress(&ids).collect();
+        let ids = gve::decompress(&ids).collect();
 
         let maxlen = (ids.len() / 2).min(tableids.len());
 
-        let v = Vec::with_capacity(maxlen);
+        let mut v = Vec::with_capacity(maxlen);
 
         for i in 0..maxlen {
             let tableid = tableids[i];
@@ -67,21 +72,6 @@ impl CompressedLocations {
         }
 
         v
-    }
-
-    pub fn locations(&self) -> Vec<TableLocation> {
-        let data = self.get_data();
-
-        let mut i = 2;
-
-        let mut locations = Vec::with_capacity(data.len() / 3);
-        while i < data.len() {
-            let t = TableLocation::from_integers(&[data[i - 2], data[i - 1], data[i]]);
-            locations.push(t);
-            i += 3;
-        }
-
-        locations
     }
 }
 
