@@ -28,6 +28,7 @@ fn basename(s: &str) -> String {
 }
 fn main() {
     let Config {
+        label,
         database,
         algorithm,
         table,
@@ -81,6 +82,7 @@ fn main() {
         basename(&table),
         header,
         multi_proc,
+        label,
     );
 
     let receiver = if database {

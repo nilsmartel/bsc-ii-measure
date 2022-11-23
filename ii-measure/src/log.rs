@@ -10,15 +10,22 @@ pub struct Logger {
     table: String,
     header: bool,
     multi_proc: bool,
+    label: String,
 }
 
 pub fn print_header() {
-    println!("cells;bytes;build_duration_nanosec;build_duration_total_nanosec;retr_duration_avg_nanosec;algorithm;table;multi_proc");
+    println!("cells;bytes;build_duration_nanosec;build_duration_total_nanosec;retr_duration_avg_nanosec;algorithm;table;multi_proc;label");
 }
 
 impl Logger {
     /// Starts a new logging server as a separate thread and opens the desired files.
-    pub fn new(algorithm: String, table: String, header: bool, multi_proc: bool) -> Self {
+    pub fn new(
+        algorithm: String,
+        table: String,
+        header: bool,
+        multi_proc: bool,
+        label: Option<String>,
+    ) -> Self {
         Logger {
             memdata: None,
             retrieval: None,
@@ -26,6 +33,7 @@ impl Logger {
             table,
             header,
             multi_proc,
+            label: label.unwrap_or_default(),
         }
     }
 
@@ -42,8 +50,10 @@ impl Logger {
 
         let retr_duration = self.retrieval.expect("retrieval information").as_nanos();
 
+        let label = &self.label;
+
         let multi_proc = self.multi_proc;
-        println!("{cells};{bytes};{duration};{total_duration};{retr_duration};{algorithm};{table};{multi_proc}");
+        println!("{cells};{bytes};{duration};{total_duration};{retr_duration};{algorithm};{table};{multi_proc};{label}");
     }
 
     pub fn memory_info(&mut self, data: MemData) {

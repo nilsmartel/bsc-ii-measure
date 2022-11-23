@@ -16,6 +16,9 @@ pub struct Config {
     #[structopt(short, long)]
     pub algorithm: CompressionAlgorithm,
 
+    #[structopt(short, long)]
+    pub label: Option<String>,
+
     #[structopt()]
     pub table: String,
 
