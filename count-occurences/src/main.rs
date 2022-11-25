@@ -15,22 +15,13 @@ struct Config {
 fn main() {
     let Config { corpus, cell } = Config::from_args();
 
-    let mut corpus = BinTable::open(&corpus).expect("open corpus");
-
-    for row in corpus.by_ref() {
-        if row.tokenized < cell {
-            continue;
-        }
-    }
+    let corpus = BinTable::open(&corpus).expect("open corpus");
 
     let mut count = 0;
-
-    for row in corpus.by_ref() {
+    for row in corpus {
         if row.tokenized == cell {
             count += 1;
-            continue;
         }
-
         if row.tokenized > cell {
             break;
         }
