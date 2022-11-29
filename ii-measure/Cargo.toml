@@ -1,6 +1,6 @@
 [package]
 name = "ii-measure"
-version = "0.11.0"
+version = "0.12.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -15,7 +15,6 @@ rand = "*"
 group-varint-encoding = "0.1.0"    # Fast algorithm to compress lists if integers in blocks of 4. Appends 0 to blocks, if length…
 lz4_flex = "0.9.5"         # Fastest LZ4 implementation in Rust, no unsafe by default.
 fast-smaz = "0.1.0"    # Pure Rust SMAZ compression implementation
-varint-compression = "0.1.0"    # variable length integer compression
 
 bintable2 = {path = "../bintable2" }
 jemallocator = "0.5.0"                       # A Rust allocator backed by jemalloc
@@ -35,4 +34,7 @@ dict-incremental-coding = { path = "../dict-incremental-coding" }
 dict-incremental-coding-improved = { path = "../dict-incremental-coding-improved" }
 # Fast algorithm to compress lists if integers in blocks of 4. Appends 0s to blocks, if…
 group-varint-offset-encoding = "0.1.1"
+
+# variable length integer compression
+vbyte = "0.1.0"
 
