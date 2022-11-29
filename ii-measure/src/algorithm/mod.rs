@@ -12,6 +12,8 @@ pub mod incr_ns;
 pub mod incremental;
 pub mod pfor_split;
 pub mod pfor_x;
+pub mod vbyte;
+pub mod vbyteincr;
 
 pub use baseline::*;
 pub use dedup::*;

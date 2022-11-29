@@ -120,6 +120,10 @@ fn main() {
             measure_logging(algorithm::incremental::incrementalcoding, receiver, log)
         }
 
+        VByteNSDedup => measure_logging(algorithm::vbyte::VByteEncoded::new, receiver, log),
+
+        VByteNSIncrDedup => measure_logging(algorithm::vbyteincr::VByteEncoded::new, receiver, log),
+
         IncrCodingDedupNS => measure_logging(
             algorithm::incr_ns::InvertedIndexIncrementalCodingNS::new,
             receiver,

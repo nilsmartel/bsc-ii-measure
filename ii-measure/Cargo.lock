@@ -69,7 +69,7 @@ dependencies = [
  "int-compression-4-wise",
  "lz4_flex",
  "rand",
- "varint-compression 0.2.0",
+ "varint-compression",
 ]
 
 [[package]]
@@ -239,21 +239,21 @@ dependencies = [
 name = "dict-front-coding"
 version = "0.1.0"
 dependencies = [
- "varint-compression 0.2.0",
+ "varint-compression",
 ]
 
 [[package]]
 name = "dict-incremental-coding"
 version = "0.1.0"
 dependencies = [
- "varint-compression 0.2.0",
+ "varint-compression",
 ]
 
 [[package]]
 name = "dict-incremental-coding-improved"
 version = "0.1.1"
 dependencies = [
- "varint-compression 0.2.0",
+ "varint-compression",
 ]
 
 [[package]]
@@ -541,7 +541,7 @@ dependencies = [
 
 [[package]]
 name = "ii-measure"
-version = "0.11.0"
+version = "0.12.0"
 dependencies = [
  "anyhow",
  "bintable2",
@@ -564,7 +564,7 @@ dependencies = [
  "threadpool",
  "tokio",
  "tokio-stream",
- "varint-compression 0.1.0",
+ "vbyte",
 ]
 
 [[package]]
@@ -1501,15 +1501,15 @@ dependencies = [
 
 [[package]]
 name = "varint-compression"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97774f372bad25eecc4cb4a56b691c7b92b67cd23bd17f25962389336bfe61bc"
-
-[[package]]
-name = "varint-compression"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee9f7521a6d07a7b7ad7b979a1965578f123412c44ebf0b44609d0a2a7ae7edc"
+
+[[package]]
+name = "vbyte"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3a2d5a99b98f4bd3d8a440886e730b3096df43f798bd3a785db1019729c02d0"
 
 [[package]]
 name = "vcpkg"

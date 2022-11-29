@@ -10,7 +10,7 @@ use dict_incremental_coding_improved::Dict;
 use group_varint_encoding as gve;
 use group_varint_offset_encoding as gvoe;
 use rand::random;
-use varint_compression;
+use vbyte;
 
 /// List of u32s compressed using Group Varint Encoding (ns)
 #[derive(Clone)]
@@ -35,7 +35,7 @@ impl CompressedLocations {
 
         let mut data = Vec::new();
         let tableids = gvoe::compress(tableids);
-        data.extend(varint_compression::compress(tableids.len() as u64));
+        data.extend(vbyte::compress(tableids.len() as u64));
         data.extend(tableids);
 
         data.extend(gve::compress(ids));
@@ -47,7 +47,7 @@ impl CompressedLocations {
     }
 
     fn locations(&self) -> Vec<TableLocation> {
-        let (len, rest) = varint_compression::decompress(&self.data);
+        let (len, rest) = vbyte::decompress(&self.data).expect("decompress length (vbyte)");
         let len = len as usize;
         let tableids = &rest[..len];
         let tableids = gvoe::decompress(&tableids);
