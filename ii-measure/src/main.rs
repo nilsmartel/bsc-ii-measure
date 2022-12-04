@@ -103,6 +103,9 @@ fn main() {
         NS => measure_logging(algorithm::ns_raw, receiver, log),
         NSArena => measure_logging(algorithm::ns_arena::ns_arena, receiver, log),
 
+        SmazFastPforDedup => {
+            unimplemented!("not going to be implemented");
+        }
         SmazDedup => measure_logging(algorithm::smaz, receiver, log),
         Smaz => measure_logging(algorithm::smaz_raw, receiver, log),
 
@@ -120,6 +123,9 @@ fn main() {
             measure_logging(algorithm::incremental::incrementalcoding, receiver, log)
         }
 
+        VByteArenaNSDedup => {
+            measure_logging(algorithm::vbyte_arena::VByteEncoded::new, receiver, log)
+        }
         VByteNSDedup => measure_logging(algorithm::vbyte::VByteEncoded::new, receiver, log),
 
         VByteNSIncrDedup => measure_logging(algorithm::vbyteincr::VByteEncoded::new, receiver, log),
@@ -146,7 +152,6 @@ fn main() {
 
         FastPforDedup => measure_logging(algorithm::pfor_x::pfor, receiver, log),
         FastPforSplitDedup => measure_logging(algorithm::pfor_split::pforsplit, receiver, log),
-
-        _ => panic!("algorithm {} not yet implemented", algorithm.str()),
+        // _ => panic!("algorithm {} not yet implemented", algorithm.str()),
     }
 }

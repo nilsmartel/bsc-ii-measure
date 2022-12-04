@@ -8,6 +8,7 @@ pub enum CompressionAlgorithm {
     DedupHash,
     DedupBTree,
 
+    VByteArenaNSDedup,
     VByteNSDedup,
     VByteNSIncrDedup,
 
@@ -47,6 +48,7 @@ impl CompressionAlgorithm {
             (DedupBTree, "dedup_btree"),
             (NSDedup, "ns+dedup"),
             (VByteNSDedup, "vbyte+ns+dedup"),
+            (VByteArenaNSDedup, "vbyte+arena+ns+dedup"),
             (VByteNSIncrDedup, "vbyte+ns+incr+dedup"),
             (NS, "ns"),
             (NSArena, "ns_arena"),

@@ -13,6 +13,7 @@ pub mod incremental;
 pub mod pfor_split;
 pub mod pfor_x;
 pub mod vbyte;
+pub mod vbyte_arena;
 pub mod vbyteincr;
 
 pub use baseline::*;
