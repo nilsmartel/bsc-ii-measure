@@ -13,6 +13,9 @@ where
     eprintln!("Step 2. Measure retrieval time.");
 
     let keys = ii.random_keys();
+    if keys.is_empty() {
+        return log.retrieval_info(Duration::from_millis(1));
+    }
 
     let total_attempts = keys.len().min(1) as u32;
     let starttime = Instant::now();
