@@ -92,10 +92,10 @@ pub fn smaz_raw(
         build_time += starttime.elapsed();
     }
 
-    let starttime = Instant::now();
-    eprintln!("sorting data");
-    data.sort();
-    build_time += starttime.elapsed();
+    // let starttime = Instant::now();
+    // eprintln!("sorting data");
+    // data.sort();
+    // build_time += starttime.elapsed();
 
     (data.len(), build_time, SmazInvertedIndexRaw { data })
 }
