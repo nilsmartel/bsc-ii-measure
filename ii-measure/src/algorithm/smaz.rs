@@ -163,6 +163,7 @@ impl InvertedIndex<Vec<TableLocation>> for SmazInvertedIndexRaw {
 impl crate::util::RandomKeys for SmazInvertedIndexRaw {
     fn random_keys_potentially_ordered(&self) -> Vec<String> {
         Vec::new()
+
         // let mut v = Vec::with_capacity(self.data.len() / 10);
 
         // let mut s: &[u8] = &[];

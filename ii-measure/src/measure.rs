@@ -14,7 +14,7 @@ where
 
     let keys = ii.random_keys();
 
-    let total_attempts = keys.len() as u32;
+    let total_attempts = keys.len().min(1) as u32;
     let starttime = Instant::now();
 
     {
