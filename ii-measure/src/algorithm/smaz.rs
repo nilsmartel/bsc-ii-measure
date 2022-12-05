@@ -93,12 +93,8 @@ pub fn smaz_raw(
     }
 
     let starttime = Instant::now();
-    eprintln!("entries: {}", data.len());
-    if !is_sorted::IsSorted::is_sorted(&mut data.iter()) {
-        eprint!("sorting");
-        data.sort_unstable();
-        eprint!(" complete");
-    }
+    eprintln!("sorting data");
+    data.sort();
     build_time += starttime.elapsed();
 
     (data.len(), build_time, SmazInvertedIndexRaw { data })
@@ -166,27 +162,28 @@ impl InvertedIndex<Vec<TableLocation>> for SmazInvertedIndexRaw {
 
 impl crate::util::RandomKeys for SmazInvertedIndexRaw {
     fn random_keys_potentially_ordered(&self) -> Vec<String> {
-        let mut v = Vec::with_capacity(self.data.len() / 10);
+        Vec::new()
+        // let mut v = Vec::with_capacity(self.data.len() / 10);
 
-        let mut s: &[u8] = &[];
-        for elem in self.data.iter() {
-            let si = &elem.0 as &[u8];
-            if s == si {
-                continue;
-            }
+        // let mut s: &[u8] = &[];
+        // for elem in self.data.iter() {
+        //     let si = &elem.0 as &[u8];
+        //     if s == si {
+        //         continue;
+        //     }
 
-            s = si;
-            v.push(si);
-        }
+        //     s = si;
+        //     v.push(si);
+        // }
 
-        (0..crate::util::random_keys::DESIRED_KEY_COUNT)
-            .map(|_| {
-                let index = random::<f64>() * v.len() as f64;
-                let s = v[index as usize];
-                let s = fast_smaz::decompress(s).expect("smaz decompress key");
+        // (0..crate::util::random_keys::DESIRED_KEY_COUNT)
+        //     .map(|_| {
+        //         let index = random::<f64>() * v.len() as f64;
+        //         let s = v[index as usize];
+        //         let s = fast_smaz::decompress(s).expect("smaz decompress key");
 
-                String::from_utf8(s).expect("smaz valid utf8 string")
-            })
-            .collect()
+        //         String::from_utf8(s).expect("smaz valid utf8 string")
+        //     })
+        //     .collect()
     }
 }
